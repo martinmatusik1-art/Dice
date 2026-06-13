@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { physics } from '../physics';
 import { graphics } from '../graphics';
 import { audio } from '../audio';
+import { isAppLocked, triggerLockFeedback } from '../main';
 
 class SlingshotMode {
   private active = false;
@@ -107,6 +108,12 @@ class SlingshotMode {
 
   private onStartDrag = (e: MouseEvent | TouchEvent) => {
     if (!this.active) return;
+    
+    // Check if the application is locked
+    if (isAppLocked) {
+      triggerLockFeedback();
+      return;
+    }
     
     // Check if dice is sleeping (ready to be fired)
     if (!physics.isSleeping()) return;

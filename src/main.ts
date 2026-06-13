@@ -250,8 +250,7 @@ class App {
 
   private handleCanvasInteraction() {
     if (this.isLocked) {
-      audio.playLockedBuzzer();
-      this.showLockedNotification();
+      triggerLockFeedback();
       return;
     }
 
@@ -266,45 +265,6 @@ class App {
         this.resultPanel?.classList.add('hidden');
       }
     }
-  }
-
-  private showLockedNotification() {
-    // Prevent toast spamming
-    if (document.getElementById('lock-toast')) return;
-
-    const toast = document.createElement('div');
-    toast.id = 'lock-toast';
-    toast.style.position = 'fixed';
-    toast.style.top = '140px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%) translateY(-15px)';
-    toast.style.background = 'rgba(231, 76, 60, 0.95)';
-    toast.style.color = '#fff';
-    toast.style.padding = '10px 20px';
-    toast.style.borderRadius = '24px';
-    toast.style.fontWeight = '600';
-    toast.style.fontSize = '0.85rem';
-    toast.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
-    toast.style.zIndex = '1000';
-    toast.style.opacity = '0';
-    toast.style.display = 'flex';
-    toast.style.alignItems = 'center';
-    toast.style.gap = '8px';
-    toast.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    toast.innerHTML = `<i class="fa-solid fa-lock"></i> <span>Hádzanie kockou je uzamknuté!</span>`;
-
-    document.body.appendChild(toast);
-
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateX(-50%) translateY(0)';
-    });
-
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateX(-50%) translateY(-15px)';
-      setTimeout(() => toast.remove(), 300);
-    }, 1800);
   }
 
   // Application Loop Tick (renders visual frame, runs physics steps)
@@ -359,3 +319,42 @@ const app = new App();
 window.addEventListener('DOMContentLoaded', () => {
   app.init();
 });
+
+export function triggerLockFeedback() {
+  audio.playLockedBuzzer();
+  if (document.getElementById('lock-toast')) return;
+
+  const toast = document.createElement('div');
+  toast.id = 'lock-toast';
+  toast.style.position = 'fixed';
+  toast.style.top = '140px';
+  toast.style.left = '50%';
+  toast.style.transform = 'translateX(-50%) translateY(-15px)';
+  toast.style.background = 'rgba(231, 76, 60, 0.95)';
+  toast.style.color = '#fff';
+  toast.style.padding = '10px 20px';
+  toast.style.borderRadius = '24px';
+  toast.style.fontWeight = '600';
+  toast.style.fontSize = '0.85rem';
+  toast.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
+  toast.style.zIndex = '1000';
+  toast.style.opacity = '0';
+  toast.style.display = 'flex';
+  toast.style.alignItems = 'center';
+  toast.style.gap = '8px';
+  toast.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+  toast.innerHTML = `<i class="fa-solid fa-lock"></i> <span>Hádzanie kockou je uzamknuté!</span>`;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  });
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-15px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 1800);
+}

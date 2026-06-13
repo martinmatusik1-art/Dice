@@ -275,12 +275,12 @@ class GraphicsEngine {
   }
 
   // Spawn smoke and fire particle systems for detonation mode
-  public spawnExplosionParticles(position: THREE.Vector3) {
-    const particleCount = 40;
+  public spawnExplosionParticles(position: THREE.Vector3, intensity = 1.0) {
+    const particleCount = Math.floor((15 + Math.random() * 15) * intensity + 10);
     const colors = [0xff4e00, 0xff9100, 0xf9d423, 0x333333]; // Fire colors and gray smoke
     
     for (let i = 0; i < particleCount; i++) {
-      const size = 0.1 + Math.random() * 0.25;
+      const size = (0.05 + Math.random() * 0.15) * (0.5 + intensity * 0.8);
       const geo = new THREE.DodecahedronGeometry(size);
       
       const isSmoke = Math.random() > 0.6;
@@ -295,21 +295,21 @@ class GraphicsEngine {
 
       if (!isSmoke) {
         mat.emissive = new THREE.Color(color);
-        mat.emissiveIntensity = 1.5;
+        mat.emissiveIntensity = 1.0 + intensity * 1.0;
       }
 
       const pMesh = new THREE.Mesh(geo, mat);
       
       // Position slightly offset from explosion point
       pMesh.position.copy(position);
-      pMesh.position.x += (Math.random() - 0.5) * 0.8;
-      pMesh.position.y += (Math.random() - 0.5) * 0.4;
-      pMesh.position.z += (Math.random() - 0.5) * 0.8;
+      pMesh.position.x += (Math.random() - 0.5) * 0.8 * intensity;
+      pMesh.position.y += (Math.random() - 0.5) * 0.4 * intensity;
+      pMesh.position.z += (Math.random() - 0.5) * 0.8 * intensity;
 
       // Random expanding velocity
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 8;
-      const verticalSpeed = 3 + Math.random() * 7;
+      const speed = (1 + Math.random() * 5) * (0.5 + intensity * 1.2);
+      const verticalSpeed = (2 + Math.random() * 4) * (0.5 + intensity * 1.5);
       
       const velocity = new THREE.Vector3(
         Math.cos(angle) * speed,
@@ -317,7 +317,7 @@ class GraphicsEngine {
         Math.sin(angle) * speed
       );
 
-      const life = 0.5 + Math.random() * 0.5;
+      const life = (0.3 + Math.random() * 0.4) * (0.7 + intensity * 0.5);
       this.scene.add(pMesh);
 
       this.particles.push({

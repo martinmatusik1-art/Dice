@@ -29,7 +29,7 @@
         </div>
         <div class="logo">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Kocka <small class="ver-text">v1.04</small></span>
+          <span>3D Kocka <small class="ver-text">v1.05</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats">
@@ -88,13 +88,18 @@
         <div class="drag-hint">Potiahni kocku dozadu a vystreľ!</div>
       </div>
 
-      <!-- Detonator Button (TNT mode) -->
+      <!-- Detonator Plunger (TNT mode) -->
       <div id="detonation-control" class="hidden">
-        <button id="detonate-btn">
-          <span class="btn-cap"></span>
-          <span class="btn-base"></span>
-          <span class="detonation-text">ODPÁLIŤ!</span>
-        </button>
+        <div id="detonator-wrapper">
+          <div id="plunger-handle">
+            <span class="plunger-cap"></span>
+            <span class="plunger-rod"></span>
+          </div>
+          <div class="plunger-base">
+            <span class="tnt-label">TNT</span>
+          </div>
+          <div class="detonation-text">STLAČ A ODPÁĽ!</div>
+        </div>
       </div>
 
       <!-- Settings Sidebar Panel -->
@@ -142,7 +147,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Verzia 1.04 (Capacitor PWA)</span>
+          <span>Verzia 1.05 (Capacitor PWA)</span>
         </div>
       </div>
 

@@ -134,13 +134,13 @@ class AudioEngine {
   }
 
   // Exploding dynamite sound (White noise + Low-pass sweep + Sub-bass boom)
-  public playExplosion() {
+  public playExplosion(intensity = 1.0) {
     if (!this.enabled || !this.effectsEnabled) return;
     this.init();
     if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
-    const duration = 1.2;
+    const duration = 0.5 + intensity * 0.7; // scaled duration
 
     // 1. Procedural White Noise Buffer
     const bufferSize = this.ctx.sampleRate * duration;
@@ -155,11 +155,11 @@ class AudioEngine {
 
     const noiseFilter = this.ctx.createBiquadFilter();
     noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.setValueAtTime(1000, now);
-    noiseFilter.frequency.exponentialRampToValueAtTime(60, now + 0.8);
+    noiseFilter.frequency.setValueAtTime(800 * intensity + 200, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(40 + 20 * (1 - intensity), now + 0.8 * duration);
 
     const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.5, now);
+    noiseGain.gain.setValueAtTime(0.5 * intensity, now);
     noiseGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
     noiseNode.connect(noiseFilter);
@@ -174,17 +174,17 @@ class AudioEngine {
     const subGain = this.ctx.createGain();
 
     subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(100, now);
-    subOsc.frequency.linearRampToValueAtTime(20, now + 0.4);
+    subOsc.frequency.setValueAtTime(80 + 20 * intensity, now);
+    subOsc.frequency.linearRampToValueAtTime(20, now + 0.3 * duration);
 
-    subGain.gain.setValueAtTime(0.8, now);
-    subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+    subGain.gain.setValueAtTime(0.8 * intensity, now);
+    subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5 * duration);
 
     subOsc.connect(subGain);
     subGain.connect(this.ctx.destination);
 
     subOsc.start(now);
-    subOsc.stop(now + 0.6);
+    subOsc.stop(now + 0.5 * duration);
   }
 
   // Gentle UI Click Sound

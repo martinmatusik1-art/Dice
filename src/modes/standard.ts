@@ -4,6 +4,7 @@
 
 import { physics } from '../physics';
 import { audio } from '../audio';
+import { isAppLocked, triggerLockFeedback } from '../main';
 
 class StandardMode {
   private active = false;
@@ -110,6 +111,10 @@ class StandardMode {
           const shakeLimit = 12.0;
           
           if (deltaX > shakeLimit || deltaY > shakeLimit || deltaZ > shakeLimit) {
+            if (isAppLocked) {
+              triggerLockFeedback();
+              return;
+            }
             this.throwDice();
           }
         }

@@ -321,8 +321,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 export function triggerLockFeedback() {
-  audio.playLockedBuzzer();
   if (document.getElementById('lock-toast')) return;
+  audio.playLockedBuzzer();
 
   const toast = document.createElement('div');
   toast.id = 'lock-toast';

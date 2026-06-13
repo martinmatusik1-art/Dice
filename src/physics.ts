@@ -65,7 +65,7 @@ class PhysicsEngine {
     this.world.addBody(floorBody);
 
     // Border Walls (with large half-extents of 20 to prevent corner leaks on wide aspect ratios)
-    const wallHeight = 5;
+    const wallHeight = 40;
 
     // Left wall
     const wallLeftShape = new CANNON.Box(new CANNON.Vec3(0.2, wallHeight, 20));
@@ -143,6 +143,11 @@ class PhysicsEngine {
 
   public step(dt: number) {
     this.world.step(dt);
+    
+    // Safety check: if dice somehow glitches through the floor or escapes, reset it to center
+    if (this.diceBody.position.y < -5.0) {
+      this.resetToCenter();
+    }
   }
 
   // Check if dice has fully stopped rolling

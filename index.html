@@ -21,24 +21,21 @@
       <!-- 3D Canvas Background -->
       <canvas id="three-canvas"></canvas>
 
-      <!-- Glassmorphic Header -->
-      <header class="glass-panel">
+      <!-- Glassmorphic Top Bar -->
+      <div id="top-bar" class="glass-panel">
+        <div class="user-profile" id="user-profile-btn" title="Zmeniť meno">
+          <i class="fa-solid fa-circle-user profile-icon"></i>
+          <span id="user-name-display">Hosť</span>
+        </div>
         <div class="logo">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Kocka</span>
+          <span>3D Kocka <small class="ver-text">v1.01</small></span>
         </div>
-        <div class="header-controls">
-          <button id="sound-toggle-btn" class="icon-btn" title="Vypnúť/Zapnúť Zvuky">
-            <i class="fa-solid fa-volume-high"></i>
-          </button>
-          <button id="settings-btn" class="icon-btn" title="Nastavenia">
-            <i class="fa-solid fa-gear"></i>
-          </button>
-          <button id="premium-badge-btn" class="premium-btn">
-            <i class="fa-solid fa-crown"></i> <span>Premium</span>
-          </button>
+        <div class="roll-stats">
+          <i class="fa-solid fa-chart-simple"></i>
+          <span>Hody: <strong id="roll-count-display">0</strong></span>
         </div>
-      </header>
+      </div>
 
       <!-- Roll Result Indicator -->
       <div id="roll-result-container" class="glass-panel hidden">
@@ -46,8 +43,8 @@
         <span id="roll-result-value">6</span>
       </div>
 
-      <!-- Left Mode Selector (Floating) -->
-      <nav id="mode-selector" class="glass-panel">
+      <!-- Bottom Navigation Bar -->
+      <nav id="bottom-bar" class="glass-panel">
         <button class="mode-btn active" data-mode="standard">
           <i class="fa-solid fa-hand-pointer"></i>
           <span>Klasický</span>
@@ -59,6 +56,19 @@
         <button class="mode-btn" data-mode="detonation">
           <i class="fa-solid fa-bomb"></i>
           <span>Detonácia</span>
+        </button>
+        <div class="bar-divider"></div>
+        <button id="sound-toggle-btn" class="bar-btn" title="Vypnúť/Zapnúť Zvuky">
+          <i class="fa-solid fa-volume-high"></i>
+          <span>Zvuky</span>
+        </button>
+        <button id="settings-btn" class="bar-btn" title="Nastavenia">
+          <i class="fa-solid fa-gear"></i>
+          <span>Nastavenia</span>
+        </button>
+        <button id="premium-badge-btn" class="premium-bar-btn">
+          <i class="fa-solid fa-crown"></i>
+          <span>Premium</span>
         </button>
       </nav>
 
@@ -127,7 +137,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Verzia 1.0.0 (Capacitor PWA)</span>
+          <span>Verzia 1.01 (Capacitor PWA)</span>
         </div>
       </div>
 

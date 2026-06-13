@@ -75,114 +75,104 @@ html, body {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* 1. Header Styles */
-header {
+/* 1. Top Bar Styles */
+#top-bar {
   position: absolute;
   top: 15px;
   left: 15px;
   right: 15px;
-  height: 60px;
+  height: 52px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 15px;
   pointer-events: auto;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  max-width: 140px;
+}
+
+.user-profile:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-icon {
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+}
+
+#user-name-display {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.25rem;
+  gap: 8px;
+  font-size: 1.1rem;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   background: linear-gradient(135deg, #fff 30%, var(--primary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+.ver-text {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
 .logo-icon {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   color: var(--primary-color);
   -webkit-text-fill-color: initial;
   filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.4));
   animation: float 3s ease-in-out infinite;
 }
 
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Buttons Styling */
-.icon-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.icon-btn:active {
-  transform: scale(0.95);
-}
-
-/* Premium Button styling */
-.premium-btn {
-  background: linear-gradient(135deg, #ffe066 0%, #f5b041 100%);
-  border: none;
-  color: #512e09;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 8px 16px;
-  border-radius: 20px;
+.roll-stats {
   display: flex;
   align-items: center;
   gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(245, 176, 65, 0.3);
-  transition: all 0.3s ease;
-  height: 38px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.premium-btn i {
-  font-size: 1rem;
+.roll-stats i {
+  color: var(--primary-color);
 }
 
-.premium-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(245, 176, 65, 0.5);
-}
-
-.premium-btn:active {
-  transform: scale(0.95);
-}
-
-/* When already Premium */
-.premium-btn.purchased {
-  background: linear-gradient(135deg, #2b3a42 0%, #1e272c 100%);
-  color: #ffe066;
-  border: 1px solid rgba(255, 224, 102, 0.3);
-  box-shadow: none;
+#roll-count-display {
+  color: var(--primary-color);
+  font-weight: 800;
 }
 
 /* 2. Roll Result Indicator */
 #roll-result-container {
   position: absolute;
-  top: 90px;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -214,71 +204,118 @@ header {
   pointer-events: none;
 }
 
-/* 3. Mode Selector Navigation */
-#mode-selector {
+/* 3. Bottom Navigation Bar */
+#bottom-bar {
   position: absolute;
+  bottom: calc(15px + var(--ad-height));
   left: 15px;
-  top: 90px;
-  bottom: calc(20px + var(--ad-height));
-  width: 76px;
+  right: 15px;
+  height: 72px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-  gap: 15px;
-  padding: 20px 0;
+  padding: 0 10px;
+  pointer-events: auto;
+  border-radius: 20px;
 }
 
-.mode-btn {
+.bar-btn, .mode-btn {
   background: none;
   border: none;
   color: var(--text-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  width: 60px;
-  height: 65px;
-  border-radius: 12px;
+  gap: 4px;
   cursor: pointer;
   justify-content: center;
-  transition: all 0.3s ease;
+  height: 60px;
+  width: 70px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
 }
 
-.mode-btn i {
-  font-size: 1.35rem;
+.bar-btn i, .mode-btn i {
+  font-size: 1.25rem;
 }
 
-.mode-btn span {
-  font-size: 0.7rem;
+.bar-btn span, .mode-btn span {
+  font-size: 0.65rem;
   font-weight: 600;
 }
 
-.mode-btn:hover {
+.bar-btn:hover, .mode-btn:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .mode-btn.active {
   color: var(--primary-color);
-  background: rgba(255, 183, 3, 0.12);
-  border: 1px solid rgba(255, 183, 3, 0.25);
-  box-shadow: 0 0 15px rgba(255, 183, 3, 0.15);
+  background: rgba(255, 183, 3, 0.08);
+  border: 1px solid rgba(255, 183, 3, 0.15);
+}
+
+.bar-divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.premium-bar-btn {
+  background: linear-gradient(135deg, #ffe066 0%, #f5b041 100%);
+  border: none;
+  color: #512e09;
+  font-weight: 700;
+  height: 52px;
+  width: 76px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 176, 65, 0.25);
+  transition: all 0.25s ease;
+}
+
+.premium-bar-btn i {
+  font-size: 1.15rem;
+}
+
+.premium-bar-btn span {
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.premium-bar-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(245, 176, 65, 0.4);
+}
+
+.premium-bar-btn.purchased {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  box-shadow: none;
+  cursor: default;
+}
+.premium-bar-btn.purchased:hover {
+  transform: none;
 }
 
 /* 4. Instructions Panel */
 #instruction-panel {
   position: absolute;
-  bottom: calc(90px + var(--ad-height));
+  bottom: calc(20px + var(--ad-height) + 72px + 10px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 12px 24px;
-  border-radius: 24px;
-  font-size: 0.9rem;
-  font-weight: 400;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
   color: var(--text-secondary);
   text-align: center;
-  max-width: 80%;
+  max-width: 85%;
   white-space: nowrap;
 }
 
@@ -390,8 +427,8 @@ header {
 #settings-sidebar {
   position: absolute;
   right: 15px;
-  top: 90px;
-  bottom: calc(20px + var(--ad-height));
+  top: 80px;
+  bottom: calc(20px + var(--ad-height) + 82px);
   width: 280px;
   display: flex;
   flex-direction: column;
@@ -856,12 +893,12 @@ input:checked + .slider:before {
   pointer-events: none;
 }
 
-#app-container.premium #mode-selector {
-  bottom: 20px;
+#app-container.premium #bottom-bar {
+  bottom: 15px;
 }
 
 #app-container.premium #instruction-panel {
-  bottom: 20px;
+  bottom: calc(20px + 72px + 10px);
 }
 
 
@@ -890,29 +927,45 @@ input:checked + .slider:before {
 
 /* Responsive Overrides */
 @media (max-width: 480px) {
-  header {
+  #top-bar {
+    left: 10px;
+    right: 10px;
+    top: 10px;
     padding: 0 10px;
-    height: 55px;
   }
   .logo span {
-    display: none; /* Icon only on extra small screens to save space */
+    display: none; /* Hide logo text on small screens, show icon only */
   }
-  .premium-btn span {
-    display: none;
+  #bottom-bar {
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + var(--ad-height));
+    height: 68px;
+    padding: 0 5px;
   }
-  .premium-btn {
-    padding: 8px 12px;
+  #app-container.premium #bottom-bar {
+    bottom: 10px;
+  }
+  .bar-btn, .mode-btn {
+    width: 52px;
+    height: 56px;
+  }
+  .bar-btn span, .mode-btn span {
+    font-size: 0.58rem;
+  }
+  .premium-bar-btn {
+    width: 62px;
+    height: 48px;
+  }
+  .premium-bar-btn span {
+    font-size: 0.55rem;
   }
   #settings-sidebar {
-    width: 250px;
+    width: calc(100% - 20px);
     right: 10px;
-  }
-  #mode-selector {
     left: 10px;
-    padding: 10px 0;
-  }
-  .mode-btn {
-    height: 55px;
+    top: 72px;
+    bottom: calc(10px + var(--ad-height) + 78px);
   }
   .mock-ad .ad-desc {
     display: none; /* Hide description on mobile to keep clean */

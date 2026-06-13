@@ -2,6 +2,7 @@
    3D Dice Simulation PWA - Main Application Entrypoint
    ------------------------------------------------------------- */
 
+import './style.css';
 import * as THREE from 'three';
 import { graphics } from './graphics';
 import { physics } from './physics';
@@ -30,6 +31,27 @@ class App {
       return;
     }
 
+    // Initialize stats and user info
+    const rollCountDisplay = document.getElementById('roll-count-display');
+    const userNameDisplay = document.getElementById('user-name-display');
+    const userProfileBtn = document.getElementById('user-profile-btn');
+
+    let rollCount = parseInt(localStorage.getItem('dice_app_roll_count') || '0', 10);
+    if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
+
+    let username = localStorage.getItem('dice_app_username') || 'Hosť';
+    if (userNameDisplay) userNameDisplay.innerText = username;
+
+    userProfileBtn?.addEventListener('click', () => {
+      audio.playClick();
+      const newName = prompt("Zadajte svoje meno:", username);
+      if (newName && newName.trim() !== '') {
+        username = newName.trim().substring(0, 15);
+        localStorage.setItem('dice_app_username', username);
+        if (userNameDisplay) userNameDisplay.innerText = username;
+      }
+    });
+
     // 1. Initialize core engines
     audio.enabled = true; // default on
     graphics.init(canvas);
@@ -47,6 +69,11 @@ class App {
         clearTimeout(this.settleTimeout);
         this.settleTimeout = null;
       }
+
+      // Increment throws
+      rollCount++;
+      localStorage.setItem('dice_app_roll_count', rollCount.toString());
+      if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
     };
 
     standardMode.init(triggerRollState);

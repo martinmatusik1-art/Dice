@@ -259,7 +259,7 @@ class GraphicsEngine {
     }
 
     const faces = [1, 6, 2, 5, 3, 4];
-    const scale = 1.0 - (count - 1) * 0.12;
+    const scale = 0.4;
 
     for (let i = 0; i < count; i++) {
       // Generate materials for this specific die

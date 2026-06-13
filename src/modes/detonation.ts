@@ -68,8 +68,7 @@ class DetonationMode {
     this.isBlownUp = false;
     
     // Freeze all dice bodies in place vertically on the floor
-    const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.12;
+    const scale = 0.4;
     
     physics.diceBodies.forEach((body, i) => {
       body.type = CANNON.Body.STATIC;
@@ -192,8 +191,7 @@ class DetonationMode {
     if (!this.active) return;
 
     // If it's already rolled and stopped elsewhere, reset it back to launchpad first
-    const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.12;
+    const scale = 0.4;
     const startY = scale;
     if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - startY) > 0.5) {
       this.resetDiceForTNT();

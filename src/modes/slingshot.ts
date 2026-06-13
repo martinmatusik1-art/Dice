@@ -90,7 +90,7 @@ class SlingshotMode {
 
   public resetDiceToSlingshot() {
     const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 1.5 * scale;
     const height = scale + 0.1;
 
@@ -173,7 +173,7 @@ class SlingshotMode {
     const pullDist3D = Math.min(dist / this.maxDragLength, 1.0) * 1.2;
 
     const count = graphics.diceMeshes.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 1.5 * scale;
 
     graphics.diceMeshes.forEach((mesh, i) => {
@@ -209,7 +209,7 @@ class SlingshotMode {
 
     // Reset mesh positions back to their starting offset alignment before applying physics force
     const count = graphics.diceMeshes.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 1.5 * scale;
 
     graphics.diceMeshes.forEach((mesh, i) => {

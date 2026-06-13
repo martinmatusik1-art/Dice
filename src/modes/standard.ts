@@ -37,7 +37,7 @@ class StandardMode {
     audio.playClick();
 
     const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 2.0 * scale;
 
     physics.diceBodies.forEach((body, i) => {

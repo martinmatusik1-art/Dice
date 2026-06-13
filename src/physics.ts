@@ -132,7 +132,7 @@ class PhysicsEngine {
     this.diceBodies = [];
 
     // 2. Spawn specified count (scale down as count increases)
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const diceShape = new CANNON.Box(new CANNON.Vec3(scale, scale, scale));
 
     for (let i = 0; i < count; i++) {
@@ -167,7 +167,7 @@ class PhysicsEngine {
     
     // Safety check: if dice somehow glitches through the floor or escapes, reset it to center
     const count = this.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 2.2 * scale;
     
     this.diceBodies.forEach((body, i) => {
@@ -238,7 +238,7 @@ class PhysicsEngine {
   // Reset all active physics dice to a stable layout on the table floor
   public resetToCenter() {
     const count = this.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const spacing = 2.2 * scale;
     
     this.diceBodies.forEach((body, i) => {

@@ -69,7 +69,7 @@ class DetonationMode {
     
     // Freeze all dice bodies in place visually on top of the TNT platform
     const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     
     physics.diceBodies.forEach((body, i) => {
       body.type = CANNON.Body.STATIC;
@@ -243,7 +243,7 @@ class DetonationMode {
 
     // If it's already rolled and stopped elsewhere, reset it back to launchpad first
     const count = physics.diceBodies.length;
-    const scale = 1.0 - (count - 1) * 0.08;
+    const scale = 1.0 - (count - 1) * 0.12;
     const startY = 1.0 + scale;
     if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - startY) > 0.5) {
       this.resetDiceForTNT();

@@ -177,13 +177,13 @@ class DetonationMode {
       metalness: 0.9
     });
     const platformMesh = new THREE.Mesh(platformGeo, platformMat);
-    platformMesh.position.y = 0.9; // top of platform
+    platformMesh.position.y = 0.925; // top of platform is exactly Y = 1.0
     platformMesh.castShadow = true;
     platformMesh.receiveShadow = true;
     this.tntGroup.add(platformMesh);
 
     // 2. Dynamite Bundle (3 Red cylinders at bottom)
-    const dynGeo = new THREE.CylinderGeometry(0.35, 0.35, 1.4, 16);
+    const dynGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.85, 16);
     const dynMat = new THREE.MeshStandardMaterial({
       color: 0xd32f2f, // bright warning red
       roughness: 0.6,
@@ -191,9 +191,9 @@ class DetonationMode {
     });
 
     const positions = [
-      new THREE.Vector3(-0.25, 0.8, -0.15),
-      new THREE.Vector3(0.25, 0.8, -0.15),
-      new THREE.Vector3(0.0, 0.8, 0.28)
+      new THREE.Vector3(-0.25, 0.425, -0.15),
+      new THREE.Vector3(0.25, 0.425, -0.15),
+      new THREE.Vector3(0.0, 0.425, 0.28)
     ];
 
     positions.forEach(pos => {
@@ -205,14 +205,14 @@ class DetonationMode {
     });
 
     // 3. Yellow bounding tape around dynamite sticks
-    const tapeGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.2, 16);
+    const tapeGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.15, 16);
     const tapeMat = new THREE.MeshStandardMaterial({
       color: 0xf4b400,
       roughness: 0.8,
       metalness: 0.0
     });
     const tapeMesh = new THREE.Mesh(tapeGeo, tapeMat);
-    tapeMesh.position.y = 0.8;
+    tapeMesh.position.y = 0.425;
     this.tntGroup!.add(tapeMesh);
 
     graphics.scene.add(this.tntGroup!);
@@ -258,7 +258,7 @@ class DetonationMode {
     graphics.triggerCameraShake(0.25 + intensity * 0.45, 0.25 + intensity * 0.35);
 
     // 3. Spawn particle fireball and smoke at origin
-    graphics.spawnExplosionParticles(new THREE.Vector3(0, 0.9, 0), intensity);
+    graphics.spawnExplosionParticles(new THREE.Vector3(0, 1.0, 0), intensity);
 
     // 4. Apply explosion upward blast force to physical bodies
     physics.diceBodies.forEach((body, i) => {

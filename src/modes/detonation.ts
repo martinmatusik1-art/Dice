@@ -3,6 +3,7 @@
    ------------------------------------------------------------- */
 
 import * as THREE from 'three';
+import * as CANNON from 'cannon-es';
 import { physics } from '../physics';
 import { graphics } from '../graphics';
 import { audio } from '../audio';
@@ -38,12 +39,20 @@ class DetonationMode {
     this.active = false;
     this.detonatorPanel?.classList.add('hidden');
     
+    // Ensure body is returned to dynamic when exiting this mode
+    physics.diceBody.type = CANNON.Body.DYNAMIC;
+    physics.diceBody.updateMassProperties();
+
     this.removeTNTModels();
   }
 
   public resetDiceForTNT() {
     this.isBlownUp = false;
-    // Position dice directly on top of the TNT launch platform (Y = 2.0)
+    
+    // Freeze the dice body in place visually on top of the TNT platform
+    physics.diceBody.type = CANNON.Body.STATIC;
+    physics.diceBody.updateMassProperties();
+    
     physics.diceBody.position.set(0, 2.0, 0);
     physics.diceBody.velocity.set(0, 0, 0);
     physics.diceBody.angularVelocity.set(0, 0, 0);
@@ -126,15 +135,23 @@ class DetonationMode {
 
   // Explode dynamite stick
   public explode() {
-    if (!this.active || this.isBlownUp) return;
+    if (!this.active) return;
     
-    // Check if dice is sitting ready
-    if (!physics.isSleeping() || Math.abs(physics.diceBody.position.y - 2.0) > 0.5) {
-      // If dice is rolling, don't allow double explosion unless resettled
+    // If it is already rolling, don't allow double trigger
+    if (this.isBlownUp && !physics.isSleeping()) {
       return;
     }
 
+    // If it's already rolled and stopped elsewhere, reset it back to launchpad first
+    if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - 2.0) > 0.5) {
+      this.resetDiceForTNT();
+    }
+
     this.isBlownUp = true;
+
+    // Unfreeze the physical body to make it dynamic
+    physics.diceBody.type = CANNON.Body.DYNAMIC;
+    physics.diceBody.updateMassProperties();
     
     // 1. Play explosion sound
     audio.playExplosion();
@@ -146,7 +163,7 @@ class DetonationMode {
     graphics.spawnExplosionParticles(new THREE.Vector3(0, 0.9, 0));
 
     // 4. Apply explosion upward blast force to physical body
-    physics.diceBody.position.y += 0.2; // lift up slightly to clear contacts
+    physics.diceBody.position.y = 2.2; // lift up slightly to clear contacts
     
     const blastForceY = 18.0 + Math.random() * 8.0; // strong vertical push
     const lateralScatterX = (Math.random() - 0.5) * 6.0;

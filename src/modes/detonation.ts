@@ -67,7 +67,7 @@ class DetonationMode {
   public resetDiceForTNT() {
     this.isBlownUp = false;
     
-    // Freeze all dice bodies in place visually on top of the TNT platform
+    // Freeze all dice bodies in place vertically on the floor
     const count = physics.diceBodies.length;
     const scale = 1.0 - (count - 1) * 0.12;
     
@@ -75,8 +75,8 @@ class DetonationMode {
       body.type = CANNON.Body.STATIC;
       body.updateMassProperties();
       
-      // Stack them vertically: bottom starts at Y = 1.0 + scale, each next is 2.1 * scale units higher
-      body.position.set(0, 1.0 + scale + i * (2.1 * scale), 0);
+      // Stack them vertically: bottom starts directly on the floor, each next is 2.1 * scale units higher
+      body.position.set(0, scale + i * (2.1 * scale), 0);
       body.velocity.set(0, 0, 0);
       body.angularVelocity.set(0, 0, 0);
       body.quaternion.set(0, 0, 0, 1);
@@ -163,59 +163,9 @@ class DetonationMode {
     }
   };
 
-  // Build a beautiful procedural 3D TNT Platform in Three.js
+  // Build a beautiful procedural 3D TNT Platform in Three.js (Removed per user request)
   private buildTNTModels() {
-    this.removeTNTModels(); // clean up just in case
-
-    this.tntGroup = new THREE.Group();
-
-    // 1. Launch Platform Disc (Steel metal look)
-    const platformGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.15, 24);
-    const platformMat = new THREE.MeshStandardMaterial({
-      color: 0x55555d,
-      roughness: 0.2,
-      metalness: 0.9
-    });
-    const platformMesh = new THREE.Mesh(platformGeo, platformMat);
-    platformMesh.position.y = 0.925; // top of platform is exactly Y = 1.0
-    platformMesh.castShadow = true;
-    platformMesh.receiveShadow = true;
-    this.tntGroup.add(platformMesh);
-
-    // 2. Dynamite Bundle (3 Red cylinders at bottom)
-    const dynGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.85, 16);
-    const dynMat = new THREE.MeshStandardMaterial({
-      color: 0xd32f2f, // bright warning red
-      roughness: 0.6,
-      metalness: 0.1
-    });
-
-    const positions = [
-      new THREE.Vector3(-0.25, 0.425, -0.15),
-      new THREE.Vector3(0.25, 0.425, -0.15),
-      new THREE.Vector3(0.0, 0.425, 0.28)
-    ];
-
-    positions.forEach(pos => {
-      const stick = new THREE.Mesh(dynGeo, dynMat);
-      stick.position.copy(pos);
-      stick.castShadow = true;
-      stick.receiveShadow = true;
-      this.tntGroup!.add(stick);
-    });
-
-    // 3. Yellow bounding tape around dynamite sticks
-    const tapeGeo = new THREE.CylinderGeometry(0.72, 0.72, 0.15, 16);
-    const tapeMat = new THREE.MeshStandardMaterial({
-      color: 0xf4b400,
-      roughness: 0.8,
-      metalness: 0.0
-    });
-    const tapeMesh = new THREE.Mesh(tapeGeo, tapeMat);
-    tapeMesh.position.y = 0.425;
-    this.tntGroup!.add(tapeMesh);
-
-    graphics.scene.add(this.tntGroup!);
+    this.removeTNTModels();
   }
 
   private removeTNTModels() {
@@ -244,7 +194,7 @@ class DetonationMode {
     // If it's already rolled and stopped elsewhere, reset it back to launchpad first
     const count = physics.diceBodies.length;
     const scale = 1.0 - (count - 1) * 0.12;
-    const startY = 1.0 + scale;
+    const startY = scale;
     if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - startY) > 0.5) {
       this.resetDiceForTNT();
     }
@@ -257,16 +207,16 @@ class DetonationMode {
     // 2. Camera Shake (scaled)
     graphics.triggerCameraShake(0.25 + intensity * 0.45, 0.25 + intensity * 0.35);
 
-    // 3. Spawn particle fireball and smoke at origin
-    graphics.spawnExplosionParticles(new THREE.Vector3(0, 1.0, 0), intensity);
+    // 3. Spawn particle fireball and smoke at origin (directly on the floor)
+    graphics.spawnExplosionParticles(new THREE.Vector3(0, 0.1, 0), intensity);
 
     // 4. Apply explosion upward blast force to physical bodies
     physics.diceBodies.forEach((body, i) => {
       body.type = CANNON.Body.DYNAMIC;
       body.updateMassProperties();
 
-      // Lift slightly relative to size
-      body.position.y += 0.2 * scale;
+      // Lift slightly relative to size to prevent floor clipping
+      body.position.y += 0.1 * scale;
 
       // Blast force propagates vertically, losing slight velocity on higher stacked dice
       const heightFactor = 1.0 - (i * 0.12);

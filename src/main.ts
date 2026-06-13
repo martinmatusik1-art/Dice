@@ -65,6 +65,30 @@ class App {
     ads.init();
     billing.init();
 
+    // Load saved themes
+    const isPremium = ads.getIsPremium();
+    
+    const savedTheme = localStorage.getItem('dice_app_theme') || 'classic';
+    const activeTheme = (savedTheme === 'classic' || isPremium) ? savedTheme : 'classic';
+    graphics.currentThemeKey = activeTheme;
+    // Set active class on color button
+    const activeColorBtn = document.querySelector(`.color-btn[data-theme="${activeTheme}"]`);
+    if (activeColorBtn) {
+      document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+      activeColorBtn.classList.add('active');
+    }
+
+    const savedBg = localStorage.getItem('dice_app_bg_theme') || 'classic';
+    const activeBg = (savedBg === 'classic' || isPremium) ? savedBg : 'classic';
+    // Set initial background in graphics
+    graphics.updateBackgroundTheme(activeBg);
+    // Set active class on background button
+    const activeBgBtn = document.querySelector(`.bg-btn[data-bg="${activeBg}"]`);
+    if (activeBgBtn) {
+      document.querySelectorAll('.bg-btn').forEach(b => b.classList.remove('active'));
+      activeBgBtn.classList.add('active');
+    }
+
     // 3. Initialize herné módy
     const triggerRollState = () => {
       this.isRolling = true;
@@ -202,11 +226,9 @@ class App {
       audio.playClick();
     });
 
-    // Sound toggle buttons (Header and checkboxes)
+    // Sound toggle buttons (Header sound toggle only, checkboxes removed)
     const headerSoundBtn = document.getElementById('sound-toggle-btn');
-    const colSoundCheckbox = document.getElementById('collision-sound-checkbox') as HTMLInputElement;
-    const effSoundCheckbox = document.getElementById('effects-sound-checkbox') as HTMLInputElement;
-
+ 
     const toggleSoundState = (enabled: boolean) => {
       audio.enabled = enabled;
       if (headerSoundBtn) {
@@ -215,24 +237,13 @@ class App {
           icon.className = enabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
         }
       }
-      if (colSoundCheckbox) colSoundCheckbox.checked = enabled;
     };
-
+ 
     headerSoundBtn?.addEventListener('click', () => {
       audio.playClick();
       toggleSoundState(!audio.enabled);
     });
-
-    colSoundCheckbox?.addEventListener('change', () => {
-      audio.playClick();
-      toggleSoundState(colSoundCheckbox.checked);
-    });
-
-    effSoundCheckbox?.addEventListener('change', () => {
-      audio.playClick();
-      audio.effectsEnabled = effSoundCheckbox.checked;
-    });
-
+ 
     // Dice Theme Selector
     const colorButtons = document.querySelectorAll('.color-btn');
     
@@ -240,19 +251,45 @@ class App {
       btn.addEventListener('click', () => {
         audio.playClick();
         const themeKey = btn.getAttribute('data-theme') || 'classic';
-        const isPremium = ads.getIsPremium();
-
-        if (themeKey !== 'classic' && !isPremium) {
+        const isPrem = ads.getIsPremium();
+ 
+        if (themeKey !== 'classic' && !isPrem) {
           // Locked - open play billing
           document.getElementById('billing-modal')?.classList.remove('hidden');
           return;
         }
-
-        // Apply theme
+ 
+        // Save and apply theme
+        localStorage.setItem('dice_app_theme', themeKey);
         graphics.updateDiceTheme(themeKey);
         
         // UI toggle active
         colorButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Table Background Selector
+    const bgButtons = document.querySelectorAll('.bg-btn');
+    
+    bgButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        audio.playClick();
+        const bgKey = btn.getAttribute('data-bg') || 'classic';
+        const isPrem = ads.getIsPremium();
+ 
+        if (bgKey !== 'classic' && !isPrem) {
+          // Locked - open play billing
+          document.getElementById('billing-modal')?.classList.remove('hidden');
+          return;
+        }
+ 
+        // Save and apply theme
+        localStorage.setItem('dice_app_bg_theme', bgKey);
+        graphics.updateBackgroundTheme(bgKey);
+        
+        // UI toggle active
+        bgButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
       });
     });

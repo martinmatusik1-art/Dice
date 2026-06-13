@@ -18,7 +18,8 @@ export const DICE_THEMES: Record<string, DiceTheme> = {
   onyx: { dice: '#151518', pips: '#e5c158', roughness: 0.15, metalness: 0.85, label: "Ónyxová čierna" },
   neon: { dice: '#0a0b10', pips: '#00f0ff', emissive: '#002b3d', roughness: 0.25, metalness: 0.2, label: "Neonovo azúrová" },
   emerald: { dice: '#023812', pips: '#ffd700', roughness: 0.12, metalness: 0.4, label: "Smaragdovo zelená" },
-  magma: { dice: '#300208', pips: '#ff3700', emissive: '#4a0000', roughness: 0.08, metalness: 0.5, label: "Lávovo červená" }
+  magma: { dice: '#300208', pips: '#ff3700', emissive: '#4a0000', roughness: 0.08, metalness: 0.5, label: "Lávovo červená" },
+  sapphire: { dice: '#031b4e', pips: '#00d2ff', emissive: '#002540', roughness: 0.1, metalness: 0.7, label: "Zafírovo modrá" }
 };
 
 class GraphicsEngine {
@@ -426,6 +427,29 @@ class GraphicsEngine {
     
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  public updateBackgroundTheme(themeKey: string) {
+    const themes: Record<string, { css: string, floor: number }> = {
+      classic: { css: 'radial-gradient(circle at center, #1b2030 0%, #080a10 100%)', floor: 0x11131a },
+      green: { css: 'radial-gradient(circle at center, #005c30 0%, #002c10 100%)', floor: 0x023c1e },
+      purple: { css: 'radial-gradient(circle at center, #3c1361 0%, #17002c 100%)', floor: 0x250a41 },
+      charcoal: { css: 'radial-gradient(circle at center, #262626 0%, #0a0a0a 100%)', floor: 0x141414 },
+      crimson: { css: 'radial-gradient(circle at center, #63101d 0%, #200004 100%)', floor: 0x38050d },
+      teal: { css: 'radial-gradient(circle at center, #0b4f54 0%, #021a1c 100%)', floor: 0x062d30 }
+    };
+
+    const theme = themes[themeKey] || themes.classic;
+
+    const container = document.getElementById('app-container');
+    if (container) {
+      container.style.background = theme.css;
+    }
+
+    if (this.trayFloor && this.trayFloor.material) {
+      const mat = this.trayFloor.material as THREE.MeshStandardMaterial;
+      mat.color.setHex(theme.floor);
+    }
   }
 }
 

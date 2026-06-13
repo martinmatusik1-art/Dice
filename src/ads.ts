@@ -135,6 +135,7 @@ class AdManager {
     const container = document.getElementById('app-container');
     const premiumBadgeBtn = document.getElementById('premium-badge-btn');
     const premiumNote = document.getElementById('premium-themes-note');
+    const premiumBgNote = document.getElementById('premium-bg-note');
     
     if (this.isPremium) {
       container?.classList.add('premium');
@@ -144,6 +145,9 @@ class AdManager {
       }
       if (premiumNote) {
         premiumNote.classList.add('hidden');
+      }
+      if (premiumBgNote) {
+        premiumBgNote.classList.add('hidden');
       }
       
       // Notify window of size change so 3D renderer updates viewport

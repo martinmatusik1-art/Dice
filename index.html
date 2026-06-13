@@ -103,7 +103,6 @@
           <h3>Nastavenia</h3>
           <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        
         <div class="settings-group">
           <h4>Vzhľad Kocky</h4>
           <div class="color-options">
@@ -112,6 +111,7 @@
             <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #00f0ff 50%, #ff007f 50%);" title="Neonovo azúrová"></button>
             <button class="color-btn" data-theme="emerald" style="background: linear-gradient(135deg, #00a86b 50%, #f4c430 50%);" title="Smaragdovo zelená"></button>
             <button class="color-btn" data-theme="magma" style="background: linear-gradient(135deg, #ff4e50 50%, #f9d423 50%);" title="Lávovo červená"></button>
+            <button class="color-btn" data-theme="sapphire" style="background: linear-gradient(135deg, #031b4e 50%, #00d2ff 50%);" title="Zafírovo modrá"></button>
           </div>
           <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Témy sú iba v Premium verzii</p>
         </div>
@@ -125,21 +125,16 @@
         </div>
 
         <div class="settings-group">
-          <h4>Zvukové efekty</h4>
-          <div class="toggle-setting">
-            <span>Kolízie kocky</span>
-            <label class="switch">
-              <input type="checkbox" id="collision-sound-checkbox" checked>
-              <span class="slider"></span>
-            </label>
+          <h4>Farebný Podklad</h4>
+          <div class="bg-options">
+            <button class="bg-btn active" data-bg="classic" style="background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);" title="Polnočná modrá"></button>
+            <button class="bg-btn" data-bg="green" style="background: radial-gradient(circle at center, #005c30 0%, #002c10 100%);" title="Kasínová zelená"></button>
+            <button class="bg-btn" data-bg="purple" style="background: radial-gradient(circle at center, #3c1361 0%, #17002c 100%);" title="Kráľovská fialová"></button>
+            <button class="bg-btn" data-bg="charcoal" style="background: radial-gradient(circle at center, #262626 0%, #0a0a0a 100%);" title="Uhlíková čierna"></button>
+            <button class="bg-btn" data-bg="crimson" style="background: radial-gradient(circle at center, #63101d 0%, #200004 100%);" title="Zapadajúca červená"></button>
+            <button class="bg-btn" data-bg="teal" style="background: radial-gradient(circle at center, #0b4f54 0%, #021a1c 100%);" title="Oceánska tyrkysová"></button>
           </div>
-          <div class="toggle-setting">
-            <span>Efekty módov</span>
-            <label class="switch">
-              <input type="checkbox" id="effects-sound-checkbox" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
+          <p id="premium-bg-note" class="warning-text"><i class="fa-solid fa-lock"></i> Podklady sú iba v Premium verzii</p>
         </div>
 
         <div class="settings-group premium-ad-free">

@@ -539,6 +539,43 @@ html, body {
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
+/* Background option buttons */
+.bg-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.bg-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.bg-btn.active {
+  border-color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.bg-btn.active::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 0.75rem;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
 /* Slider setting styling */
 .slider-setting {
   display: flex;

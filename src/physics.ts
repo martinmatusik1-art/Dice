@@ -13,6 +13,12 @@ class PhysicsEngine {
   private floorMaterial = new CANNON.Material('floor');
   private wallMaterial = new CANNON.Material('wall');
 
+  // Storing walls as properties to update them dynamically
+  private wallLeftBody!: CANNON.Body;
+  private wallRightBody!: CANNON.Body;
+  private wallFrontBody!: CANNON.Body;
+  private wallBackBody!: CANNON.Body;
+
   public init() {
     // 1. World configuration
     this.world = new CANNON.World();
@@ -48,7 +54,7 @@ class PhysicsEngine {
   }
 
   private createTrayPhysics() {
-    // Floor Box (corresponds to Three.js floor 10x0.2x12)
+    // Floor Box (corresponds to Three.js floor 10x0.2x12, physics floor matches)
     const floorShape = new CANNON.Box(new CANNON.Vec3(5, 0.1, 6));
     const floorBody = new CANNON.Body({
       mass: 0,
@@ -58,32 +64,58 @@ class PhysicsEngine {
     floorBody.position.set(0, -0.1, 0);
     this.world.addBody(floorBody);
 
-    // Border Walls (10x12 floor area, walls are at X = +/-5, Z = +/-6)
+    // Border Walls (with large half-extents of 20 to prevent corner leaks on wide aspect ratios)
     const wallHeight = 5;
 
     // Left wall
-    const wallLeftShape = new CANNON.Box(new CANNON.Vec3(0.2, wallHeight, 6));
-    const wallLeftBody = new CANNON.Body({ mass: 0, shape: wallLeftShape, material: this.wallMaterial });
-    wallLeftBody.position.set(-5.2, wallHeight, 0);
-    this.world.addBody(wallLeftBody);
+    const wallLeftShape = new CANNON.Box(new CANNON.Vec3(0.2, wallHeight, 20));
+    this.wallLeftBody = new CANNON.Body({ mass: 0, shape: wallLeftShape, material: this.wallMaterial });
+    this.wallLeftBody.position.set(-5.2, wallHeight, 0);
+    this.world.addBody(this.wallLeftBody);
 
     // Right wall
-    const wallRightShape = new CANNON.Box(new CANNON.Vec3(0.2, wallHeight, 6));
-    const wallRightBody = new CANNON.Body({ mass: 0, shape: wallRightShape, material: this.wallMaterial });
-    wallRightBody.position.set(5.2, wallHeight, 0);
-    this.world.addBody(wallRightBody);
+    const wallRightShape = new CANNON.Box(new CANNON.Vec3(0.2, wallHeight, 20));
+    this.wallRightBody = new CANNON.Body({ mass: 0, shape: wallRightShape, material: this.wallMaterial });
+    this.wallRightBody.position.set(5.2, wallHeight, 0);
+    this.world.addBody(this.wallRightBody);
 
     // Front wall
-    const wallFrontShape = new CANNON.Box(new CANNON.Vec3(5, wallHeight, 0.2));
-    const wallFrontBody = new CANNON.Body({ mass: 0, shape: wallFrontShape, material: this.wallMaterial });
-    wallFrontBody.position.set(0, wallHeight, -6.2);
-    this.world.addBody(wallFrontBody);
+    const wallFrontShape = new CANNON.Box(new CANNON.Vec3(20, wallHeight, 0.2));
+    this.wallFrontBody = new CANNON.Body({ mass: 0, shape: wallFrontShape, material: this.wallMaterial });
+    this.wallFrontBody.position.set(0, wallHeight, -6.2);
+    this.world.addBody(this.wallFrontBody);
 
     // Back wall
-    const wallBackShape = new CANNON.Box(new CANNON.Vec3(5, wallHeight, 0.2));
-    const wallBackBody = new CANNON.Body({ mass: 0, shape: wallBackShape, material: this.wallMaterial });
-    wallBackBody.position.set(0, wallHeight, 6.2);
-    this.world.addBody(wallBackBody);
+    const wallBackShape = new CANNON.Box(new CANNON.Vec3(20, wallHeight, 0.2));
+    this.wallBackBody = new CANNON.Body({ mass: 0, shape: wallBackShape, material: this.wallMaterial });
+    this.wallBackBody.position.set(0, wallHeight, 6.2);
+    this.world.addBody(this.wallBackBody);
+  }
+
+  // Update physical walls based on screen aspect ratio so the dice never leaves the viewport
+  public updateBoundaries(aspect: number) {
+    const fovRad = (45 * Math.PI) / 180;
+    
+    // Calculate visible space at camera distance (Y = 15)
+    // We adjust Y slightly if graphics.ts has mobile zoom (which zoom Y to 15 + delta)
+    const cameraY = aspect < 0.7 ? 15 + (0.7 - aspect) * 8 : 15;
+    
+    const visibleHalfHeight = Math.tan(fovRad / 2) * cameraY;
+    const visibleHalfWidth = visibleHalfHeight * aspect;
+
+    // Constrain dice center so it doesn't cross the screen edge
+    // Dice size is 2x2x2, so its boundary radius is ~1.0
+    const marginX = 1.05;
+    const marginZ = 1.05;
+
+    // Safety minimum boundaries
+    const limitX = Math.max(visibleHalfWidth - marginX, 1.4);
+    const limitZ = Math.max(visibleHalfHeight - marginZ, 1.4);
+
+    this.wallLeftBody.position.x = -limitX - 0.2;
+    this.wallRightBody.position.x = limitX + 0.2;
+    this.wallFrontBody.position.z = -limitZ - 0.2;
+    this.wallBackBody.position.z = limitZ + 0.2;
   }
 
   private createDicePhysics() {

@@ -56,6 +56,7 @@ class App {
     audio.enabled = true; // default on
     graphics.init(canvas);
     physics.init();
+    physics.updateBoundaries(window.innerWidth / window.innerHeight);
     
     // 2. Initialize monetization modules
     ads.init();
@@ -194,6 +195,7 @@ class App {
     // Handle Window Resize
     window.addEventListener('resize', () => {
       graphics.resize();
+      physics.updateBoundaries(window.innerWidth / window.innerHeight);
     });
   }
 

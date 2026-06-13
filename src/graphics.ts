@@ -44,8 +44,10 @@ class GraphicsEngine {
     this.scene.background = null; // transparent to see CSS gradient background
 
     // 2. Camera setup
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    this.camera.position.set(0, 15, 0); // Looking straight down
+    const aspect = window.innerWidth / window.innerHeight;
+    this.camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
+    const targetY = aspect < 0.7 ? 15 + (0.7 - aspect) * 8 : 15;
+    this.camera.position.set(0, targetY, 0); // Looking straight down
     this.camera.lookAt(0, 0, 0);
 
     // 3. Renderer setup
@@ -373,13 +375,20 @@ class GraphicsEngine {
       this.camera.position.z = (Math.random() - 0.5) * currentShake;
       
       if (this.shakeTime <= 0) {
-        this.camera.position.set(0, 15, 0); // reset camera position
+        const aspect = window.innerWidth / window.innerHeight;
+        const targetY = aspect < 0.7 ? 15 + (0.7 - aspect) * 8 : 15;
+        this.camera.position.set(0, targetY, 0); // reset camera position
       }
     }
   }
 
   public resize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    const aspect = window.innerWidth / window.innerHeight;
+    this.camera.aspect = aspect;
+    
+    const targetY = aspect < 0.7 ? 15 + (0.7 - aspect) * 8 : 15;
+    this.camera.position.y = targetY;
+    
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }

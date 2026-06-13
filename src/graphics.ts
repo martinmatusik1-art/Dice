@@ -14,12 +14,12 @@ export interface DiceTheme {
 }
 
 export const DICE_THEMES: Record<string, DiceTheme> = {
-  classic: { dice: '#ffffff', pips: '#d32f2f', roughness: 0.1, metalness: 0.0, label: "Klasická biela" },
-  onyx: { dice: '#151518', pips: '#e5c158', roughness: 0.15, metalness: 0.85, label: "Ónyxová čierna" },
-  neon: { dice: '#0a0b10', pips: '#00f0ff', emissive: '#002b3d', roughness: 0.25, metalness: 0.2, label: "Neonovo azúrová" },
-  emerald: { dice: '#023812', pips: '#ffd700', roughness: 0.12, metalness: 0.4, label: "Smaragdovo zelená" },
-  magma: { dice: '#300208', pips: '#ff3700', emissive: '#4a0000', roughness: 0.08, metalness: 0.5, label: "Lávovo červená" },
-  sapphire: { dice: '#031b4e', pips: '#00d2ff', emissive: '#002540', roughness: 0.1, metalness: 0.7, label: "Zafírovo modrá" }
+  classic: { dice: '#ffffff', pips: '#d32f2f', roughness: 0.1, metalness: 0.0, label: "Classic White" },
+  onyx: { dice: '#151518', pips: '#e5c158', roughness: 0.15, metalness: 0.85, label: "Onyx Black" },
+  neon: { dice: '#0a0b10', pips: '#00f0ff', emissive: '#002b3d', roughness: 0.25, metalness: 0.2, label: "Neon Cyan" },
+  emerald: { dice: '#023812', pips: '#ffd700', roughness: 0.12, metalness: 0.4, label: "Emerald Green" },
+  magma: { dice: '#300208', pips: '#ff3700', emissive: '#4a0000', roughness: 0.08, metalness: 0.5, label: "Lava Red" },
+  sapphire: { dice: '#031b4e', pips: '#00d2ff', emissive: '#002540', roughness: 0.1, metalness: 0.7, label: "Sapphire Blue" }
 };
 
 class GraphicsEngine {

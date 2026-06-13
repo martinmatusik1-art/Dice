@@ -42,12 +42,12 @@ class App {
     let rollCount = parseInt(localStorage.getItem('dice_app_roll_count') || '0', 10);
     if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
 
-    let username = localStorage.getItem('dice_app_username') || 'Hosť';
+    let username = localStorage.getItem('dice_app_username') || 'Guest';
     if (userNameDisplay) userNameDisplay.innerText = username;
 
     userProfileBtn?.addEventListener('click', () => {
       audio.playClick();
-      const newName = prompt("Zadajte svoje meno:", username);
+      const newName = prompt("Enter your name:", username);
       if (newName && newName.trim() !== '') {
         username = newName.trim().substring(0, 15);
         localStorage.setItem('dice_app_username', username);

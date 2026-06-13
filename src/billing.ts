@@ -27,7 +27,7 @@ class BillingManager {
     const openModal = () => {
       audio.playClick();
       if (ads.getIsPremium()) {
-        alert("Už ste zakúpili Premium verziu! Všetky funkcie sú odomknuté.");
+        alert("You have already purchased the Premium version! All features are unlocked.");
         return;
       }
       this.modal?.classList.remove('hidden');
@@ -54,7 +54,7 @@ class BillingManager {
     // Disable button to prevent double click, show loading state
     this.confirmBtn.disabled = true;
     const originalText = this.confirmBtn.innerText;
-    this.confirmBtn.innerText = "Spracovávam platbu...";
+    this.confirmBtn.innerText = "Processing payment...";
 
     // Simulating Google Play Billing interaction (1.5 seconds)
     setTimeout(() => {
@@ -101,7 +101,7 @@ class BillingManager {
     toast.style.gap = '10px';
     toast.style.opacity = '0';
     toast.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    toast.innerHTML = `<i class="fa-solid fa-crown"></i> <span>Premium verzia aktivovaná! Ďakujeme!</span>`;
+    toast.innerHTML = `<i class="fa-solid fa-crown"></i> <span>Premium version activated! Thank you!</span>`;
 
     document.body.appendChild(toast);
 

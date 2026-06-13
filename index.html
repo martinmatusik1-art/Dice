@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="sk">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>3D Kocka PWA</title>
+    <title>3D Dice PWA</title>
     <!-- Modern Premium Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,20 +23,20 @@
 
       <!-- Glassmorphic Top Bar -->
       <div id="top-bar" class="glass-panel">
-        <div class="user-profile" id="user-profile-btn" title="Zmeniť meno">
+        <div class="user-profile" id="user-profile-btn" title="Change name">
           <i class="fa-solid fa-circle-user profile-icon"></i>
-          <span id="user-name-display">Hosť</span>
+          <span id="user-name-display">Guest</span>
         </div>
         <div class="logo">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Kocka <small class="ver-text">v1.05</small></span>
+          <span>3D Dice <small class="ver-text">v1.05</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats">
             <i class="fa-solid fa-chart-simple"></i>
-            <span>Hody: <strong id="roll-count-display">0</strong></span>
+            <span>Rolls: <strong id="roll-count-display">0</strong></span>
           </div>
-          <button id="lock-btn" class="lock-btn" title="Zamknúť/Odomknúť hod">
+          <button id="lock-btn" class="lock-btn" title="Lock/Unlock roll">
             <i class="fa-solid fa-lock-open"></i>
           </button>
         </div>
@@ -44,7 +44,7 @@
 
       <!-- Roll Result Indicator -->
       <div id="roll-result-container" class="glass-panel hidden">
-        <span class="result-label">Výsledok:</span>
+        <span class="result-label">Result:</span>
         <span id="roll-result-value">6</span>
       </div>
 
@@ -52,32 +52,30 @@
       <nav id="bottom-bar" class="glass-panel">
         <button class="mode-btn active" data-mode="standard">
           <i class="fa-solid fa-hand-pointer"></i>
-          <span>Klasický</span>
+          <span>Classic</span>
         </button>
         <button class="mode-btn" data-mode="slingshot">
           <i class="fa-solid fa-crosshairs"></i>
-          <span>Prak</span>
+          <span>Slingshot</span>
         </button>
         <button class="mode-btn" data-mode="detonation">
           <i class="fa-solid fa-bomb"></i>
-          <span>Detonácia</span>
+          <span>Detonation</span>
         </button>
         <div class="bar-divider"></div>
-        <button id="sound-toggle-btn" class="bar-btn" title="Vypnúť/Zapnúť Zvuky">
+        <button id="sound-toggle-btn" class="bar-btn" title="Toggle Mute">
           <i class="fa-solid fa-volume-high"></i>
-          <span>Zvuky</span>
+          <span>Sounds</span>
         </button>
-        <button id="settings-btn" class="bar-btn" title="Nastavenia">
+        <button id="settings-btn" class="bar-btn" title="Settings">
           <i class="fa-solid fa-gear"></i>
-          <span>Nastavenia</span>
+          <span>Settings</span>
         </button>
         <button id="premium-badge-btn" class="premium-bar-btn">
           <i class="fa-solid fa-crown"></i>
           <span>Premium</span>
         </button>
       </nav>
-
-
 
       <!-- Slingshot UI Overlay (Active during drag) -->
       <div id="slingshot-overlay" class="hidden">
@@ -100,24 +98,24 @@
       <!-- Settings Sidebar Panel -->
       <div id="settings-sidebar" class="glass-panel">
         <div class="sidebar-header">
-          <h3>Nastavenia</h3>
+          <h3>Settings</h3>
           <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="settings-group">
-          <h4>Vzhľad Kocky</h4>
+          <h4>Dice Theme</h4>
           <div class="color-options">
-            <button class="color-btn active" data-theme="classic" style="background: linear-gradient(135deg, #ffffff 50%, #d32f2f 50%);" title="Klasická biela"></button>
-            <button class="color-btn" data-theme="onyx" style="background: linear-gradient(135deg, #1c1c1c 50%, #d4af37 50%);" title="Ónyxová čierna"></button>
-            <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #00f0ff 50%, #ff007f 50%);" title="Neonovo azúrová"></button>
-            <button class="color-btn" data-theme="emerald" style="background: linear-gradient(135deg, #00a86b 50%, #f4c430 50%);" title="Smaragdovo zelená"></button>
-            <button class="color-btn" data-theme="magma" style="background: linear-gradient(135deg, #ff4e50 50%, #f9d423 50%);" title="Lávovo červená"></button>
-            <button class="color-btn" data-theme="sapphire" style="background: linear-gradient(135deg, #031b4e 50%, #00d2ff 50%);" title="Zafírovo modrá"></button>
+            <button class="color-btn active" data-theme="classic" style="background: linear-gradient(135deg, #ffffff 50%, #d32f2f 50%);" title="Classic White"></button>
+            <button class="color-btn" data-theme="onyx" style="background: linear-gradient(135deg, #1c1c1c 50%, #d4af37 50%);" title="Onyx Black"></button>
+            <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #00f0ff 50%, #ff007f 50%);" title="Neon Cyan"></button>
+            <button class="color-btn" data-theme="emerald" style="background: linear-gradient(135deg, #00a86b 50%, #f4c430 50%);" title="Emerald Green"></button>
+            <button class="color-btn" data-theme="magma" style="background: linear-gradient(135deg, #ff4e50 50%, #f9d423 50%);" title="Lava Red"></button>
+            <button class="color-btn" data-theme="sapphire" style="background: linear-gradient(135deg, #031b4e 50%, #00d2ff 50%);" title="Sapphire Blue"></button>
           </div>
-          <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Témy sú iba v Premium verzii</p>
+          <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Themes are only available in Premium</p>
         </div>
 
         <div class="settings-group">
-          <h4>Počet Kociek</h4>
+          <h4>Number of Dice</h4>
           <div class="slider-setting">
             <input type="range" id="dice-count-slider" min="1" max="6" value="1" step="1">
             <span id="dice-count-display-val">1</span>
@@ -125,27 +123,27 @@
         </div>
 
         <div class="settings-group">
-          <h4>Farebný Podklad</h4>
+          <h4>Table Background</h4>
           <div class="bg-options">
-            <button class="bg-btn active" data-bg="classic" style="background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);" title="Polnočná modrá"></button>
-            <button class="bg-btn" data-bg="green" style="background: radial-gradient(circle at center, #005c30 0%, #002c10 100%);" title="Kasínová zelená"></button>
-            <button class="bg-btn" data-bg="purple" style="background: radial-gradient(circle at center, #3c1361 0%, #17002c 100%);" title="Kráľovská fialová"></button>
-            <button class="bg-btn" data-bg="charcoal" style="background: radial-gradient(circle at center, #262626 0%, #0a0a0a 100%);" title="Uhlíková čierna"></button>
-            <button class="bg-btn" data-bg="crimson" style="background: radial-gradient(circle at center, #63101d 0%, #200004 100%);" title="Zapadajúca červená"></button>
-            <button class="bg-btn" data-bg="teal" style="background: radial-gradient(circle at center, #0b4f54 0%, #021a1c 100%);" title="Oceánska tyrkysová"></button>
+            <button class="bg-btn active" data-bg="classic" style="background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);" title="Midnight Blue"></button>
+            <button class="bg-btn" data-bg="green" style="background: radial-gradient(circle at center, #005c30 0%, #002c10 100%);" title="Casino Green"></button>
+            <button class="bg-btn" data-bg="purple" style="background: radial-gradient(circle at center, #3c1361 0%, #17002c 100%);" title="Royal Purple"></button>
+            <button class="bg-btn" data-bg="charcoal" style="background: radial-gradient(circle at center, #262626 0%, #0a0a0a 100%);" title="Carbon Black"></button>
+            <button class="bg-btn" data-bg="crimson" style="background: radial-gradient(circle at center, #63101d 0%, #200004 100%);" title="Sunset Crimson"></button>
+            <button class="bg-btn" data-bg="teal" style="background: radial-gradient(circle at center, #0b4f54 0%, #021a1c 100%);" title="Ocean Turquoise"></button>
           </div>
-          <p id="premium-bg-note" class="warning-text"><i class="fa-solid fa-lock"></i> Podklady sú iba v Premium verzii</p>
+          <p id="premium-bg-note" class="warning-text"><i class="fa-solid fa-lock"></i> Backgrounds are only available in Premium</p>
         </div>
 
         <div class="settings-group premium-ad-free">
-          <h4>Prémiové funkcie</h4>
+          <h4>Premium Features</h4>
           <button id="sidebar-buy-premium" class="premium-buy-btn">
-            <i class="fa-solid fa-crown"></i> Aktivovať Premium
+            <i class="fa-solid fa-crown"></i> Activate Premium
           </button>
         </div>
 
         <div class="sidebar-footer">
-          <span>Verzia 1.05 (Capacitor PWA)</span>
+          <span>Version 1.05 (Capacitor PWA)</span>
         </div>
       </div>
 
@@ -163,50 +161,50 @@
             </div>
             <div class="product-details">
               <h2>Dice Premium Pack</h2>
-              <p>Jednorazový nákup pre odomknutie všetkých funkcií.</p>
+              <p>One-time purchase to unlock all premium features.</p>
             </div>
             <div class="product-price">0.99 €</div>
           </div>
 
           <div class="product-benefits">
             <ul>
-              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Úplné odstránenie reklám</strong></li>
-              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Odomknutie všetkých tém vzhľadu</strong></li>
-              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Neobmedzené explózie a herné módy</strong></li>
-              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Trvalá licencie priradená k účtu Google</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Complete ad removal</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Unlock all visual themes</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Unlimited explosions & game modes</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Lifetime license tied to your account</strong></li>
             </ul>
           </div>
 
           <div class="modal-actions">
-            <button id="billing-cancel-btn" class="modal-btn cancel">Zrušiť</button>
-            <button id="billing-confirm-btn" class="modal-btn confirm">Kúpiť jedným kliknutím</button>
+            <button id="billing-cancel-btn" class="modal-btn cancel">Cancel</button>
+            <button id="billing-confirm-btn" class="modal-btn confirm">1-Tap Buy</button>
           </div>
         </div>
       </div>
 
       <!-- Simulated Adaptive Ad Banner (Bottom) -->
       <footer id="ad-banner-container">
-        <div class="ad-label">REKLAMA</div>
+        <div class="ad-label">SPONSORED</div>
         <div id="ad-banner-content">
           <!-- Cycling Ads will inject here -->
           <div class="mock-ad active">
             <i class="fa-solid fa-cart-shopping ad-icon" style="color: #ff5722;"></i>
             <div class="ad-text-container">
-              <div class="ad-title">TEMU - Nakupujte ako miliardár!</div>
-              <div class="ad-desc">Zľavy až do 90%. Bezplatné doručenie na Slovensko. Stiahnite si teraz!</div>
+              <div class="ad-title">TEMU - Shop like a billionaire!</div>
+              <div class="ad-desc">Discounts up to 90%. Free worldwide shipping. Download now!</div>
             </div>
-            <button class="ad-cta">Zobraziť</button>
+            <button class="ad-cta">View</button>
           </div>
         </div>
-        <button id="remove-ads-shortcut-btn" title="Odstrániť reklamy"><i class="fa-solid fa-xmark"></i></button>
+        <button id="remove-ads-shortcut-btn" title="Remove Ads"><i class="fa-solid fa-xmark"></i></button>
       </footer>
 
       <!-- Orientation Lock Overlay -->
       <div id="orientation-lock-overlay">
         <div class="lock-message-content">
           <i class="fa-solid fa-mobile-screen rotate-phone-icon"></i>
-          <h2>Otočte telefón na výšku</h2>
-          <p>Pre správne fungovanie a hru prosím otočte telefón do zvislej polohy.</p>
+          <h2>Please rotate to portrait</h2>
+          <p>Please rotate your phone to portrait mode for optimal gameplay.</p>
         </div>
       </div>
 

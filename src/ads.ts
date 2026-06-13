@@ -12,30 +12,30 @@ interface Advertisement {
 
 const MOCK_ADS: Advertisement[] = [
   {
-    title: "TEMU - Nakupujte ako miliardár!",
-    desc: "Zľavy až do 90% na tisíce tovarov. Bezplatné doručenie na Slovensko.",
-    cta: "Inštalovať",
+    title: "TEMU - Shop like a billionaire!",
+    desc: "Discounts up to 90% on thousands of items. Free shipping.",
+    cta: "Install",
     icon: "fa-solid fa-cart-shopping",
     color: "#ff5722"
   },
   {
-    title: "Booking.com - Cestujte za menej",
-    desc: "Ušetrite 15% a viac na letných pobytoch. Bezplatné storno vo väčšine izieb.",
-    cta: "Hľadať",
+    title: "Booking.com - Travel for less",
+    desc: "Save 15% or more on summer stays. Free cancellation on most rooms.",
+    cta: "Search",
     icon: "fa-solid fa-hotel",
     color: "#003580"
   },
   {
-    title: "AliExpress - Neskutočné ceny",
-    desc: "Super ponuky od 0.99 €. Bezpečné platby a garancia vrátenia peňazí.",
-    cta: "Kúpiť",
+    title: "AliExpress - Unbelievable prices",
+    desc: "Super deals from 0.99 €. Safe payments and money-back guarantee.",
+    cta: "Buy",
     icon: "fa-solid fa-bag-shopping",
     color: "#e62e04"
   },
   {
-    title: "Dice Premium - Užite si hru bez reklám",
-    desc: "Odomknite exkluzívne témy a herné módy len za symbolických 0.99 €.",
-    cta: "Kúpiť Premium",
+    title: "Dice Premium - Enjoy ad-free gameplay",
+    desc: "Unlock exclusive themes and game modes for only 0.99 €.",
+    cta: "Buy Premium",
     icon: "fa-solid fa-crown",
     color: "#ffb703"
   }
@@ -105,7 +105,7 @@ class AdManager {
         // Trigger billing modal
         document.getElementById('billing-modal')?.classList.remove('hidden');
       } else {
-        alert(`Otváram obchod s aplikáciami pre reklamu: "${ad.title}"\n(V natívnej aplikácii Capacitor by toto presmerovalo do Google Play Store)`);
+        alert(`Opening App Store for ad: "${ad.title}"\n(In native Capacitor app, this would redirect to Google Play Store)`);
       }
     });
   }
@@ -140,7 +140,7 @@ class AdManager {
     if (this.isPremium) {
       container?.classList.add('premium');
       if (premiumBadgeBtn) {
-        premiumBadgeBtn.innerHTML = '<i class="fa-solid fa-crown"></i> <span>Premium Aktívne</span>';
+        premiumBadgeBtn.innerHTML = '<i class="fa-solid fa-crown"></i> <span>Premium Active</span>';
         premiumBadgeBtn.classList.add('purchased');
       }
       if (premiumNote) {

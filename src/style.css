@@ -452,20 +452,6 @@ html, body {
   padding: 2px 6px;
 }
 
-.detonation-text {
-  position: absolute;
-  bottom: -28px;
-  width: 120px;
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #ff4e50;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-  pointer-events: none;
-  letter-spacing: 0.5px;
-  animation: pulse 1.5s infinite;
-}
-
 /* 7. Settings Sidebar */
 #settings-sidebar {
   position: absolute;

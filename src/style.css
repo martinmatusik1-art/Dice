@@ -497,12 +497,14 @@ html, body {
   z-index: 100;
   transform: translateX(120%);
   opacity: 0;
+  pointer-events: none; /* Disable mouse/touch events when closed */
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #settings-sidebar.active {
   transform: translateX(0);
   opacity: 1;
+  pointer-events: auto; /* Enable mouse/touch events when open */
 }
 
 .sidebar-header {

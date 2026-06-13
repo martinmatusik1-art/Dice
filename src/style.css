@@ -1032,3 +1032,74 @@ input:checked + .slider:before {
     display: none; /* Hide description on mobile to keep clean */
   }
 }
+
+/* 8. Orientation Lock Overlay */
+#orientation-lock-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(18, 18, 18, 0.98);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  color: #fff;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.lock-message-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 320px;
+}
+
+.rotate-phone-icon {
+  font-size: 4.5rem;
+  color: #ff4e50;
+  margin-bottom: 25px;
+  animation: rotatePhone 2.5s ease-in-out infinite;
+}
+
+#orientation-lock-overlay h2 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.5px;
+}
+
+#orientation-lock-overlay p {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@keyframes rotatePhone {
+  0% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-90deg);
+  }
+  70% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Show lock warning when device is rotated to landscape on mobile-sized viewports */
+@media (orientation: landscape) and (max-height: 520px), (orientation: landscape) and (max-width: 950px) {
+  #orientation-lock-overlay {
+    display: flex;
+  }
+}

@@ -33,9 +33,12 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: var(--bg-color);
+  background-color: #060709; /* Sleek margin color for desktop views */
   font-family: var(--font-family);
   color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* App Layout Grid */
@@ -43,8 +46,10 @@ html, body {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 480px; /* Constrain viewport width to standard mobile screen ratio */
   height: 100%;
   position: relative;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.85); /* Premium drop shadow on desktop */
   background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);
 }
 
@@ -167,6 +172,47 @@ html, body {
 #roll-count-display {
   color: var(--primary-color);
   font-weight: 800;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lock-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
+}
+
+.lock-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.lock-btn.locked {
+  background: rgba(231, 76, 60, 0.15);
+  border-color: rgba(231, 76, 60, 0.35);
+  color: #e74c3c;
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.15);
+  animation: pulseLock 2s infinite;
+}
+
+@keyframes pulseLock {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(231, 76, 60, 0.3); }
+  100% { transform: scale(1); }
 }
 
 /* 2. Roll Result Indicator */

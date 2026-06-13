@@ -7,7 +7,6 @@ import { audio } from '../audio';
 
 class StandardMode {
   private active = false;
-  private shakeThreshold = 15;
   private lastX: number | null = null;
   private lastY: number | null = null;
   private lastZ: number | null = null;
@@ -96,7 +95,6 @@ class StandardMode {
 
       const curTime = Date.now();
       if ((curTime - this.lastUpdate) > 100) {
-        const diffTime = curTime - this.lastUpdate;
         this.lastUpdate = curTime;
 
         const x = acc.x;
@@ -104,10 +102,14 @@ class StandardMode {
         const z = acc.z;
 
         if (this.lastX !== null && this.lastY !== null && this.lastZ !== null) {
-          const speed = Math.abs(x + y + z - this.lastX - this.lastY - this.lastZ) / diffTime * 10000;
+          const deltaX = Math.abs(x - this.lastX);
+          const deltaY = Math.abs(y - this.lastY);
+          const deltaZ = Math.abs(z - this.lastZ);
           
-          if (speed > this.shakeThreshold) {
-            // Phone shaken - roll!
+          // 12.0 m/s^2 represents a distinct physical shake gesture, ignoring minor sensor noise
+          const shakeLimit = 12.0;
+          
+          if (deltaX > shakeLimit || deltaY > shakeLimit || deltaZ > shakeLimit) {
             this.throwDice();
           }
         }

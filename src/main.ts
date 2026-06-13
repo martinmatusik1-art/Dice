@@ -13,6 +13,8 @@ import { standardMode } from './modes/standard';
 import { slingshotMode } from './modes/slingshot';
 import { detonationMode } from './modes/detonation';
 
+export let isAppLocked = false;
+
 class App {
   private clock = new THREE.Clock();
   private currentMode: 'standard' | 'slingshot' | 'detonation' = 'standard';
@@ -20,6 +22,7 @@ class App {
   private resultValue: HTMLElement | null = null;
   private isRolling = false;
   private settleTimeout: number | null = null;
+  private isLocked = false;
 
   public init() {
     this.resultPanel = document.getElementById('roll-result-container');
@@ -109,18 +112,33 @@ class App {
       });
     });
 
-    // Main Canvas click (Standard mode rolls, or others reset)
+    // Main Canvas click/touch (Standard mode rolls, or others reset)
     const canvas3d = document.getElementById('three-canvas');
-    canvas3d?.addEventListener('mousedown', (e) => {
-      // Prevent throw if clicking menu buttons
+    canvas3d?.addEventListener('pointerdown', (e) => {
+      // Prevent throw if clicking menu overlay buttons
       if ((e.target as HTMLElement).tagName !== 'CANVAS') return;
       
       this.handleCanvasInteraction();
     });
-    canvas3d?.addEventListener('touchstart', (e) => {
-      if ((e.target as HTMLElement).tagName !== 'CANVAS') return;
-      this.handleCanvasInteraction();
-    }, { passive: true });
+
+    // Lock button event listener
+    const lockBtn = document.getElementById('lock-btn');
+    lockBtn?.addEventListener('click', () => {
+      audio.playClick();
+      this.isLocked = !this.isLocked;
+      isAppLocked = this.isLocked; // sync global export
+      
+      const icon = lockBtn.querySelector('i');
+      if (icon) {
+        icon.className = this.isLocked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+      }
+      
+      if (this.isLocked) {
+        lockBtn.classList.add('locked');
+      } else {
+        lockBtn.classList.remove('locked');
+      }
+    });
 
     // Settings panel toggle
     const settingsBtn = document.getElementById('settings-btn');
@@ -231,6 +249,12 @@ class App {
   }
 
   private handleCanvasInteraction() {
+    if (this.isLocked) {
+      audio.playLockedBuzzer();
+      this.showLockedNotification();
+      return;
+    }
+
     if (physics.isSleeping()) {
       if (this.currentMode === 'standard') {
         standardMode.throwDice();
@@ -242,6 +266,45 @@ class App {
         this.resultPanel?.classList.add('hidden');
       }
     }
+  }
+
+  private showLockedNotification() {
+    // Prevent toast spamming
+    if (document.getElementById('lock-toast')) return;
+
+    const toast = document.createElement('div');
+    toast.id = 'lock-toast';
+    toast.style.position = 'fixed';
+    toast.style.top = '140px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%) translateY(-15px)';
+    toast.style.background = 'rgba(231, 76, 60, 0.95)';
+    toast.style.color = '#fff';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '24px';
+    toast.style.fontWeight = '600';
+    toast.style.fontSize = '0.85rem';
+    toast.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
+    toast.style.zIndex = '1000';
+    toast.style.opacity = '0';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '8px';
+    toast.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    toast.innerHTML = `<i class="fa-solid fa-lock"></i> <span>Hádzanie kockou je uzamknuté!</span>`;
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-15px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 1800);
   }
 
   // Application Loop Tick (renders visual frame, runs physics steps)

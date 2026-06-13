@@ -238,6 +238,39 @@ class AudioEngine {
       osc.stop(time + 0.35);
     });
   }
+
+  // Warning sound when attempting to roll a locked die
+  public playLockedBuzzer() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const duration = 0.15;
+    
+    // Synthesize dry synthetic bzz (two low detuned sawtooth oscillators)
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110, now); // A2 note
+
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(113, now); // slightly detuned for chorus fatness
+
+    gainNode.gain.setValueAtTime(0.18, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + duration);
+    osc2.stop(now + duration);
+  }
 }
 
 export const audio = new AudioEngine();

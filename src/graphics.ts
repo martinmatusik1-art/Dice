@@ -1,0 +1,388 @@
+/* -------------------------------------------------------------
+   Three.js Rendering Engine with Custom Procedural Die Mesh
+   ------------------------------------------------------------- */
+
+import * as THREE from 'three';
+
+export interface DiceTheme {
+  dice: string;
+  pips: string;
+  roughness: number;
+  metalness: number;
+  emissive?: string;
+  label: string;
+}
+
+export const DICE_THEMES: Record<string, DiceTheme> = {
+  classic: { dice: '#ffffff', pips: '#d32f2f', roughness: 0.1, metalness: 0.0, label: "Klasická biela" },
+  onyx: { dice: '#151518', pips: '#e5c158', roughness: 0.15, metalness: 0.85, label: "Ónyxová čierna" },
+  neon: { dice: '#0a0b10', pips: '#00f0ff', emissive: '#002b3d', roughness: 0.25, metalness: 0.2, label: "Neonovo azúrová" },
+  emerald: { dice: '#023812', pips: '#ffd700', roughness: 0.12, metalness: 0.4, label: "Smaragdovo zelená" },
+  magma: { dice: '#300208', pips: '#ff3700', emissive: '#4a0000', roughness: 0.08, metalness: 0.5, label: "Lávovo červená" }
+};
+
+class GraphicsEngine {
+  public scene!: THREE.Scene;
+  public camera!: THREE.PerspectiveCamera;
+  public renderer!: THREE.WebGLRenderer;
+  
+  public diceMesh: THREE.Mesh | null = null;
+  private diceMaterials: THREE.MeshStandardMaterial[] = [];
+  private currentThemeKey: string = 'classic';
+  
+  private trayFloor!: THREE.Mesh;
+  private particles: Array<{
+    mesh: THREE.Mesh;
+    velocity: THREE.Vector3;
+    life: number;
+    maxLife: number;
+  }> = [];
+
+  public init(canvas: HTMLCanvasElement) {
+    // 1. Scene setup
+    this.scene = new THREE.Scene();
+    this.scene.background = null; // transparent to see CSS gradient background
+
+    // 2. Camera setup
+    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    this.camera.position.set(0, 15, 0); // Looking straight down
+    this.camera.lookAt(0, 0, 0);
+
+    // 3. Renderer setup
+    this.renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // 4. Lighting Setup
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    this.scene.add(ambientLight);
+
+    // Main Directional Light (Shadow Caster)
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(5, 12, 4);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 25;
+    dirLight.shadow.camera.left = -6;
+    dirLight.shadow.camera.right = 6;
+    dirLight.shadow.camera.top = 6;
+    dirLight.shadow.camera.bottom = -6;
+    dirLight.shadow.bias = -0.0005;
+    this.scene.add(dirLight);
+
+    // Spotlight for dramatic effect in center
+    const spotLight = new THREE.SpotLight(0xffb703, 0.5, 20, Math.PI / 4, 0.5, 1);
+    spotLight.position.set(0, 10, 0);
+    spotLight.target.position.set(0, 0, 0);
+    this.scene.add(spotLight);
+
+    this.createTray();
+    this.createDice(this.currentThemeKey);
+  }
+
+  // Create rolling tray (floor and borders)
+  private createTray() {
+    // Floor (Dark leather/metallic board)
+    const floorGeo = new THREE.BoxGeometry(10, 0.2, 12);
+    const floorMat = new THREE.MeshStandardMaterial({
+      color: 0x11131a,
+      roughness: 0.6,
+      metalness: 0.25,
+      bumpScale: 0.05
+    });
+    this.trayFloor = new THREE.Mesh(floorGeo, floorMat);
+    this.trayFloor.position.y = -0.1;
+    this.trayFloor.receiveShadow = true;
+    this.scene.add(this.trayFloor);
+
+    // Subtle Grid/Lines on the Floor
+    const gridHelper = new THREE.GridHelper(10, 10, 0x2c3e50, 0x1a252f);
+    gridHelper.position.y = 0.01;
+    this.scene.add(gridHelper);
+  }
+
+  // Generate perfect Rounded Cube Geometry with correct UVs
+  private createRoundedBoxGeometry(width: number, height: number, depth: number, radius: number, segments: number): THREE.BufferGeometry {
+    const geometry = new THREE.BoxGeometry(width, height, depth, segments, segments, segments);
+    const positionAttribute = geometry.attributes.position;
+    const temp = new THREE.Vector3();
+
+    const wHalf = width / 2;
+    const hHalf = height / 2;
+    const dHalf = depth / 2;
+
+    for (let i = 0; i < positionAttribute.count; i++) {
+      temp.fromBufferAttribute(positionAttribute, i);
+
+      const rx = Math.sign(temp.x) * Math.max(0, Math.abs(temp.x) - (wHalf - radius));
+      const ry = Math.sign(temp.y) * Math.max(0, Math.abs(temp.y) - (hHalf - radius));
+      const rz = Math.sign(temp.z) * Math.max(0, Math.abs(temp.z) - (dHalf - radius));
+
+      const flatX = temp.x - rx;
+      const flatY = temp.y - ry;
+      const flatZ = temp.z - rz;
+
+      const displacement = new THREE.Vector3(rx, ry, rz);
+      if (displacement.length() > 0) {
+        displacement.normalize().multiplyScalar(radius);
+        temp.set(flatX + displacement.x, flatY + displacement.y, flatZ + displacement.z);
+        positionAttribute.setXYZ(i, temp.x, temp.y, temp.z);
+      }
+    }
+
+    geometry.computeVertexNormals();
+    return geometry;
+  }
+
+  // Generates canvas texture representing the pips on a face
+  private createDiceFaceTexture(value: number, theme: DiceTheme): THREE.CanvasTexture {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background
+    ctx.fillStyle = theme.dice;
+    ctx.fillRect(0, 0, 256, 256);
+
+    // Bevel borders
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(7, 7, 242, 242);
+    
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(14, 14, 228, 228);
+
+    // Pip styling
+    ctx.fillStyle = theme.pips;
+    
+    if (theme.emissive) {
+      ctx.shadowColor = theme.pips;
+      ctx.shadowBlur = 18;
+    } else {
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 3;
+    }
+
+    const r = 23; // pip radius
+    const drawPip = (x: number, y: number) => {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const center = 128;
+    const low = 68;
+    const high = 188;
+
+    switch (value) {
+      case 1:
+        drawPip(center, center);
+        break;
+      case 2:
+        drawPip(low, low);
+        drawPip(high, high);
+        break;
+      case 3:
+        drawPip(low, low);
+        drawPip(center, center);
+        drawPip(high, high);
+        break;
+      case 4:
+        drawPip(low, low);
+        drawPip(high, low);
+        drawPip(low, high);
+        drawPip(high, high);
+        break;
+      case 5:
+        drawPip(low, low);
+        drawPip(high, low);
+        drawPip(center, center);
+        drawPip(low, high);
+        drawPip(high, high);
+        break;
+      case 6:
+        drawPip(low, low);
+        drawPip(high, low);
+        drawPip(low, center);
+        drawPip(high, center);
+        drawPip(low, high);
+        drawPip(high, high);
+        break;
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
+  }
+
+  // Create the 3D dice mesh with specific theme
+  public createDice(themeKey: string) {
+    if (this.diceMesh) {
+      this.scene.remove(this.diceMesh);
+      this.diceMaterials.forEach(mat => mat.dispose());
+      this.diceMaterials = [];
+    }
+
+    this.currentThemeKey = themeKey;
+    const theme = DICE_THEMES[themeKey] || DICE_THEMES.classic;
+    const geom = this.createRoundedBoxGeometry(2.0, 2.0, 2.0, 0.35, 12);
+
+    // Opposite faces sum to 7:
+    // +X (Right): 1, -X (Left): 6
+    // +Y (Top): 2,   -Y (Bottom): 5
+    // +Z (Front): 3, -Z (Back): 4
+    const faces = [1, 6, 2, 5, 3, 4];
+
+    this.diceMaterials = faces.map(val => {
+      const texture = this.createDiceFaceTexture(val, theme);
+      
+      const matParams: THREE.MeshStandardMaterialParameters = {
+        map: texture,
+        roughness: theme.roughness,
+        metalness: theme.metalness
+      };
+
+      if (theme.emissive) {
+        matParams.emissive = new THREE.Color(theme.emissive);
+        matParams.emissiveIntensity = 1.0;
+      }
+
+      return new THREE.MeshStandardMaterial(matParams);
+    });
+
+    this.diceMesh = new THREE.Mesh(geom, this.diceMaterials);
+    this.diceMesh.castShadow = true;
+    this.diceMesh.receiveShadow = true;
+    this.diceMesh.position.set(0, 1.1, 0); // Sit slightly above floor initially
+    this.scene.add(this.diceMesh);
+  }
+
+  public updateDiceTheme(themeKey: string) {
+    this.createDice(themeKey);
+  }
+
+  // Spawn smoke and fire particle systems for detonation mode
+  public spawnExplosionParticles(position: THREE.Vector3) {
+    const particleCount = 40;
+    const colors = [0xff4e00, 0xff9100, 0xf9d423, 0x333333]; // Fire colors and gray smoke
+    
+    for (let i = 0; i < particleCount; i++) {
+      const size = 0.1 + Math.random() * 0.25;
+      const geo = new THREE.DodecahedronGeometry(size);
+      
+      const isSmoke = Math.random() > 0.6;
+      const color = isSmoke ? 0x444444 : colors[Math.floor(Math.random() * 3)];
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.9,
+        metalness: 0.1,
+        transparent: true,
+        opacity: isSmoke ? 0.6 : 0.9
+      });
+
+      if (!isSmoke) {
+        mat.emissive = new THREE.Color(color);
+        mat.emissiveIntensity = 1.5;
+      }
+
+      const pMesh = new THREE.Mesh(geo, mat);
+      
+      // Position slightly offset from explosion point
+      pMesh.position.copy(position);
+      pMesh.position.x += (Math.random() - 0.5) * 0.8;
+      pMesh.position.y += (Math.random() - 0.5) * 0.4;
+      pMesh.position.z += (Math.random() - 0.5) * 0.8;
+
+      // Random expanding velocity
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 8;
+      const verticalSpeed = 3 + Math.random() * 7;
+      
+      const velocity = new THREE.Vector3(
+        Math.cos(angle) * speed,
+        verticalSpeed,
+        Math.sin(angle) * speed
+      );
+
+      const life = 0.5 + Math.random() * 0.5;
+      this.scene.add(pMesh);
+
+      this.particles.push({
+        mesh: pMesh,
+        velocity,
+        life,
+        maxLife: life
+      });
+    }
+  }
+
+  // Dynamic Camera Shake Effect
+  private shakeTime = 0;
+  private shakeIntensity = 0;
+
+  public triggerCameraShake(intensity: number, duration: number) {
+    this.shakeIntensity = intensity;
+    this.shakeTime = duration;
+  }
+
+  public updateParticlesAndEffects(dt: number) {
+    // 1. Update Particles
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.life -= dt;
+
+      if (p.life <= 0) {
+        this.scene.remove(p.mesh);
+        p.mesh.geometry.dispose();
+        (p.mesh.material as THREE.Material).dispose();
+        this.particles.splice(i, 1);
+      } else {
+        // Move particle
+        p.mesh.position.addScaledVector(p.velocity, dt);
+        // Apply gravity to particles
+        p.velocity.y -= 9.81 * dt;
+        
+        // Scale down and fade out
+        const ratio = p.life / p.maxLife;
+        p.mesh.scale.setScalar(ratio);
+        
+        const mat = p.mesh.material as THREE.MeshStandardMaterial;
+        mat.opacity = ratio;
+        if (mat.emissiveIntensity > 0) {
+          mat.emissiveIntensity = ratio * 1.5;
+        }
+      }
+    }
+
+    // 2. Camera Shake logic
+    if (this.shakeTime > 0) {
+      this.shakeTime -= dt;
+      const currentShake = this.shakeIntensity * (this.shakeTime / 0.5); // fade shake out
+      this.camera.position.x = (Math.random() - 0.5) * currentShake;
+      this.camera.position.z = (Math.random() - 0.5) * currentShake;
+      
+      if (this.shakeTime <= 0) {
+        this.camera.position.set(0, 15, 0); // reset camera position
+      }
+    }
+  }
+
+  public resize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+}
+
+export const graphics = new GraphicsEngine();

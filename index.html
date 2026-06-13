@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>3D Kocka PWA</title>
+    <!-- Modern Premium Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <!-- App Container -->
+    <div id="app-container">
+      
+      <!-- 3D Canvas Background -->
+      <canvas id="three-canvas"></canvas>
+
+      <!-- Glassmorphic Header -->
+      <header class="glass-panel">
+        <div class="logo">
+          <i class="fa-solid fa-dice-d6 logo-icon"></i>
+          <span>3D Kocka</span>
+        </div>
+        <div class="header-controls">
+          <button id="sound-toggle-btn" class="icon-btn" title="Vypnúť/Zapnúť Zvuky">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+          <button id="settings-btn" class="icon-btn" title="Nastavenia">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+          <button id="premium-badge-btn" class="premium-btn">
+            <i class="fa-solid fa-crown"></i> <span>Premium</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Roll Result Indicator -->
+      <div id="roll-result-container" class="glass-panel hidden">
+        <span class="result-label">Výsledok:</span>
+        <span id="roll-result-value">6</span>
+      </div>
+
+      <!-- Left Mode Selector (Floating) -->
+      <nav id="mode-selector" class="glass-panel">
+        <button class="mode-btn active" data-mode="standard">
+          <i class="fa-solid fa-hand-pointer"></i>
+          <span>Klasický</span>
+        </button>
+        <button class="mode-btn" data-mode="slingshot">
+          <i class="fa-solid fa-crosshairs"></i>
+          <span>Prak</span>
+        </button>
+        <button class="mode-btn" data-mode="detonation">
+          <i class="fa-solid fa-bomb"></i>
+          <span>Detonácia</span>
+        </button>
+      </nav>
+
+      <!-- Control Instructions (Contextual) -->
+      <div id="instruction-panel" class="glass-panel">
+        <span id="instruction-text">Klikni na obrazovku alebo zatras mobilom pre hod</span>
+      </div>
+
+      <!-- Slingshot UI Overlay (Active during drag) -->
+      <div id="slingshot-overlay" class="hidden">
+        <div class="slingshot-band"></div>
+        <div class="drag-hint">Potiahni kocku dozadu a vystreľ!</div>
+      </div>
+
+      <!-- Detonator Button (TNT mode) -->
+      <div id="detonation-control" class="hidden">
+        <button id="detonate-btn">
+          <span class="btn-cap"></span>
+          <span class="btn-base"></span>
+          <span class="detonation-text">ODPÁLIŤ!</span>
+        </button>
+      </div>
+
+      <!-- Settings Sidebar Panel -->
+      <div id="settings-sidebar" class="glass-panel hidden">
+        <div class="sidebar-header">
+          <h3>Nastavenia</h3>
+          <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div class="settings-group">
+          <h4>Vzhľad Kocky</h4>
+          <div class="color-options">
+            <button class="color-btn active" data-theme="classic" style="background: linear-gradient(135deg, #ffffff 50%, #d32f2f 50%);" title="Klasická biela"></button>
+            <button class="color-btn" data-theme="onyx" style="background: linear-gradient(135deg, #1c1c1c 50%, #d4af37 50%);" title="Ónyxová čierna"></button>
+            <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #00f0ff 50%, #ff007f 50%);" title="Neonovo azúrová"></button>
+            <button class="color-btn" data-theme="emerald" style="background: linear-gradient(135deg, #00a86b 50%, #f4c430 50%);" title="Smaragdovo zelená"></button>
+            <button class="color-btn" data-theme="magma" style="background: linear-gradient(135deg, #ff4e50 50%, #f9d423 50%);" title="Lávovo červená"></button>
+          </div>
+          <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Témy sú iba v Premium verzii</p>
+        </div>
+
+        <div class="settings-group">
+          <h4>Zvukové efekty</h4>
+          <div class="toggle-setting">
+            <span>Kolízie kocky</span>
+            <label class="switch">
+              <input type="checkbox" id="collision-sound-checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="toggle-setting">
+            <span>Efekty módov</span>
+            <label class="switch">
+              <input type="checkbox" id="effects-sound-checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group premium-ad-free">
+          <h4>Prémiové funkcie</h4>
+          <button id="sidebar-buy-premium" class="premium-buy-btn">
+            <i class="fa-solid fa-crown"></i> Aktivovať Premium
+          </button>
+        </div>
+
+        <div class="sidebar-footer">
+          <span>Verzia 1.0.0 (Capacitor PWA)</span>
+        </div>
+      </div>
+
+      <!-- Google Play Billing Mock Modal -->
+      <div id="billing-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-brands fa-google-play play-icon"></i>
+            <span>Google Play Billing</span>
+          </div>
+          
+          <div class="product-info">
+            <div class="product-icon">
+              <i class="fa-solid fa-crown gold-crown"></i>
+            </div>
+            <div class="product-details">
+              <h2>Dice Premium Pack</h2>
+              <p>Jednorazový nákup pre odomknutie všetkých funkcií.</p>
+            </div>
+            <div class="product-price">0.99 €</div>
+          </div>
+
+          <div class="product-benefits">
+            <ul>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Úplné odstránenie reklám</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Odomknutie všetkých tém vzhľadu</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Neobmedzené explózie a herné módy</strong></li>
+              <li><i class="fa-solid fa-circle-check green-check"></i> <strong>Trvalá licencie priradená k účtu Google</strong></li>
+            </ul>
+          </div>
+
+          <div class="modal-actions">
+            <button id="billing-cancel-btn" class="modal-btn cancel">Zrušiť</button>
+            <button id="billing-confirm-btn" class="modal-btn confirm">Kúpiť jedným kliknutím</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulated Adaptive Ad Banner (Bottom) -->
+      <footer id="ad-banner-container">
+        <div class="ad-label">REKLAMA</div>
+        <div id="ad-banner-content">
+          <!-- Cycling Ads will inject here -->
+          <div class="mock-ad active">
+            <i class="fa-solid fa-cart-shopping ad-icon" style="color: #ff5722;"></i>
+            <div class="ad-text-container">
+              <div class="ad-title">TEMU - Nakupujte ako miliardár!</div>
+              <div class="ad-desc">Zľavy až do 90%. Bezplatné doručenie na Slovensko. Stiahnite si teraz!</div>
+            </div>
+            <button class="ad-cta">Zobraziť</button>
+          </div>
+        </div>
+        <button id="remove-ads-shortcut-btn" title="Odstrániť reklamy"><i class="fa-solid fa-xmark"></i></button>
+      </footer>
+
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

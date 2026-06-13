@@ -1,0 +1,920 @@
+/* -------------------------------------------------------------
+   3D Dice Simulation CSS - Premium Glassmorphic Design
+   ------------------------------------------------------------- */
+
+/* Google Font Import & Root Variables */
+:root {
+  --primary-color: #ffb703;
+  --secondary-color: #219ebc;
+  --accent-color: #fb8500;
+  --bg-color: #0b0c10;
+  --panel-bg: rgba(18, 22, 33, 0.7);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ad-height: 70px;
+}
+
+/* Base resets for nativelike feel */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  font-family: var(--font-family);
+  color: var(--text-primary);
+}
+
+/* App Layout Grid */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);
+}
+
+/* ThreeJS Canvas */
+#three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+}
+
+/* Glassmorphic Panels */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 1. Header Styles */
+header {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  pointer-events: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #fff 30%, var(--primary-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-icon {
+  font-size: 1.4rem;
+  color: var(--primary-color);
+  -webkit-text-fill-color: initial;
+  filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.4));
+  animation: float 3s ease-in-out infinite;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Buttons Styling */
+.icon-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Premium Button styling */
+.premium-btn {
+  background: linear-gradient(135deg, #ffe066 0%, #f5b041 100%);
+  border: none;
+  color: #512e09;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(245, 176, 65, 0.3);
+  transition: all 0.3s ease;
+  height: 38px;
+}
+
+.premium-btn i {
+  font-size: 1rem;
+}
+
+.premium-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(245, 176, 65, 0.5);
+}
+
+.premium-btn:active {
+  transform: scale(0.95);
+}
+
+/* When already Premium */
+.premium-btn.purchased {
+  background: linear-gradient(135deg, #2b3a42 0%, #1e272c 100%);
+  color: #ffe066;
+  border: 1px solid rgba(255, 224, 102, 0.3);
+  box-shadow: none;
+}
+
+/* 2. Roll Result Indicator */
+#roll-result-container {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#roll-result-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+}
+
+.hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 3. Mode Selector Navigation */
+#mode-selector {
+  position: absolute;
+  left: 15px;
+  top: 90px;
+  bottom: calc(20px + var(--ad-height));
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+}
+
+.mode-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 60px;
+  height: 65px;
+  border-radius: 12px;
+  cursor: pointer;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.mode-btn i {
+  font-size: 1.35rem;
+}
+
+.mode-btn span {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.mode-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn.active {
+  color: var(--primary-color);
+  background: rgba(255, 183, 3, 0.12);
+  border: 1px solid rgba(255, 183, 3, 0.25);
+  box-shadow: 0 0 15px rgba(255, 183, 3, 0.15);
+}
+
+/* 4. Instructions Panel */
+#instruction-panel {
+  position: absolute;
+  bottom: calc(90px + var(--ad-height));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 80%;
+  white-space: nowrap;
+}
+
+/* 5. Slingshot Interactive Overlay */
+#slingshot-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.drag-hint {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  color: #fff;
+  letter-spacing: 0.5px;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  animation: pulse 1.5s infinite;
+}
+
+/* 6. Detonation Mechanics (TNT) */
+#detonation-control {
+  position: absolute;
+  right: 20px;
+  bottom: calc(100px + var(--ad-height));
+  z-index: 10;
+}
+
+#detonate-btn {
+  background: none;
+  border: none;
+  position: relative;
+  width: 80px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn-cap {
+  width: 36px;
+  height: 8px;
+  background: #d32f2f;
+  border-radius: 4px;
+  position: absolute;
+  top: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s ease;
+}
+
+#detonate-btn:active .btn-cap {
+  transform: translateY(22px);
+}
+
+/* Detonator Rod */
+#detonate-btn::before {
+  content: '';
+  width: 6px;
+  height: 30px;
+  background: #bdc3c7;
+  position: absolute;
+  top: 8px;
+  z-index: -1;
+}
+
+.btn-base {
+  width: 60px;
+  height: 70px;
+  background: #f4b400;
+  border-radius: 8px;
+  position: absolute;
+  bottom: 0;
+  border: 3px solid #3e2723;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.btn-base::after {
+  content: 'TNT';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #3e2723;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.detonation-text {
+  position: absolute;
+  bottom: -25px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ff4e50;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* 7. Settings Sidebar */
+#settings-sidebar {
+  position: absolute;
+  right: 15px;
+  top: 90px;
+  bottom: calc(20px + var(--ad-height));
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 100;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#settings-sidebar.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.sidebar-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.settings-group {
+  margin-bottom: 25px;
+}
+
+.settings-group h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+/* Dice color option buttons */
+.color-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.color-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.color-btn.active {
+  border-color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.color-btn.active::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 0.75rem;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+/* Locked Overlay/Note */
+.warning-text {
+  font-size: 0.7rem;
+  color: var(--accent-color);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Toggle Switch Styling */
+.toggle-setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: #f1f3f5;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,255,255,0.1);
+  transition: .4s;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--secondary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Premium Buy Button in Sidebar */
+.premium-buy-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ffe066 0%, #f5b041 100%);
+  border: none;
+  color: #512e09;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.premium-buy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(245, 176, 65, 0.4);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+/* 8. Google Play Billing Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 400px;
+  border-radius: 24px;
+  padding: 24px;
+  animation: popUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+}
+
+.play-store-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.play-icon {
+  color: #34a853;
+  font-size: 1.1rem;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 20px;
+}
+
+.product-icon {
+  background: rgba(245, 176, 65, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(245, 176, 65, 0.2);
+}
+
+.gold-crown {
+  color: #f4d03f;
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 5px rgba(244, 208, 63, 0.3));
+}
+
+.product-details h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.product-details p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.product-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-left: auto;
+}
+
+.product-benefits {
+  margin-bottom: 25px;
+}
+
+.product-benefits ul {
+  list-style: none;
+}
+
+.product-benefits li {
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e9ecef;
+}
+
+.green-check {
+  color: #2ecc71;
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn.confirm {
+  background: #34a853; /* Google Play Green */
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3);
+}
+
+.modal-btn.confirm:hover {
+  background: #2b8e44;
+  box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+}
+
+.modal-btn:active {
+  transform: scale(0.97);
+}
+
+/* 9. Simulated Bottom Adaptive Banner */
+#ad-banner-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--ad-height);
+  background: #111216;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  z-index: 90;
+  transition: transform 0.3s ease;
+  pointer-events: auto;
+}
+
+.ad-label {
+  font-size: 0.55rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 2px 4px;
+  border-radius: 3px;
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+#ad-banner-content {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mock-ad {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  max-width: 600px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  padding-top: 10px;
+}
+
+.mock-ad.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.ad-icon {
+  font-size: 1.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ad-text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.ad-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-desc {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ad-cta {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.ad-cta:hover {
+  background: #0056b3;
+}
+
+#remove-ads-shortcut-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+#remove-ads-shortcut-btn:hover {
+  color: #fff;
+}
+
+/* Adjustments when Premium is active (no ads) */
+#app-container.premium #ad-banner-container {
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+#app-container.premium #mode-selector {
+  bottom: 20px;
+}
+
+#app-container.premium #instruction-panel {
+  bottom: 20px;
+}
+
+
+/* Keyframe Animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(8deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.03); }
+  100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+}
+
+@keyframes slideDown {
+  from { transform: translate(-50%, -40px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes popUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Responsive Overrides */
+@media (max-width: 480px) {
+  header {
+    padding: 0 10px;
+    height: 55px;
+  }
+  .logo span {
+    display: none; /* Icon only on extra small screens to save space */
+  }
+  .premium-btn span {
+    display: none;
+  }
+  .premium-btn {
+    padding: 8px 12px;
+  }
+  #settings-sidebar {
+    width: 250px;
+    right: 10px;
+  }
+  #mode-selector {
+    left: 10px;
+    padding: 10px 0;
+  }
+  .mode-btn {
+    height: 55px;
+  }
+  .mock-ad .ad-desc {
+    display: none; /* Hide description on mobile to keep clean */
+  }
+}

@@ -1,0 +1,243 @@
+/* -------------------------------------------------------------
+   Web Audio API Procedural Synthesizer for 3D Dice PWA
+   ------------------------------------------------------------- */
+
+class AudioEngine {
+  private ctx: AudioContext | null = null;
+  public enabled: boolean = true;
+  public effectsEnabled: boolean = true;
+  private stretchOsc: OscillatorNode | null = null;
+  private stretchGain: GainNode | null = null;
+
+  constructor() {
+    // AudioContext is initialized on first user interaction
+  }
+
+  private init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  // Plays a procedural plastic thud/cink for dice collisions
+  public playThud(intensity: number) {
+    if (!this.enabled || intensity < 0.1) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const volume = Math.min(intensity * 0.15, 0.8);
+    const duration = 0.15 + Math.min(intensity * 0.05, 0.25);
+    const now = this.ctx.currentTime;
+
+    // Bass Thud (Sine sweep)
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc.type = 'sine';
+    // Frequency sweeps from 180Hz down to 50Hz (plastic collision)
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + duration);
+
+    gainNode.gain.setValueAtTime(volume, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+    
+    osc.start(now);
+    osc.stop(now + duration);
+
+    // High frequency "click" (highpass noise or sharp envelope)
+    const clickOsc = this.ctx.createOscillator();
+    const clickGain = this.ctx.createGain();
+
+    clickOsc.type = 'triangle';
+    clickOsc.frequency.setValueAtTime(800, now);
+    clickOsc.frequency.linearRampToValueAtTime(400, now + 0.02);
+
+    clickGain.gain.setValueAtTime(volume * 0.6, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);
+
+    clickOsc.connect(clickGain);
+    clickGain.connect(this.ctx.destination);
+
+    clickOsc.start(now);
+    clickOsc.stop(now + 0.03);
+  }
+
+  // Plays a rising pitch for rubber band stretch
+  public playSlingshotStretch(dragDistance: number, maxDistance: number) {
+    if (!this.enabled || !this.effectsEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const percent = Math.min(dragDistance / maxDistance, 1.0);
+    const targetFreq = 120 + percent * 280; // 120Hz to 400Hz
+    const now = this.ctx.currentTime;
+
+    if (!this.stretchOsc) {
+      this.stretchOsc = this.ctx.createOscillator();
+      this.stretchGain = this.ctx.createGain();
+
+      this.stretchOsc.type = 'triangle';
+      this.stretchOsc.frequency.setValueAtTime(120, now);
+      
+      this.stretchGain.gain.setValueAtTime(0.01, now);
+      this.stretchGain.gain.linearRampToValueAtTime(0.12, now + 0.1);
+
+      this.stretchOsc.connect(this.stretchGain);
+      this.stretchGain.connect(this.ctx.destination);
+      this.stretchOsc.start(now);
+    } else {
+      // Smoothly slide the pitch up
+      this.stretchOsc.frequency.setTargetAtTime(targetFreq, now, 0.05);
+      this.stretchGain!.gain.setTargetAtTime(0.02 + percent * 0.1, now, 0.05);
+    }
+  }
+
+  public stopSlingshotStretch() {
+    if (this.stretchOsc) {
+      try {
+        this.stretchOsc.stop();
+      } catch (e) {}
+      this.stretchOsc = null;
+      this.stretchGain = null;
+    }
+  }
+
+  // Slingshot snap/release sound
+  public playSlingshotRelease() {
+    this.stopSlingshotStretch();
+    if (!this.enabled || !this.effectsEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(350, now);
+    osc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+
+    gainNode.gain.setValueAtTime(0.25, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.09);
+  }
+
+  // Exploding dynamite sound (White noise + Low-pass sweep + Sub-bass boom)
+  public playExplosion() {
+    if (!this.enabled || !this.effectsEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const duration = 1.2;
+
+    // 1. Procedural White Noise Buffer
+    const bufferSize = this.ctx.sampleRate * duration;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noiseNode = this.ctx.createBufferSource();
+    noiseNode.buffer = buffer;
+
+    const noiseFilter = this.ctx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.setValueAtTime(1000, now);
+    noiseFilter.frequency.exponentialRampToValueAtTime(60, now + 0.8);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.5, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+    noiseNode.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+
+    noiseNode.start(now);
+    noiseNode.stop(now + duration);
+
+    // 2. Sub-bass boom
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(100, now);
+    subOsc.frequency.linearRampToValueAtTime(20, now + 0.4);
+
+    subGain.gain.setValueAtTime(0.8, now);
+    subGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+    subOsc.connect(subGain);
+    subGain.connect(this.ctx.destination);
+
+    subOsc.start(now);
+    subOsc.stop(now + 0.6);
+  }
+
+  // Gentle UI Click Sound
+  public playClick() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.linearRampToValueAtTime(300, now + 0.05);
+
+    gainNode.gain.setValueAtTime(0.08, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.06);
+  }
+
+  // Premium purchased retro fanfare (C4 -> E4 -> G4 -> C5 arpeggio)
+  public playSuccess() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+
+    notes.forEach((freq, idx) => {
+      const time = now + idx * 0.12;
+      const osc = this.ctx!.createOscillator();
+      const gainNode = this.ctx!.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, time);
+      
+      gainNode.gain.setValueAtTime(0.12, time);
+      gainNode.gain.exponentialRampToValueAtTime(0.005, time + 0.3);
+
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx!.destination);
+
+      osc.start(time);
+      osc.stop(time + 0.35);
+    });
+  }
+}
+
+export const audio = new AudioEngine();

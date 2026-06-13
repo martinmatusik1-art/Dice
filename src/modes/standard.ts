@@ -36,26 +36,33 @@ class StandardMode {
     this.isRolling = true;
     audio.playClick();
 
-    // 1. Position dice above table
-    physics.diceBody.position.set(
-      (Math.random() - 0.5) * 2, // slightly random X offset
-      6.0,                       // high start position
-      (Math.random() - 0.5) * 2  // slightly random Z offset
-    );
+    const count = physics.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 2.0 * scale;
 
-    // 2. Calculate satisfying random throw velocities
-    const forceX = (Math.random() - 0.5) * 8;
-    const forceY = -3 - Math.random() * 5; // pushed downwards
-    const forceZ = (Math.random() - 0.5) * 8;
+    physics.diceBodies.forEach((body, i) => {
+      // Position each dice above the table, in a small grid offset to prevent initial clipping
+      const offsetX = ((i % 3) - 1) * spacing;
+      const offsetZ = (Math.floor(i / 3) - 0.5) * spacing;
 
-    physics.diceBody.velocity.set(forceX, forceY, forceZ);
+      body.position.set(
+        offsetX + (Math.random() - 0.5) * 0.4 * scale,
+        6.0 + (Math.random() - 0.5) * 0.5,
+        offsetZ + (Math.random() - 0.5) * 0.4 * scale
+      );
 
-    // 3. Apply high rotation spin (angular momentum)
-    const spinX = (Math.random() - 0.5) * 25;
-    const spinY = (Math.random() - 0.5) * 25;
-    const spinZ = (Math.random() - 0.5) * 25;
+      // Random downward and scattering velocities
+      const forceX = (Math.random() - 0.5) * 8;
+      const forceY = -4 - Math.random() * 6; // push downwards
+      const forceZ = (Math.random() - 0.5) * 8;
+      body.velocity.set(forceX, forceY, forceZ);
 
-    physics.diceBody.angularVelocity.set(spinX, spinY, spinZ);
+      // Apply chaotic spin
+      const spinX = (Math.random() - 0.5) * 30;
+      const spinY = (Math.random() - 0.5) * 30;
+      const spinZ = (Math.random() - 0.5) * 30;
+      body.angularVelocity.set(spinX, spinY, spinZ);
+    });
 
     // 4. Trigger callback to update main UI loop
     if (this.onRollCallback) {

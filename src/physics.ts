@@ -7,7 +7,12 @@ import { audio } from './audio';
 
 class PhysicsEngine {
   public world!: CANNON.World;
-  public diceBody!: CANNON.Body;
+  public diceBodies: CANNON.Body[] = []; // Active physical dice bodies
+  
+  // Backwards compatibility getter for single-die references
+  public get diceBody(): CANNON.Body {
+    return this.diceBodies[0];
+  }
   
   private diceMaterial = new CANNON.Material('dice');
   private floorMaterial = new CANNON.Material('floor');
@@ -30,7 +35,7 @@ class PhysicsEngine {
 
     this.createContactMaterials();
     this.createTrayPhysics();
-    this.createDicePhysics();
+    this.setDiceCount(1);
   }
 
   private createContactMaterials() {
@@ -118,51 +123,89 @@ class PhysicsEngine {
     this.wallBackBody.position.z = limitZ + 0.2;
   }
 
-  private createDicePhysics() {
-    // Dice Box (2x2x2 size box has half-extents 1x1x1)
-    const diceShape = new CANNON.Box(new CANNON.Vec3(1.0, 1.0, 1.0));
-    
-    this.diceBody = new CANNON.Body({
-      mass: 1.2, // standard dice weight
-      shape: diceShape,
-      material: this.diceMaterial
+  // Set active count of physical dice bodies in the simulation
+  public setDiceCount(count: number) {
+    // 1. Clear existing bodies from world
+    this.diceBodies.forEach(body => {
+      this.world.removeBody(body);
     });
-    this.diceBody.position.set(0, 1.1, 0);
-    this.diceBody.linearDamping = 0.15;
-    this.diceBody.angularDamping = 0.15;
+    this.diceBodies = [];
 
-    // Collision sound trigger
-    this.diceBody.addEventListener('collide', (event: any) => {
-      const relativeVelocity = event.contact.getImpactVelocityAlongNormal();
-      // Only play sounds for significant collisions, scale volume dynamically
-      audio.playThud(relativeVelocity);
-    });
+    // 2. Spawn specified count (scale down as count increases)
+    const scale = 1.0 - (count - 1) * 0.08;
+    const diceShape = new CANNON.Box(new CANNON.Vec3(scale, scale, scale));
 
-    this.world.addBody(this.diceBody);
+    for (let i = 0; i < count; i++) {
+      const body = new CANNON.Body({
+        mass: 1.2, // standard dice weight
+        shape: diceShape,
+        material: this.diceMaterial
+      });
+
+      // Grid position offsets to avoid overlaps on load (scaled spacing)
+      const spacing = 2.2 * scale;
+      const offsetX = ((i % 3) - 1) * spacing;
+      const offsetZ = (Math.floor(i / 3) - 0.5) * spacing;
+      body.position.set(offsetX, scale + 0.1, offsetZ);
+
+      body.linearDamping = 0.15;
+      body.angularDamping = 0.15;
+
+      // Collision sound trigger
+      body.addEventListener('collide', (event: any) => {
+        const relativeVelocity = event.contact.getImpactVelocityAlongNormal();
+        audio.playThud(relativeVelocity);
+      });
+
+      this.world.addBody(body);
+      this.diceBodies.push(body);
+    }
   }
 
   public step(dt: number) {
     this.world.step(dt);
     
     // Safety check: if dice somehow glitches through the floor or escapes, reset it to center
-    if (this.diceBody.position.y < -5.0) {
-      this.resetToCenter();
-    }
+    const count = this.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 2.2 * scale;
+    
+    this.diceBodies.forEach((body, i) => {
+      if (body.position.y < -5.0) {
+        const offsetX = ((i % 3) - 1) * spacing;
+        const offsetZ = (Math.floor(i / 3) - 0.5) * spacing;
+        body.position.set(offsetX, scale + 0.1, offsetZ);
+        body.velocity.set(0, 0, 0);
+        body.angularVelocity.set(0, 0, 0);
+        body.quaternion.set(0, 0, 0, 1);
+      }
+    });
   }
 
-  // Check if dice has fully stopped rolling
+  // Check if all active dice have fully stopped rolling
   public isSleeping(): boolean {
-    const velThreshold = 0.05;
-    const angThreshold = 0.05;
-    
-    const linVel = this.diceBody.velocity.length();
-    const angVel = this.diceBody.angularVelocity.length();
-    
-    return linVel < velThreshold && angVel < angThreshold;
+    const velThreshold = 0.08;
+    const angThreshold = 0.08;
+
+    return this.diceBodies.every(body => {
+      const linVel = body.velocity.length();
+      const angVel = body.angularVelocity.length();
+      return linVel < velThreshold && angVel < angThreshold;
+    });
   }
 
-  // Detect which face of the dice is pointing upwards in world space
+  // Get upward face for standard single-die backwards compatibility
   public getUpwardFace(): number {
+    return this.diceBodies.length > 0 ? this.getUpwardFaceForBody(this.diceBodies[0]) : 1;
+  }
+
+  // Get array of upward faces for all active dice
+  public getUpwardFaces(): number[] {
+    return this.diceBodies.map(body => this.getUpwardFaceForBody(body));
+  }
+
+  // Detect which face of a specific dice body is pointing upwards in world space
+  private getUpwardFaceForBody(body: CANNON.Body): number {
     const localNormals = [
       { face: 1, vector: new CANNON.Vec3(1, 0, 0) },   // +X
       { face: 6, vector: new CANNON.Vec3(-1, 0, 0) },  // -X
@@ -178,7 +221,7 @@ class PhysicsEngine {
     for (const normalInfo of localNormals) {
       const worldNormal = new CANNON.Vec3();
       // Multiply rotation quaternion of physical body by local normal to get world normal
-      this.diceBody.quaternion.vmult(normalInfo.vector, worldNormal);
+      body.quaternion.vmult(normalInfo.vector, worldNormal);
 
       // Dot product with world UP vector (0, 1, 0)
       const dot = worldNormal.dot(new CANNON.Vec3(0, 1, 0));
@@ -192,12 +235,20 @@ class PhysicsEngine {
     return upwardFace;
   }
 
-  // Reset physics to a stable position
+  // Reset all active physics dice to a stable layout on the table floor
   public resetToCenter() {
-    this.diceBody.position.set(0, 1.1, 0);
-    this.diceBody.velocity.set(0, 0, 0);
-    this.diceBody.angularVelocity.set(0, 0, 0);
-    this.diceBody.quaternion.set(0, 0, 0, 1);
+    const count = this.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 2.2 * scale;
+    
+    this.diceBodies.forEach((body, i) => {
+      const offsetX = ((i % 3) - 1) * spacing;
+      const offsetZ = (Math.floor(i / 3) - 0.5) * spacing;
+      body.position.set(offsetX, scale + 0.1, offsetZ);
+      body.velocity.set(0, 0, 0);
+      body.angularVelocity.set(0, 0, 0);
+      body.quaternion.set(0, 0, 0, 1);
+    });
   }
 }
 

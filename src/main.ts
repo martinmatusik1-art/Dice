@@ -155,6 +155,53 @@ class App {
       settingsSidebar?.classList.remove('active');
     });
 
+    // Dice Count Slider
+    const diceCountSlider = document.getElementById('dice-count-slider') as HTMLInputElement;
+    const diceCountDisplay = document.getElementById('dice-count-display-val');
+
+    // Load saved count
+    let diceCount = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
+    if (isNaN(diceCount) || diceCount < 1 || diceCount > 6) {
+      diceCount = 1;
+    }
+
+    if (diceCountSlider) {
+      diceCountSlider.value = diceCount.toString();
+    }
+    if (diceCountDisplay) {
+      diceCountDisplay.innerText = diceCount.toString();
+    }
+
+    // Set initial count
+    physics.setDiceCount(diceCount);
+    graphics.setDiceCount(diceCount, graphics.currentThemeKey);
+
+    diceCountSlider?.addEventListener('input', () => {
+      let count = parseInt(diceCountSlider.value, 10);
+      if (isNaN(count) || count < 1 || count > 6) count = 1;
+
+      if (diceCountDisplay) {
+        diceCountDisplay.innerText = count.toString();
+      }
+
+      localStorage.setItem('dice_app_dice_count', count.toString());
+
+      // Update engines
+      physics.setDiceCount(count);
+      graphics.setDiceCount(count, graphics.currentThemeKey);
+
+      // Reset the current mode's dice positions
+      if (this.currentMode === 'slingshot') {
+        slingshotMode.resetDiceToSlingshot();
+      } else if (this.currentMode === 'detonation') {
+        detonationMode.resetDiceForTNT();
+      } else {
+        physics.resetToCenter();
+      }
+
+      audio.playClick();
+    });
+
     // Sound toggle buttons (Header and checkboxes)
     const headerSoundBtn = document.getElementById('sound-toggle-btn');
     const colSoundCheckbox = document.getElementById('collision-sound-checkbox') as HTMLInputElement;
@@ -277,9 +324,10 @@ class App {
     physics.step(dt);
 
     // 2. Synchronize ThreeJS Graphics with CannonJS Physics
-    if (graphics.diceMesh) {
-      graphics.diceMesh.position.copy(physics.diceBody.position as any);
-      graphics.diceMesh.quaternion.copy(physics.diceBody.quaternion as any);
+    const minLen = Math.min(graphics.diceMeshes.length, physics.diceBodies.length);
+    for (let i = 0; i < minLen; i++) {
+      graphics.diceMeshes[i].position.copy(physics.diceBodies[i].position as any);
+      graphics.diceMeshes[i].quaternion.copy(physics.diceBodies[i].quaternion as any);
     }
 
     // 3. Update active particles and screen shakes
@@ -291,8 +339,8 @@ class App {
       
       // Delay result display slightly for dramatic pacing
       this.settleTimeout = window.setTimeout(() => {
-        const value = physics.getUpwardFace();
-        this.showResult(value);
+        const values = physics.getUpwardFaces();
+        this.showResults(values);
       }, 500);
     }
 
@@ -300,9 +348,14 @@ class App {
     graphics.renderer.render(graphics.scene, graphics.camera);
   };
 
-  private showResult(value: number) {
+  private showResults(faces: number[]) {
     if (this.resultValue && this.resultPanel) {
-      this.resultValue.innerText = value.toString();
+      if (faces.length === 1) {
+        this.resultValue.innerText = faces[0].toString();
+      } else {
+        const sum = faces.reduce((a, b) => a + b, 0);
+        this.resultValue.innerText = `${faces.join(' + ')} = ${sum}`;
+      }
       this.resultPanel.classList.remove('hidden');
       
       // Gentle bump animation to draw attention

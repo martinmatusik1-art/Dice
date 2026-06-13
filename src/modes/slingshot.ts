@@ -89,10 +89,26 @@ class SlingshotMode {
   }
 
   public resetDiceToSlingshot() {
-    physics.diceBody.position.copy(this.startPos3D as any);
-    physics.diceBody.velocity.set(0, 0, 0);
-    physics.diceBody.angularVelocity.set(0, 0, 0);
-    physics.diceBody.quaternion.set(0, 0, 0, 1);
+    const count = physics.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 1.5 * scale;
+    const height = scale + 0.1;
+
+    this.startPos3D.y = height;
+
+    physics.diceBodies.forEach((body, i) => {
+      // Position in a small cluster/grid around startPos3D
+      const offsetX = i === 0 ? 0 : ((i - 1) % 3 - 1) * spacing;
+      const offsetZ = i === 0 ? 0 : (Math.floor((i - 1) / 3) + 1) * spacing;
+      body.position.set(
+        this.startPos3D.x + offsetX,
+        this.startPos3D.y,
+        this.startPos3D.z + offsetZ
+      );
+      body.velocity.set(0, 0, 0);
+      body.angularVelocity.set(0, 0, 0);
+      body.quaternion.set(0, 0, 0, 1);
+    });
   }
 
   // Convert 3D position in tray to 2D screen coordinate
@@ -152,18 +168,25 @@ class SlingshotMode {
     // Draw the rubber band
     this.drawBand(dist);
     
-    // Slightly offset the visual dice mesh in 3D to simulate pulling back
-    if (graphics.diceMesh) {
-      const pullDir3D = new THREE.Vector3(-dragVec.x, 0, dragVec.y).normalize();
-      const pullDist3D = Math.min(dist / this.maxDragLength, 1.0) * 1.2;
+    // Slightly offset the visual dice meshes in 3D to simulate pulling back together
+    const pullDir3D = new THREE.Vector3(-dragVec.x, 0, dragVec.y).normalize();
+    const pullDist3D = Math.min(dist / this.maxDragLength, 1.0) * 1.2;
+
+    const count = graphics.diceMeshes.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 1.5 * scale;
+
+    graphics.diceMeshes.forEach((mesh, i) => {
+      const offsetX = i === 0 ? 0 : ((i - 1) % 3 - 1) * spacing;
+      const offsetZ = i === 0 ? 0 : (Math.floor((i - 1) / 3) + 1) * spacing;
       
-      graphics.diceMesh.position.copy(this.startPos3D)
-        .addScaledVector(pullDir3D, pullDist3D);
+      const basePos = this.startPos3D.clone().add(new THREE.Vector3(offsetX, 0, offsetZ));
+      mesh.position.copy(basePos).addScaledVector(pullDir3D, pullDist3D);
       
       // Rotate dice slightly according to pull
-      graphics.diceMesh.rotation.z = (dragVec.x / this.maxDragLength) * 0.5;
-      graphics.diceMesh.rotation.x = (dragVec.y / this.maxDragLength) * 0.5;
-    }
+      mesh.rotation.z = (dragVec.x / this.maxDragLength) * 0.5;
+      mesh.rotation.x = (dragVec.y / this.maxDragLength) * 0.5;
+    });
   };
 
   private onEndDrag = () => {
@@ -184,10 +207,16 @@ class SlingshotMode {
     
     this.clearBand();
 
-    // Reset mesh position back to physics alignment before applying force
-    if (graphics.diceMesh) {
-      graphics.diceMesh.position.copy(this.startPos3D);
-    }
+    // Reset mesh positions back to their starting offset alignment before applying physics force
+    const count = graphics.diceMeshes.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const spacing = 1.5 * scale;
+
+    graphics.diceMeshes.forEach((mesh, i) => {
+      const offsetX = i === 0 ? 0 : ((i - 1) % 3 - 1) * spacing;
+      const offsetZ = i === 0 ? 0 : (Math.floor((i - 1) / 3) + 1) * spacing;
+      mesh.position.copy(this.startPos3D).add(new THREE.Vector3(offsetX, 0, offsetZ));
+    });
 
     if (dist < 15) {
       // Too short drag - cancel
@@ -200,23 +229,26 @@ class SlingshotMode {
     const intensity = dist / this.maxDragLength;
 
     // Calculate release velocity vector (opposite to drag vector)
-    // dragVec: x is screen right, y is screen down
-    // 3D space: x is right, z is down (towards viewer)
     const angle = Math.atan2(-dragVec.y, -dragVec.x);
     const speed = 12 + intensity * 26; // dynamic speed
 
-    const velX = Math.cos(angle) * speed;
-    const velZ = Math.sin(angle) * speed;
-    const velY = 4 + intensity * 8; // arc throw upward
+    physics.diceBodies.forEach((body) => {
+      // Release velocity in same general direction with slight scattering spread
+      const scatterAngle = angle + (Math.random() - 0.5) * 0.15;
+      const finalSpeed = speed * (0.9 + Math.random() * 0.2); // minor speed variations
 
-    // Set physics values
-    physics.diceBody.velocity.set(velX, velY, velZ);
-    
-    // Apply heavy spin
-    const spinX = (Math.random() - 0.5) * 35;
-    const spinY = (Math.random() - 0.5) * 35;
-    const spinZ = (Math.random() - 0.5) * 35;
-    physics.diceBody.angularVelocity.set(spinX, spinY, spinZ);
+      const velX = Math.cos(scatterAngle) * finalSpeed;
+      const velZ = Math.sin(scatterAngle) * finalSpeed;
+      const velY = 4 + intensity * 8 + (Math.random() - 0.5) * 2.0;
+
+      body.velocity.set(velX, velY, velZ);
+      
+      // Apply random spin
+      const spinX = (Math.random() - 0.5) * 35;
+      const spinY = (Math.random() - 0.5) * 35;
+      const spinZ = (Math.random() - 0.5) * 35;
+      body.angularVelocity.set(spinX, spinY, spinZ);
+    });
 
     if (this.onRollCallback) {
       this.onRollCallback();

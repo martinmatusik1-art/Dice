@@ -51,9 +51,11 @@ class DetonationMode {
     this.isDragging = false;
     this.detonatorPanel?.classList.add('hidden');
     
-    // Ensure body is returned to dynamic when exiting this mode
-    physics.diceBody.type = CANNON.Body.DYNAMIC;
-    physics.diceBody.updateMassProperties();
+    // Ensure all bodies are returned to dynamic when exiting this mode
+    physics.diceBodies.forEach(body => {
+      body.type = CANNON.Body.DYNAMIC;
+      body.updateMassProperties();
+    });
 
     this.removeTNTModels();
 
@@ -65,14 +67,20 @@ class DetonationMode {
   public resetDiceForTNT() {
     this.isBlownUp = false;
     
-    // Freeze the dice body in place visually on top of the TNT platform
-    physics.diceBody.type = CANNON.Body.STATIC;
-    physics.diceBody.updateMassProperties();
+    // Freeze all dice bodies in place visually on top of the TNT platform
+    const count = physics.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
     
-    physics.diceBody.position.set(0, 2.0, 0);
-    physics.diceBody.velocity.set(0, 0, 0);
-    physics.diceBody.angularVelocity.set(0, 0, 0);
-    physics.diceBody.quaternion.set(0, 0, 0, 1);
+    physics.diceBodies.forEach((body, i) => {
+      body.type = CANNON.Body.STATIC;
+      body.updateMassProperties();
+      
+      // Stack them vertically: bottom starts at Y = 1.0 + scale, each next is 2.1 * scale units higher
+      body.position.set(0, 1.0 + scale + i * (2.1 * scale), 0);
+      body.velocity.set(0, 0, 0);
+      body.angularVelocity.set(0, 0, 0);
+      body.quaternion.set(0, 0, 0, 1);
+    });
   }
 
   // Pointer drag event handlers for the plunger
@@ -234,16 +242,15 @@ class DetonationMode {
     if (!this.active) return;
 
     // If it's already rolled and stopped elsewhere, reset it back to launchpad first
-    if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - 2.0) > 0.5) {
+    const count = physics.diceBodies.length;
+    const scale = 1.0 - (count - 1) * 0.08;
+    const startY = 1.0 + scale;
+    if (physics.isSleeping() && Math.abs(physics.diceBody.position.y - startY) > 0.5) {
       this.resetDiceForTNT();
     }
 
     this.isBlownUp = true;
 
-    // Unfreeze the physical body to make it dynamic
-    physics.diceBody.type = CANNON.Body.DYNAMIC;
-    physics.diceBody.updateMassProperties();
-    
     // 1. Play explosion sound
     audio.playExplosion(intensity);
 
@@ -253,21 +260,29 @@ class DetonationMode {
     // 3. Spawn particle fireball and smoke at origin
     graphics.spawnExplosionParticles(new THREE.Vector3(0, 0.9, 0), intensity);
 
-    // 4. Apply explosion upward blast force to physical body
-    physics.diceBody.position.y = 2.2; // lift up slightly to clear contacts
-    
-    const blastForceY = 8.0 + intensity * 18.0 + Math.random() * 4.0; // strong vertical push proportional to intensity
-    const lateralScatterX = (Math.random() - 0.5) * 6.0 * intensity;
-    const lateralScatterZ = (Math.random() - 0.5) * 6.0 * intensity;
-    
-    physics.diceBody.velocity.set(lateralScatterX, blastForceY, lateralScatterZ);
+    // 4. Apply explosion upward blast force to physical bodies
+    physics.diceBodies.forEach((body, i) => {
+      body.type = CANNON.Body.DYNAMIC;
+      body.updateMassProperties();
 
-    // Apply chaotic spin (angular momentum) proportional to intensity
-    const spinIntensity = 20.0 + intensity * 25.0;
-    const spinForceX = (Math.random() - 0.5) * spinIntensity;
-    const spinForceY = (Math.random() - 0.5) * spinIntensity;
-    const spinForceZ = (Math.random() - 0.5) * spinIntensity;
-    physics.diceBody.angularVelocity.set(spinForceX, spinForceY, spinForceZ);
+      // Lift slightly relative to size
+      body.position.y += 0.2 * scale;
+
+      // Blast force propagates vertically, losing slight velocity on higher stacked dice
+      const heightFactor = 1.0 - (i * 0.12);
+      const blastForceY = (8.0 + intensity * 18.0) * heightFactor + Math.random() * 4.0;
+      
+      const lateralScatterX = (Math.random() - 0.5) * 8.0 * intensity;
+      const lateralScatterZ = (Math.random() - 0.5) * 8.0 * intensity;
+      body.velocity.set(lateralScatterX, blastForceY, lateralScatterZ);
+
+      // Apply chaotic spin (angular momentum) proportional to intensity
+      const spinIntensity = 20.0 + intensity * 25.0;
+      const spinForceX = (Math.random() - 0.5) * spinIntensity;
+      const spinForceY = (Math.random() - 0.5) * spinIntensity;
+      const spinForceZ = (Math.random() - 0.5) * spinIntensity;
+      body.angularVelocity.set(spinForceX, spinForceY, spinForceZ);
+    });
 
     // Trigger main roll loop callbacks
     if (this.onRollCallback) {

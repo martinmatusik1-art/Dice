@@ -26,9 +26,17 @@ class GraphicsEngine {
   public camera!: THREE.PerspectiveCamera;
   public renderer!: THREE.WebGLRenderer;
   
-  public diceMesh: THREE.Mesh | null = null;
-  private diceMaterials: THREE.MeshStandardMaterial[] = [];
-  private currentThemeKey: string = 'classic';
+  public diceMeshes: THREE.Mesh[] = [];
+  public get diceMesh(): THREE.Mesh | null {
+    return this.diceMeshes[0] || null;
+  }
+  public set diceMesh(mesh: THREE.Mesh | null) {
+    if (mesh) this.diceMeshes[0] = mesh;
+    else this.diceMeshes = [];
+  }
+  private diceMaterials: THREE.MeshStandardMaterial[][] = [];
+  private diceGeometry: THREE.BufferGeometry | null = null;
+  public currentThemeKey: string = 'classic';
   
   private trayFloor!: THREE.Mesh;
   private particles: Array<{
@@ -228,50 +236,77 @@ class GraphicsEngine {
     return texture;
   }
 
-  // Create the 3D dice mesh with specific theme
-  public createDice(themeKey: string) {
-    if (this.diceMesh) {
-      this.scene.remove(this.diceMesh);
-      this.diceMaterials.forEach(mat => mat.dispose());
-      this.diceMaterials = [];
-    }
+  // Set active count of visual 3D dice in the scene
+  public setDiceCount(count: number, themeKey: string) {
+    // 1. Clean up existing meshes
+    this.diceMeshes.forEach(mesh => {
+      this.scene.remove(mesh);
+    });
+    this.diceMeshes = [];
+
+    // Clean up materials
+    this.diceMaterials.forEach(mats => {
+      mats.forEach(mat => mat.dispose());
+    });
+    this.diceMaterials = [];
 
     this.currentThemeKey = themeKey;
     const theme = DICE_THEMES[themeKey] || DICE_THEMES.classic;
-    const geom = this.createRoundedBoxGeometry(2.0, 2.0, 2.0, 0.35, 12);
+    
+    // Ensure geometry is loaded
+    if (!this.diceGeometry) {
+      this.diceGeometry = this.createRoundedBoxGeometry(2.0, 2.0, 2.0, 0.35, 12);
+    }
 
-    // Opposite faces sum to 7:
-    // +X (Right): 1, -X (Left): 6
-    // +Y (Top): 2,   -Y (Bottom): 5
-    // +Z (Front): 3, -Z (Back): 4
     const faces = [1, 6, 2, 5, 3, 4];
+    const scale = 1.0 - (count - 1) * 0.08;
 
-    this.diceMaterials = faces.map(val => {
-      const texture = this.createDiceFaceTexture(val, theme);
+    for (let i = 0; i < count; i++) {
+      // Generate materials for this specific die
+      const materials = faces.map(val => {
+        const texture = this.createDiceFaceTexture(val, theme);
+        
+        const matParams: THREE.MeshStandardMaterialParameters = {
+          map: texture,
+          roughness: theme.roughness,
+          metalness: theme.metalness
+        };
+
+        if (theme.emissive) {
+          matParams.emissive = new THREE.Color(theme.emissive);
+          matParams.emissiveIntensity = 1.0;
+        }
+
+        return new THREE.MeshStandardMaterial(matParams);
+      });
+
+      this.diceMaterials.push(materials);
+
+      const mesh = new THREE.Mesh(this.diceGeometry, materials);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       
-      const matParams: THREE.MeshStandardMaterialParameters = {
-        map: texture,
-        roughness: theme.roughness,
-        metalness: theme.metalness
-      };
+      // Scale visual mesh
+      mesh.scale.setScalar(scale);
+      
+      // Default layout offset to match physics initial layout
+      const spacing = 2.2 * scale;
+      const offsetX = ((i % 3) - 1) * spacing;
+      const offsetZ = (Math.floor(i / 3) - 0.5) * spacing;
+      mesh.position.set(offsetX, scale + 0.1, offsetZ);
+      
+      this.scene.add(mesh);
+      this.diceMeshes.push(mesh);
+    }
+  }
 
-      if (theme.emissive) {
-        matParams.emissive = new THREE.Color(theme.emissive);
-        matParams.emissiveIntensity = 1.0;
-      }
-
-      return new THREE.MeshStandardMaterial(matParams);
-    });
-
-    this.diceMesh = new THREE.Mesh(geom, this.diceMaterials);
-    this.diceMesh.castShadow = true;
-    this.diceMesh.receiveShadow = true;
-    this.diceMesh.position.set(0, 1.1, 0); // Sit slightly above floor initially
-    this.scene.add(this.diceMesh);
+  // Backwards-compatibility wrappers
+  public createDice(themeKey: string) {
+    this.setDiceCount(this.diceMeshes.length || 1, themeKey);
   }
 
   public updateDiceTheme(themeKey: string) {
-    this.createDice(themeKey);
+    this.setDiceCount(this.diceMeshes.length, themeKey);
   }
 
   // Spawn smoke and fire particle systems for detonation mode

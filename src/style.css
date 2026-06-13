@@ -571,6 +571,104 @@ html, body {
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
+/* Slider setting styling */
+.slider-setting {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 8px;
+}
+
+#dice-count-display-val {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 9px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 0 0 5px rgba(255, 183, 3, 0.4);
+}
+
+/* Custom premium input range slider */
+#dice-count-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+}
+
+#dice-count-slider:focus {
+  outline: none;
+}
+
+/* Chrome/Safari track */
+#dice-count-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Chrome/Safari thumb */
+#dice-count-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px rgba(251, 133, 0, 0.7);
+  margin-top: -6px; /* center it on webkit track */
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#dice-count-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+#dice-count-slider::-webkit-slider-thumb:active {
+  transform: scale(1.25);
+  background: #fb8500;
+}
+
+/* Firefox track */
+#dice-count-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Firefox thumb */
+#dice-count-slider::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px rgba(251, 133, 0, 0.7);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#dice-count-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+#dice-count-slider::-moz-range-thumb:active {
+  transform: scale(1.25);
+  background: #fb8500;
+}
+
 /* Locked Overlay/Note */
 .warning-text {
   font-size: 0.7rem;

@@ -276,13 +276,7 @@ class App {
     this.isRolling = false;
     this.resultPanel?.classList.add('hidden');
 
-    // Update instruction text
-    const instruction = document.getElementById('instruction-text');
-    if (instruction) {
-      if (mode === 'standard') instruction.innerText = "Klikni na obrazovku alebo zatras mobilom pre hod";
-      else if (mode === 'slingshot') instruction.innerText = "Potiahni kocku smerom dozadu a vystreľ ju";
-      else if (mode === 'detonation') instruction.innerText = "Klikni na detonátor na odpálenie kocky";
-    }
+
 
     // Activate new mode
     if (mode === 'standard') {

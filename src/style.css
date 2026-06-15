@@ -135,6 +135,7 @@ html, body {
   letter-spacing: 0.5px;
   background: linear-gradient(135deg, #fff 30%, var(--primary-color) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -467,6 +468,7 @@ html, body {
   opacity: 0;
   pointer-events: none; /* Disable mouse/touch events when closed */
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(18, 22, 33, 0.98); /* Less transparent background */
 }
 
 #settings-sidebar.active {
@@ -500,6 +502,39 @@ html, body {
   color: var(--text-secondary);
   margin-bottom: 12px;
   letter-spacing: 1px;
+}
+
+/* Username Edit Styles */
+.username-edit-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#username-input {
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: var(--font-family);
+}
+
+.username-save-btn {
+  padding: 8px 16px;
+  border: none;
+  background-color: var(--primary-color);
+  color: #111;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.username-save-btn:hover {
+  background-color: var(--accent-color);
 }
 
 /* Dice color option buttons */
@@ -602,6 +637,7 @@ html, body {
 /* Custom premium input range slider */
 #dice-count-slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   background: transparent;
   cursor: pointer;

@@ -2,16 +2,16 @@
    3D Dice Simulation PWA - Main Application Entrypoint
    ------------------------------------------------------------- */
 
-import './style.css';
 import * as THREE from 'three';
-import { graphics } from './graphics';
-import { physics } from './physics';
-import { audio } from './audio';
 import { ads } from './ads';
+import { audio } from './audio';
 import { billing } from './billing';
-import { standardMode } from './modes/standard';
-import { slingshotMode } from './modes/slingshot';
+import { graphics } from './graphics';
 import { detonationMode } from './modes/detonation';
+import { slingshotMode } from './modes/slingshot';
+import { standardMode } from './modes/standard';
+import { physics } from './physics';
+import './style.css';
 
 export let isAppLocked = false;
 
@@ -22,6 +22,7 @@ class App {
   private resultValue: HTMLElement | null = null;
   private isRolling = false;
   private settleTimeout: number | null = null;
+  private username: string = 'Guest';
   private isLocked = false;
 
   public init() {
@@ -37,23 +38,13 @@ class App {
     // Initialize stats and user info
     const rollCountDisplay = document.getElementById('roll-count-display');
     const userNameDisplay = document.getElementById('user-name-display');
-    const userProfileBtn = document.getElementById('user-profile-btn');
 
-    let rollCount = parseInt(localStorage.getItem('dice_app_roll_count') || '0', 10);
+    const rollCount = parseInt(localStorage.getItem('dice_app_roll_count') || '0', 10);
     if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
 
-    let username = localStorage.getItem('dice_app_username') || 'Guest';
-    if (userNameDisplay) userNameDisplay.innerText = username;
+    this.username = localStorage.getItem('dice_app_username') || 'Guest';
+    if (userNameDisplay) userNameDisplay.innerText = this.username;
 
-    userProfileBtn?.addEventListener('click', () => {
-      audio.playClick();
-      const newName = prompt("Enter your name:", username);
-      if (newName && newName.trim() !== '') {
-        username = newName.trim().substring(0, 15);
-        localStorage.setItem('dice_app_username', username);
-        if (userNameDisplay) userNameDisplay.innerText = username;
-      }
-    });
 
     // 1. Initialize core engines
     audio.enabled = true; // default on
@@ -91,7 +82,7 @@ class App {
 
     // 3. Initialize herné módy
     const triggerRollState = () => {
-      this.isRolling = true;
+      if (this.isRolling) return;
       this.resultPanel?.classList.add('hidden');
       if (this.settleTimeout) {
         clearTimeout(this.settleTimeout);
@@ -99,7 +90,9 @@ class App {
       }
 
       // Increment throws
+      let rollCount = parseInt(localStorage.getItem('dice_app_roll_count') || '0', 10);
       rollCount++;
+      this.isRolling = true;
       localStorage.setItem('dice_app_roll_count', rollCount.toString());
       if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
     };
@@ -120,6 +113,30 @@ class App {
   }
 
   private setupUI() {
+    // Common UI elements
+    const settingsSidebar = document.getElementById('settings-sidebar');
+    const userNameDisplay = document.getElementById('user-name-display');
+
+    // User Profile Management (Open settings sidebar)
+    const userProfileBtn = document.getElementById('user-profile-btn');
+    const usernameInput = document.getElementById('username-input') as HTMLInputElement;
+    const usernameSaveBtn = document.getElementById('username-save-btn');
+
+    userProfileBtn?.addEventListener('click', () => {
+      audio.playClick();
+      settingsSidebar?.classList.add('active');
+    });
+
+    if (usernameInput) usernameInput.value = this.username;
+
+    usernameSaveBtn?.addEventListener('click', () => {
+      audio.playClick();
+      this.username = usernameInput.value.trim().substring(0, 15) || 'Guest';
+      localStorage.setItem('dice_app_username', this.username);
+      if (userNameDisplay) userNameDisplay.innerText = this.username;
+      usernameInput.value = this.username; // Update input in case it was trimmed
+    });
+
     // Mode switcher buttons
     const modeButtons = document.querySelectorAll('.mode-btn');
     modeButtons.forEach(btn => {
@@ -166,7 +183,6 @@ class App {
 
     // Settings panel toggle
     const settingsBtn = document.getElementById('settings-btn');
-    const settingsSidebar = document.getElementById('settings-sidebar');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
 
     settingsBtn?.addEventListener('click', () => {
@@ -181,7 +197,7 @@ class App {
 
     // Dice Count Slider
     const diceCountSlider = document.getElementById('dice-count-slider') as HTMLInputElement;
-    const diceCountDisplay = document.getElementById('dice-count-display-val');
+    const diceCountDisplayVal = document.getElementById('dice-count-display-val');
 
     // Load saved count
     let diceCount = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
@@ -192,8 +208,8 @@ class App {
     if (diceCountSlider) {
       diceCountSlider.value = diceCount.toString();
     }
-    if (diceCountDisplay) {
-      diceCountDisplay.innerText = diceCount.toString();
+    if (diceCountDisplayVal) {
+      diceCountDisplayVal.innerText = diceCount.toString();
     }
 
     // Set initial count
@@ -204,8 +220,8 @@ class App {
       let count = parseInt(diceCountSlider.value, 10);
       if (isNaN(count) || count < 1 || count > 6) count = 1;
 
-      if (diceCountDisplay) {
-        diceCountDisplay.innerText = count.toString();
+      if (diceCountDisplayVal) {
+        diceCountDisplayVal.innerText = count.toString();
       }
 
       localStorage.setItem('dice_app_dice_count', count.toString());

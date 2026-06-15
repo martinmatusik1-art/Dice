@@ -94,6 +94,11 @@ class SlingshotMode {
     const height = scale + 0.1;
 
     this.startPos3D.y = height;
+    // Compute world position that projects to screen center
+    const ndc = new THREE.Vector3(0, 0, 0.5);
+    ndc.unproject(graphics.camera);
+    this.startPos3D.x = ndc.x;
+    this.startPos3D.z = ndc.z;
 
     physics.diceBodies.forEach((body, i) => {
       // Position in a small cluster/grid around startPos3D

@@ -16,6 +16,12 @@ import './style.css';
 
 export let isAppLocked = false;
 
+interface RollHistoryItem {
+  time: string;
+  diceValues: number[];
+  sum: number;
+}
+
 class App {
   private clock = new THREE.Clock();
   private currentMode: 'standard' | 'slingshot' | 'detonation' = 'standard';
@@ -25,6 +31,7 @@ class App {
   private settleTimeout: number | null = null;
   private username: string = 'Guest';
   private isLocked = false;
+  private rollHistory: RollHistoryItem[] = [];
 
   public init() {
     this.resultPanel = document.getElementById('roll-result-container');
@@ -45,6 +52,17 @@ class App {
 
     this.username = localStorage.getItem('dice_app_username') || 'Guest';
     if (userNameDisplay) userNameDisplay.innerText = this.username;
+
+    // Load roll history from localStorage
+    try {
+      const savedHistory = localStorage.getItem('dice_app_roll_history');
+      if (savedHistory) {
+        this.rollHistory = JSON.parse(savedHistory);
+      }
+    } catch (e) {
+      console.warn('Failed to parse roll history:', e);
+      this.rollHistory = [];
+    }
 
 
     // 1. Initialize core engines
@@ -130,6 +148,7 @@ class App {
       const billingModal = document.getElementById('billing-modal');
       const exitModal = document.getElementById('exit-modal');
       const shareModal = document.getElementById('share-modal');
+      const historyModal = document.getElementById('history-modal');
 
       // 1. Close settings if open
       if (settingsSidebar?.classList.contains('active')) {
@@ -149,6 +168,13 @@ class App {
       if (shareModal && !shareModal.classList.contains('hidden')) {
         audio.playClick();
         shareModal.classList.add('hidden');
+        return;
+      }
+
+      // Close history modal if open
+      if (historyModal && !historyModal.classList.contains('hidden')) {
+        audio.playClick();
+        historyModal.classList.add('hidden');
         return;
       }
 
@@ -311,11 +337,88 @@ class App {
         triggerCopyAction();
       }
     });
-
     shareCopyBtn?.addEventListener('click', triggerCopyAction);
 
-    const userProfileBtn = document.getElementById('user-profile-btn');
+    // History Modal Event Listeners
+    const rollStatsBtn = document.getElementById('roll-stats-btn');
+    const historyModal = document.getElementById('history-modal');
+    const historyCloseBtn = document.getElementById('history-close-btn');
+    const historyClearBtn = document.getElementById('history-clear-btn');
+    const historyList = document.getElementById('history-list');
 
+    const renderHistory = () => {
+      if (!historyList) return;
+      historyList.innerHTML = '';
+
+      if (this.rollHistory.length === 0) {
+        historyList.innerHTML = '<div class="no-history">No rolls recorded yet.</div>';
+        return;
+      }
+
+      this.rollHistory.forEach((item) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'history-item';
+
+        const leftEl = document.createElement('div');
+        leftEl.className = 'history-left';
+
+        const timeEl = document.createElement('span');
+        timeEl.className = 'history-time';
+        timeEl.innerText = item.time;
+
+        const valuesEl = document.createElement('span');
+        valuesEl.className = 'history-values';
+        if (item.diceValues.length === 1) {
+          valuesEl.innerText = `Dice: ${item.diceValues[0]}`;
+        } else {
+          valuesEl.innerText = `${item.diceValues.join(' + ')}`;
+        }
+
+        leftEl.appendChild(timeEl);
+        leftEl.appendChild(valuesEl);
+
+        const rightEl = document.createElement('div');
+        rightEl.className = 'history-right';
+
+        const sumEl = document.createElement('span');
+        sumEl.className = 'history-sum';
+        sumEl.innerText = item.sum.toString();
+
+        rightEl.appendChild(sumEl);
+
+        itemEl.appendChild(leftEl);
+        itemEl.appendChild(rightEl);
+
+        historyList.appendChild(itemEl);
+      });
+    };
+
+    rollStatsBtn?.addEventListener('click', () => {
+      audio.playClick();
+      renderHistory();
+      historyModal?.classList.remove('hidden');
+    });
+
+    historyCloseBtn?.addEventListener('click', () => {
+      audio.playClick();
+      historyModal?.classList.add('hidden');
+    });
+
+    historyModal?.addEventListener('pointerdown', (e) => {
+      if (e.target === historyModal) {
+        audio.playClick();
+        historyModal.classList.add('hidden');
+      }
+    });
+
+    historyClearBtn?.addEventListener('click', () => {
+      audio.playClick();
+      this.rollHistory = [];
+      localStorage.removeItem('dice_app_roll_history');
+      renderHistory();
+    });
+
+    const userProfileBtn = document.getElementById('user-profile-btn');
     const usernameInput = document.getElementById('username-input') as HTMLInputElement;
     const usernameSaveBtn = document.getElementById('username-save-btn');
 
@@ -674,10 +777,10 @@ class App {
 
   private showResults(faces: number[]) {
     if (this.resultValue && this.resultPanel) {
+      const sum = faces.reduce((a, b) => a + b, 0);
       if (faces.length === 1) {
         this.resultValue.innerText = faces[0].toString();
       } else {
-        const sum = faces.reduce((a, b) => a + b, 0);
         this.resultValue.innerText = `${faces.join(' + ')} = ${sum}`;
       }
       this.resultPanel.classList.remove('hidden');
@@ -687,6 +790,21 @@ class App {
       setTimeout(() => {
         if (this.resultPanel) this.resultPanel.style.transform = 'translateX(-50%) scale(1)';
       }, 150);
+
+      // Save to Roll History
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const newItem: RollHistoryItem = {
+        time: timeStr,
+        diceValues: [...faces],
+        sum: sum
+      };
+
+      this.rollHistory.unshift(newItem);
+      if (this.rollHistory.length > 10) {
+        this.rollHistory = this.rollHistory.slice(0, 10);
+      }
+      localStorage.setItem('dice_app_roll_history', JSON.stringify(this.rollHistory));
     }
   }
 }

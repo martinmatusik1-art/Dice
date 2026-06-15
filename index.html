@@ -38,10 +38,10 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.12</small></span>
+          <span>3D Dice <small class="ver-text">v1.14</small></span>
         </div>
         <div class="top-bar-right">
-          <div class="roll-stats">
+          <div class="roll-stats" id="roll-stats-btn" title="View History">
             <i class="fa-solid fa-chart-simple"></i>
             <span>Rolls: <strong id="roll-count-display">0</strong></span>
           </div>
@@ -177,7 +177,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.12 </span>
+          <span>Version 1.14 </span>
         </div>
       </div>
 
@@ -279,6 +279,27 @@
                 <i class="fa-solid fa-copy"></i> <span id="share-copy-btn-text">Copy</span>
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Modal -->
+      <div id="history-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel history-modal-content">
+          <div class="play-store-header history-header">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Roll History</span>
+            <button id="history-close-btn" class="icon-btn" style="position: absolute; right: 16px; top: 16px; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          
+          <div class="history-body">
+            <div id="history-list" class="history-list">
+              <div class="no-history">No rolls recorded yet.</div>
+            </div>
+            
+            <button id="history-clear-btn" class="modal-btn cancel" style="width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <i class="fa-solid fa-trash-can"></i> Clear History
+            </button>
           </div>
         </div>
       </div>

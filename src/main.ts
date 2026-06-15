@@ -118,42 +118,52 @@ class App {
     const settingsSidebar = document.getElementById('settings-sidebar');
     const userNameDisplay = document.getElementById('user-name-display');
 
-    // Hardware Back Button Interception (Android/Capacitor)
+    // Unified Back Button Logic (Android Hardware + Web Browser Back)
+    const handleBackButton = () => {
+      const billingModal = document.getElementById('billing-modal');
+      const exitModal = document.getElementById('exit-modal');
+
+      // 1. Close settings if open
+      if (settingsSidebar?.classList.contains('active')) {
+        audio.playClick();
+        settingsSidebar.classList.remove('active');
+        return;
+      }
+
+      // 2. Close billing modal if open
+      if (billingModal && !billingModal.classList.contains('hidden')) {
+        audio.playClick();
+        billingModal.classList.add('hidden');
+        return;
+      }
+
+      // 3. Close exit modal if it is already open (cancel exit)
+      if (exitModal && !exitModal.classList.contains('hidden')) {
+        audio.playClick();
+        exitModal.classList.add('hidden');
+        return;
+      }
+
+      // 4. Otherwise, prompt to exit
+      if (exitModal) {
+        audio.playClick();
+        exitModal.classList.remove('hidden');
+      }
+    };
+
+    // 1. Native Android Hardware Button (Capacitor)
     try {
-      CapacitorApp.addListener('backButton', () => {
-        const billingModal = document.getElementById('billing-modal');
-        const exitModal = document.getElementById('exit-modal');
-
-        // 1. Close settings if open
-        if (settingsSidebar?.classList.contains('active')) {
-          audio.playClick();
-          settingsSidebar.classList.remove('active');
-          return;
-        }
-
-        // 2. Close billing modal if open
-        if (billingModal && !billingModal.classList.contains('hidden')) {
-          audio.playClick();
-          billingModal.classList.add('hidden');
-          return;
-        }
-
-        // 3. Close exit modal if it is already open (cancel exit)
-        if (exitModal && !exitModal.classList.contains('hidden')) {
-          audio.playClick();
-          exitModal.classList.add('hidden');
-          return;
-        }
-
-        // 4. Otherwise, prompt to exit
-        if (exitModal) {
-          audio.playClick();
-          exitModal.classList.remove('hidden');
-        }
-      });
+      CapacitorApp.addListener('backButton', handleBackButton);
     } catch (e) {
       console.warn('Capacitor App plugin not found, back button handling skipped.');
     }
+
+    // 2. Web Browser / PWA Back Button Interception (Vercel)
+    history.pushState({ app: 'dice' }, '', window.location.href);
+    window.addEventListener('popstate', () => {
+      history.pushState({ app: 'dice' }, '', window.location.href);
+      handleBackButton();
+    });
 
     // Exit Modal Buttons
     const exitConfirmBtn = document.getElementById('exit-confirm-btn');

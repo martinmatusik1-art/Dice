@@ -9,6 +9,7 @@ class BillingManager {
   private modal: HTMLElement | null = null;
   private confirmBtn: HTMLButtonElement | null = null;
   private cancelBtn: HTMLButtonElement | null = null;
+  private closeBtn: HTMLButtonElement | null = null;
   private buyPremiumBtn: HTMLButtonElement | null = null;
   private sidebarBuyBtn: HTMLButtonElement | null = null;
 
@@ -16,6 +17,7 @@ class BillingManager {
     this.modal = document.getElementById('billing-modal');
     this.confirmBtn = document.getElementById('billing-confirm-btn') as HTMLButtonElement;
     this.cancelBtn = document.getElementById('billing-cancel-btn') as HTMLButtonElement;
+    this.closeBtn = document.getElementById('billing-close-btn') as HTMLButtonElement;
     this.buyPremiumBtn = document.getElementById('premium-badge-btn') as HTMLButtonElement;
     this.sidebarBuyBtn = document.getElementById('sidebar-buy-premium') as HTMLButtonElement;
 
@@ -37,9 +39,16 @@ class BillingManager {
     this.sidebarBuyBtn?.addEventListener('click', openModal);
 
     // Close Billing Dialog
-    this.cancelBtn?.addEventListener('click', () => {
+    const closeModal = () => {
       audio.playClick();
       this.modal?.classList.add('hidden');
+    };
+    this.cancelBtn?.addEventListener('click', closeModal);
+    this.closeBtn?.addEventListener('click', closeModal);
+
+    // Zatvorenie kliknutím na tmavé pozadie modálneho okna
+    this.modal?.addEventListener('pointerdown', (e) => {
+      if (e.target === this.modal) closeModal();
     });
 
     // Confirm Mock Purchase

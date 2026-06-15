@@ -32,7 +32,7 @@
         </div>
         <div class="logo">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.09</small></span>
+          <span>3D Dice <small class="ver-text">v1.11</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats">
@@ -146,6 +146,17 @@
         </div>
 
         <div class="settings-group">
+          <h4>Device Feedback</h4>
+          <div class="toggle-setting">
+            <span>Haptic Vibrations</span>
+            <label class="switch">
+              <input type="checkbox" id="haptics-toggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group">
           <h4>Statistics</h4>
           <button id="reset-rolls-btn" class="reset-btn">
             <i class="fa-solid fa-rotate-left"></i> Reset Roll Counter
@@ -160,7 +171,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.10 </span>
+          <span>Version 1.11 </span>
         </div>
       </div>
 
@@ -170,6 +181,7 @@
           <div class="play-store-header">
             <i class="fa-brands fa-google-play play-icon"></i>
             <span>Google Play Billing</span>
+            <button id="billing-close-btn" class="icon-btn" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
           </div>
           
           <div class="product-info">
@@ -205,6 +217,7 @@
           <div class="play-store-header exit-header">
             <i class="fa-solid fa-circle-exclamation"></i>
             <span>Exit Game</span>
+            <button id="exit-close-btn" class="icon-btn" style="position: absolute; right: 16px; top: 16px; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
           </div>
           
           <div class="product-info exit-info">

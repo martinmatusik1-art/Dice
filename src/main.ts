@@ -176,11 +176,20 @@ class App {
     // Exit Modal Buttons
     const exitConfirmBtn = document.getElementById('exit-confirm-btn');
     const exitCancelBtn = document.getElementById('exit-cancel-btn');
+    const exitCloseBtn = document.getElementById('exit-close-btn');
     const exitModal = document.getElementById('exit-modal');
 
-    exitCancelBtn?.addEventListener('click', () => {
+    const closeExitModal = () => {
       audio.playClick();
       exitModal?.classList.add('hidden');
+    };
+
+    exitCancelBtn?.addEventListener('click', closeExitModal);
+    exitCloseBtn?.addEventListener('click', closeExitModal);
+    
+    // Zatvorenie kliknutím na tmavé pozadie
+    exitModal?.addEventListener('pointerdown', (e) => {
+      if (e.target === exitModal) closeExitModal();
     });
 
     exitConfirmBtn?.addEventListener('click', () => {
@@ -251,6 +260,12 @@ class App {
       // Prevent throw if clicking menu overlay buttons
       if ((e.target as HTMLElement).tagName !== 'CANVAS') return;
       
+      if (settingsSidebar?.classList.contains('active')) {
+        audio.playClick();
+        settingsSidebar.classList.remove('active');
+        return;
+      }
+
       this.handleCanvasInteraction();
     });
 
@@ -285,6 +300,20 @@ class App {
     closeSettingsBtn?.addEventListener('click', () => {
       audio.playClick();
       settingsSidebar?.classList.remove('active');
+    });
+
+    // Zatvorenie nastavení pri kliknutí mimo (na iné prvky ako plátno a samotné menu)
+    document.addEventListener('pointerdown', (e) => {
+      if (settingsSidebar?.classList.contains('active')) {
+        const target = e.target as Node;
+        if (!settingsSidebar.contains(target) && 
+            !settingsBtn?.contains(target) && 
+            !userProfileBtn?.contains(target) &&
+            (target as HTMLElement).tagName !== 'CANVAS') {
+          audio.playClick();
+          settingsSidebar.classList.remove('active');
+        }
+      }
     });
 
     // Dice Count Slider
@@ -401,6 +430,19 @@ class App {
         bgButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
       });
+    });
+
+    // Haptic Feedback Toggle
+    const hapticsToggle = document.getElementById('haptics-toggle') as HTMLInputElement;
+    const savedHaptics = localStorage.getItem('dice_app_haptics');
+    if (savedHaptics !== null) {
+      audio.hapticsEnabled = savedHaptics === 'true';
+      if (hapticsToggle) hapticsToggle.checked = audio.hapticsEnabled;
+    }
+    hapticsToggle?.addEventListener('change', (e) => {
+      audio.playClick();
+      audio.hapticsEnabled = (e.target as HTMLInputElement).checked;
+      localStorage.setItem('dice_app_haptics', audio.hapticsEnabled.toString());
     });
 
     // Handle Window Resize

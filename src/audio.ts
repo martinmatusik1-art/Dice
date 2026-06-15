@@ -9,6 +9,7 @@ class AudioEngine {
   private stretchOsc: OscillatorNode | null = null;
   private stretchGain: GainNode | null = null;
   public currentSurface: string = 'classic';
+  public hapticsEnabled: boolean = true;
 
   constructor() {
     // AudioContext is initialized on first user interaction
@@ -51,6 +52,11 @@ class AudioEngine {
         clickStart = 300; clickEnd = 100;
         volMod = 0.6; durationMod = 1.2; // Mäkký, tichší a dlhší tlmený dopad
         break;
+    }
+
+    // Haptic feedback for collision
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(Math.max(5, Math.min(intensity * 1.5, 20))); // Short bump based on collision force
     }
 
     const volume = Math.min(intensity * 0.15 * volMod, 0.8);
@@ -140,6 +146,11 @@ class AudioEngine {
     this.init();
     if (!this.ctx) return;
 
+    // Haptic snap feedback
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gainNode = this.ctx.createGain();
@@ -163,6 +174,11 @@ class AudioEngine {
     if (!this.enabled || !this.effectsEnabled) return;
     this.init();
     if (!this.ctx) return;
+
+    // Heavy rumble haptic feedback
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([100 * intensity, 40, 150 * intensity]);
+    }
 
     const now = this.ctx.currentTime;
     const duration = 0.5 + intensity * 0.7; // scaled duration
@@ -218,6 +234,11 @@ class AudioEngine {
     this.init();
     if (!this.ctx) return;
 
+    // Subtle UI click haptic
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(5);
+    }
+
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gainNode = this.ctx.createGain();
@@ -269,6 +290,11 @@ class AudioEngine {
     if (!this.enabled) return;
     this.init();
     if (!this.ctx) return;
+
+    // Triple buzz haptic for locked state
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([30, 40, 30]);
+    }
 
     const now = this.ctx.currentTime;
     const duration = 0.15;

@@ -8,6 +8,7 @@ class AudioEngine {
   public effectsEnabled: boolean = true;
   private stretchOsc: OscillatorNode | null = null;
   private stretchGain: GainNode | null = null;
+  public currentSurface: string = 'classic';
 
   constructor() {
     // AudioContext is initialized on first user interaction
@@ -28,8 +29,32 @@ class AudioEngine {
     this.init();
     if (!this.ctx) return;
 
-    const volume = Math.min(intensity * 0.15, 0.8);
-    const duration = 0.15 + Math.min(intensity * 0.05, 0.25);
+    let startFreq = 180, endFreq = 50;
+    let clickStart = 800, clickEnd = 400;
+    let volMod = 1.0;
+    let durationMod = 1.0;
+
+    switch (this.currentSurface) {
+      case 'wood':
+      case 'mahogany':
+        startFreq = 350; endFreq = 120;
+        clickStart = 1500; clickEnd = 600;
+        volMod = 1.2; durationMod = 0.8;
+        break;
+      case 'concrete':
+        startFreq = 600; endFreq = 200;
+        clickStart = 2500; clickEnd = 1000;
+        volMod = 1.4; durationMod = 0.5; // Ostrý, krátky a hlasnejší náraz
+        break;
+      case 'fleece':
+        startFreq = 120; endFreq = 40;
+        clickStart = 300; clickEnd = 100;
+        volMod = 0.6; durationMod = 1.2; // Mäkký, tichší a dlhší tlmený dopad
+        break;
+    }
+
+    const volume = Math.min(intensity * 0.15 * volMod, 0.8);
+    const duration = (0.15 + Math.min(intensity * 0.05, 0.25)) * durationMod;
     const now = this.ctx.currentTime;
 
     // Bass Thud (Sine sweep)
@@ -37,9 +62,9 @@ class AudioEngine {
     const gainNode = this.ctx.createGain();
 
     osc.type = 'sine';
-    // Frequency sweeps from 180Hz down to 50Hz (plastic collision)
-    osc.frequency.setValueAtTime(180, now);
-    osc.frequency.exponentialRampToValueAtTime(50, now + duration);
+    // Dynamický sweep frekvencie podľa povrchu
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
 
     gainNode.gain.setValueAtTime(volume, now);
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
@@ -55,8 +80,8 @@ class AudioEngine {
     const clickGain = this.ctx.createGain();
 
     clickOsc.type = 'triangle';
-    clickOsc.frequency.setValueAtTime(800, now);
-    clickOsc.frequency.linearRampToValueAtTime(400, now + 0.02);
+    clickOsc.frequency.setValueAtTime(clickStart, now);
+    clickOsc.frequency.linearRampToValueAtTime(clickEnd, now + 0.02);
 
     clickGain.gain.setValueAtTime(volume * 0.6, now);
     clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);

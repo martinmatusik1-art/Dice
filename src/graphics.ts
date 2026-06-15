@@ -430,13 +430,13 @@ class GraphicsEngine {
   }
 
   public updateBackgroundTheme(themeKey: string) {
-    const themes: Record<string, { css: string, floor: number }> = {
-      classic: { css: 'radial-gradient(circle at center, #1b2030 0%, #080a10 100%)', floor: 0x11131a },
-      green: { css: 'radial-gradient(circle at center, #005c30 0%, #002c10 100%)', floor: 0x023c1e },
-      purple: { css: 'radial-gradient(circle at center, #3c1361 0%, #17002c 100%)', floor: 0x250a41 },
-      charcoal: { css: 'radial-gradient(circle at center, #262626 0%, #0a0a0a 100%)', floor: 0x141414 },
-      crimson: { css: 'radial-gradient(circle at center, #63101d 0%, #200004 100%)', floor: 0x38050d },
-      teal: { css: 'radial-gradient(circle at center, #0b4f54 0%, #021a1c 100%)', floor: 0x062d30 }
+    const themes: Record<string, { css: string, floor: number, roughness: number, metalness: number }> = {
+      classic: { css: 'radial-gradient(circle at center, #1b2030 0%, #080a10 100%)', floor: 0x11131a, roughness: 0.6, metalness: 0.25 },
+      wood: { css: 'linear-gradient(105deg, #4f2e14 0%, #301a08 100%)', floor: 0x2e190a, roughness: 0.85, metalness: 0.05 },
+      fleece: { css: 'radial-gradient(circle at center, #185a22 0%, #0a260e 100%)', floor: 0x09260e, roughness: 0.95, metalness: 0.0 },
+      concrete: { css: 'radial-gradient(circle at center, #787c80 0%, #303336 100%)', floor: 0x4a4d50, roughness: 0.9, metalness: 0.1 },
+      mahogany: { css: 'linear-gradient(45deg, #3f110c 0%, #170402 100%)', floor: 0x260703, roughness: 0.2, metalness: 0.1 },
+      leather: { css: 'radial-gradient(circle at center, #2b2b2b 0%, #0d0d0d 100%)', floor: 0x141414, roughness: 0.7, metalness: 0.1 }
     };
 
     const theme = themes[themeKey] || themes.classic;
@@ -449,6 +449,8 @@ class GraphicsEngine {
     if (this.trayFloor && this.trayFloor.material) {
       const mat = this.trayFloor.material as THREE.MeshStandardMaterial;
       mat.color.setHex(theme.floor);
+      mat.roughness = theme.roughness;
+      mat.metalness = theme.metalness;
     }
   }
 }

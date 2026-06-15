@@ -81,6 +81,7 @@ class App {
     const activeBg = (savedBg === 'classic' || isPremium) ? savedBg : 'classic';
     // Set initial background in graphics
     graphics.updateBackgroundTheme(activeBg);
+    audio.currentSurface = activeBg;
     // Set active class on background button
     const activeBgBtn = document.querySelector(`.bg-btn[data-bg="${activeBg}"]`);
     if (activeBgBtn) {
@@ -394,6 +395,7 @@ class App {
         // Save and apply theme
         localStorage.setItem('dice_app_bg_theme', bgKey);
         graphics.updateBackgroundTheme(bgKey);
+        audio.currentSurface = bgKey;
         
         // UI toggle active
         bgButtons.forEach(b => b.classList.remove('active'));

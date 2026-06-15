@@ -125,11 +125,11 @@ class App {
     // Common UI elements
     const settingsSidebar = document.getElementById('settings-sidebar');
     const userNameDisplay = document.getElementById('user-name-display');
-
     // Unified Back Button Logic (Android Hardware + Web Browser Back)
     const handleBackButton = () => {
       const billingModal = document.getElementById('billing-modal');
       const exitModal = document.getElementById('exit-modal');
+      const shareModal = document.getElementById('share-modal');
 
       // 1. Close settings if open
       if (settingsSidebar?.classList.contains('active')) {
@@ -142,6 +142,13 @@ class App {
       if (billingModal && !billingModal.classList.contains('hidden')) {
         audio.playClick();
         billingModal.classList.add('hidden');
+        return;
+      }
+
+      // Close share modal if open
+      if (shareModal && !shareModal.classList.contains('hidden')) {
+        audio.playClick();
+        shareModal.classList.add('hidden');
         return;
       }
 
@@ -208,8 +215,107 @@ class App {
       }, 150);
     });
 
-    // User Profile Management (Open settings sidebar)
+    // Share Modal Event Listeners
+    const topLogoBtn = document.getElementById('top-logo-btn');
+    const shareModal = document.getElementById('share-modal');
+    const shareCloseBtn = document.getElementById('share-close-btn');
+    const shareLinkInput = document.getElementById('share-link-input') as HTMLInputElement;
+    const shareNativeBtn = document.getElementById('share-native-btn');
+    const shareCopyBtn = document.getElementById('share-copy-btn');
+    const shareCopyBtnText = document.getElementById('share-copy-btn-text');
+
+    const getShareUrl = () => {
+      return window.location.origin + window.location.pathname;
+    };
+
+    const triggerCopyAction = () => {
+      const shareUrl = getShareUrl();
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        audio.playClick();
+        if (shareCopyBtnText) {
+          shareCopyBtnText.textContent = 'Copied!';
+          setTimeout(() => {
+            shareCopyBtnText.textContent = 'Copy';
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error('Could not copy link: ', err);
+      });
+    };
+
+    topLogoBtn?.addEventListener('click', () => {
+      audio.playClick();
+      const shareUrl = getShareUrl();
+      
+      if (shareLinkInput) {
+        shareLinkInput.value = shareUrl;
+      }
+      
+      // Update QR Code Image
+      const qrImg = document.getElementById('share-qr-code') as HTMLImageElement;
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0b0c10&data=${encodeURIComponent(shareUrl)}`;
+      }
+
+      // Encode URLs and messages for fallbacks
+      const shareText = encodeURIComponent("Play with this realistic 3D Dice app with multiple modes!");
+      const urlEncoded = encodeURIComponent(shareUrl);
+
+      const whatsappBtn = document.getElementById('share-whatsapp-btn') as HTMLAnchorElement;
+      if (whatsappBtn) {
+        whatsappBtn.href = `https://api.whatsapp.com/send?text=${shareText}%20${urlEncoded}`;
+      }
+
+      const viberBtn = document.getElementById('share-viber-btn') as HTMLAnchorElement;
+      if (viberBtn) {
+        viberBtn.href = `viber://forward?text=${shareText}%20${urlEncoded}`;
+      }
+
+      const messengerBtn = document.getElementById('share-messenger-btn') as HTMLAnchorElement;
+      if (messengerBtn) {
+        messengerBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${urlEncoded}`;
+      }
+
+      shareModal?.classList.remove('hidden');
+    });
+
+    shareCloseBtn?.addEventListener('click', () => {
+      audio.playClick();
+      shareModal?.classList.add('hidden');
+    });
+
+    shareModal?.addEventListener('pointerdown', (e) => {
+      if (e.target === shareModal) {
+        audio.playClick();
+        shareModal.classList.add('hidden');
+      }
+    });
+
+    shareNativeBtn?.addEventListener('click', async () => {
+      audio.playClick();
+      const shareUrl = getShareUrl();
+      
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: '3D Dice',
+            text: 'Play with this realistic 3D Dice app with multiple modes!',
+            url: shareUrl
+          });
+          console.log('App shared successfully');
+        } catch (err) {
+          console.log('Error sharing:', err);
+        }
+      } else {
+        // Fallback to copy clipboard if native share not supported
+        triggerCopyAction();
+      }
+    });
+
+    shareCopyBtn?.addEventListener('click', triggerCopyAction);
+
     const userProfileBtn = document.getElementById('user-profile-btn');
+
     const usernameInput = document.getElementById('username-input') as HTMLInputElement;
     const usernameSaveBtn = document.getElementById('username-save-btn');
 

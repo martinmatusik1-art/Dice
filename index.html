@@ -36,7 +36,7 @@
           <i class="fa-solid fa-circle-user profile-icon"></i>
           <span id="user-name-display">Guest</span>
         </div>
-        <div class="logo">
+        <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
           <span>3D Dice <small class="ver-text">v1.12</small></span>
         </div>
@@ -234,6 +234,51 @@
           <div class="modal-actions">
             <button id="exit-cancel-btn" class="modal-btn cancel">Cancel</button>
             <button id="exit-confirm-btn" class="modal-btn exit-confirm">Exit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share Game Modal -->
+      <div id="share-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel share-modal-content">
+          <div class="play-store-header share-header">
+            <i class="fa-solid fa-share-nodes"></i>
+            <span>Share 3D Dice</span>
+            <button id="share-close-btn" class="icon-btn" style="position: absolute; right: 16px; top: 16px; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          
+          <div class="share-body">
+            <p class="share-subtitle">Scan to open on another device:</p>
+            <div class="qr-container">
+              <img id="share-qr-code" src="" alt="QR Code" />
+            </div>
+            
+            <p class="share-subtitle">Or share with friends:</p>
+            
+            <!-- Main Native Share Button -->
+            <button id="share-native-btn" class="modal-btn confirm share-main-btn">
+              <i class="fa-solid fa-square-share-nodes"></i> Share App
+            </button>
+            
+            <!-- Fallback Share Options -->
+            <div id="share-fallbacks" class="share-buttons-grid">
+              <a id="share-whatsapp-btn" class="share-btn whatsapp" href="#" target="_blank">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+              </a>
+              <a id="share-viber-btn" class="share-btn viber" href="#" target="_blank">
+                <i class="fa-brands fa-viber"></i> Viber
+              </a>
+              <a id="share-messenger-btn" class="share-btn messenger" href="#" target="_blank">
+                <i class="fa-brands fa-facebook-messenger"></i> Messenger
+              </a>
+            </div>
+
+            <div class="share-copy-container">
+              <input type="text" id="share-link-input" readonly value="" />
+              <button id="share-copy-btn" class="modal-btn confirm">
+                <i class="fa-solid fa-copy"></i> <span id="share-copy-btn-text">Copy</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

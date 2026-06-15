@@ -1354,3 +1354,158 @@ input:checked + .slider:before {
     display: flex;
   }
 }
+
+/* -------------------------------------------------------------
+   Share Modal & Logo Interactions (Added in v1.12)
+   ------------------------------------------------------------- */
+#top-logo-btn {
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#top-logo-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+}
+
+#top-logo-btn:active {
+  transform: scale(0.98);
+}
+
+.share-modal-content {
+  max-width: 380px !important;
+  width: 90% !important;
+}
+
+.share-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.share-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+.qr-container {
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.qr-container:hover {
+  transform: scale(1.02);
+}
+
+.qr-container img {
+  width: 150px;
+  height: 150px;
+  display: block;
+}
+
+.share-main-btn {
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  padding: 12px !important;
+  border-radius: 12px;
+}
+
+.share-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.share-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  color: white;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.share-btn i {
+  font-size: 1.4rem;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.share-btn:active {
+  transform: translateY(0);
+}
+
+.share-btn.whatsapp {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  border-color: rgba(37, 211, 102, 0.2);
+}
+
+.share-btn.viber {
+  background: linear-gradient(135deg, #7360F2, #503EBF);
+  border-color: rgba(115, 96, 242, 0.2);
+}
+
+.share-btn.messenger {
+  background: linear-gradient(135deg, #006AFF, #00B2FF);
+  border-color: rgba(0, 106, 255, 0.2);
+}
+
+.share-copy-container {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.share-copy-container input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.share-copy-container button {
+  white-space: nowrap;
+  padding: 8px 16px !important;
+  margin: 0 !important;
+  min-width: 80px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+

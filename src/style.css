@@ -626,32 +626,33 @@ html, body {
 }
 
 .color-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid transparent;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: none;
+  padding: 0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.color-btn:hover {
+  transform: scale(1.05);
 }
 
 .color-btn.active {
-  border-color: #fff;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  border-color: #ffb703;
+  transform: scale(1.12);
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.45);
 }
 
-.color-btn.active::after {
-  content: '\f00c';
-  font-family: 'Font Awesome 6 Free';
-  font-weight: 900;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 0.75rem;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+.die-preview-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* Background option buttons */

@@ -120,12 +120,66 @@
         <div class="settings-group">
           <h4>Dice Theme</h4>
           <div class="color-options">
-            <button class="color-btn active" data-theme="classic" style="background: linear-gradient(135deg, #ffffff 50%, #d32f2f 50%);" title="Classic White"></button>
-            <button class="color-btn" data-theme="onyx" style="background: linear-gradient(135deg, #1c1c1c 50%, #d4af37 50%);" title="Onyx Black"></button>
-            <button class="color-btn" data-theme="neon" style="background: linear-gradient(135deg, #00f0ff 50%, #ff007f 50%);" title="Neon Cyan"></button>
-            <button class="color-btn" data-theme="emerald" style="background: linear-gradient(135deg, #00a86b 50%, #f4c430 50%);" title="Emerald Green"></button>
-            <button class="color-btn" data-theme="monochrome" style="background: linear-gradient(135deg, #ffffff 50%, #111111 50%);" title="Classic Black & White"></button>
-            <button class="color-btn" data-theme="sapphire" style="background: linear-gradient(135deg, #031b4e 50%, #00d2ff 50%);" title="Sapphire Blue"></button>
+            <button class="color-btn active" data-theme="classic" title="Classic White">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#d32f2f" />
+                <circle cx="75" cy="25" r="8" fill="#d32f2f" />
+                <circle cx="50" cy="50" r="8" fill="#d32f2f" />
+                <circle cx="25" cy="75" r="8" fill="#d32f2f" />
+                <circle cx="75" cy="75" r="8" fill="#d32f2f" />
+              </svg>
+            </button>
+            <button class="color-btn" data-theme="onyx" title="Onyx Black">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#151518" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#e5c158" />
+                <circle cx="75" cy="25" r="8" fill="#e5c158" />
+                <circle cx="50" cy="50" r="8" fill="#e5c158" />
+                <circle cx="25" cy="75" r="8" fill="#e5c158" />
+                <circle cx="75" cy="75" r="8" fill="#e5c158" />
+              </svg>
+            </button>
+            <button class="color-btn" data-theme="neon" title="Neon Cyan">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#0a0b10" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#00f0ff" />
+                <circle cx="75" cy="25" r="8" fill="#00f0ff" />
+                <circle cx="50" cy="50" r="8" fill="#00f0ff" />
+                <circle cx="25" cy="75" r="8" fill="#00f0ff" />
+                <circle cx="75" cy="75" r="8" fill="#00f0ff" />
+              </svg>
+            </button>
+            <button class="color-btn" data-theme="emerald" title="Emerald Green">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#023812" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#ffd700" />
+                <circle cx="75" cy="25" r="8" fill="#ffd700" />
+                <circle cx="50" cy="50" r="8" fill="#ffd700" />
+                <circle cx="25" cy="75" r="8" fill="#ffd700" />
+                <circle cx="75" cy="75" r="8" fill="#ffd700" />
+              </svg>
+            </button>
+            <button class="color-btn" data-theme="monochrome" title="Classic Black & White">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#111111" />
+                <circle cx="75" cy="25" r="8" fill="#111111" />
+                <circle cx="50" cy="50" r="8" fill="#111111" />
+                <circle cx="25" cy="75" r="8" fill="#111111" />
+                <circle cx="75" cy="75" r="8" fill="#111111" />
+              </svg>
+            </button>
+            <button class="color-btn" data-theme="sapphire" title="Sapphire Blue">
+              <svg viewBox="0 0 100 100" class="die-preview-svg">
+                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#031b4e" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                <circle cx="25" cy="25" r="8" fill="#00d2ff" />
+                <circle cx="75" cy="25" r="8" fill="#00d2ff" />
+                <circle cx="50" cy="50" r="8" fill="#00d2ff" />
+                <circle cx="25" cy="75" r="8" fill="#00d2ff" />
+                <circle cx="75" cy="75" r="8" fill="#00d2ff" />
+              </svg>
+            </button>
           </div>
           <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Themes are only available in Premium</p>
         </div>

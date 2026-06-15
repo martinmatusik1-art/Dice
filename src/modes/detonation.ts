@@ -21,6 +21,7 @@ class DetonationMode {
   private startY = 0;
   private currentDragY = 0;
   private maxDragY = 80; // Travel distance of the plunger in pixels
+  public lastIntensity = 0;
 
   public init(onRoll: () => void) {
     this.onRollCallback = onRoll;
@@ -198,6 +199,7 @@ class DetonationMode {
     }
 
     this.isBlownUp = true;
+    this.lastIntensity = intensity;
 
     // 1. Play explosion sound
     audio.playExplosion(intensity);
@@ -240,4 +242,3 @@ class DetonationMode {
 }
 
 export const detonationMode = new DetonationMode();
-

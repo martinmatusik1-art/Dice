@@ -53,6 +53,13 @@ class App {
     physics.init();
     physics.updateBoundaries(window.innerWidth / window.innerHeight);
     
+    // Hook up physics ceiling collision for screen cracks
+    physics.onCeilingHit = (x: number, z: number) => {
+      if (this.currentMode === 'detonation' && detonationMode.lastIntensity >= 0.95) {
+        this.spawnCrack(x, z);
+      }
+    };
+    
     // 2. Initialize monetization modules
     ads.init();
     billing.init();
@@ -182,6 +189,13 @@ class App {
       } catch (e) {
         console.warn('Exit app not available in this environment.');
       }
+      
+      // Fallback pre PWA / Webový prehliadač
+      try { window.close(); } catch (e) {}
+      
+      setTimeout(() => {
+        window.location.href = 'about:blank';
+      }, 150);
     });
 
     // User Profile Management (Open settings sidebar)
@@ -436,6 +450,42 @@ class App {
         this.resultPanel?.classList.add('hidden');
       }
     }
+  }
+
+  private spawnCrack(x: number, z: number) {
+    const container = document.getElementById('crack-container');
+    if (!container) return;
+
+    // Konverzia 3D súradnice do 2D
+    const pos = new THREE.Vector3(x, 11, z);
+    pos.project(graphics.camera);
+
+    const screenX = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const screenY = (pos.y * -0.5 + 0.5) * window.innerHeight;
+
+    const crack = document.createElement('div');
+    crack.className = 'glass-crack';
+    crack.style.left = `${screenX}px`;
+    crack.style.top = `${screenY}px`;
+    
+    const rot = Math.random() * 360;
+    const scale = 0.7 + Math.random() * 0.6;
+    crack.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${scale})`;
+    
+    crack.innerHTML = `
+      <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .crack-line { stroke: rgba(255, 255, 255, 0.85); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(255,255,255,0.6)); }
+          .crack-sub { stroke: rgba(255, 255, 255, 0.4); stroke-width: 1; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        </style>
+        <circle cx="100" cy="100" r="3" fill="rgba(255, 255, 255, 0.9)" />
+        <path class="crack-line" d="M100 100 L70 40 L50 20 M100 100 L140 30 L170 10 M100 100 L160 90 L190 85 M100 100 L150 160 L170 190 M100 100 L90 170 L70 195 M100 100 L30 140 L10 160 M100 100 L20 80 L5 60"/>
+        <path class="crack-sub" d="M70 40 L110 50 L140 30 M140 30 L130 70 L160 90 M160 90 L120 120 L150 160 M150 160 L100 140 L90 170 M90 170 L70 130 L30 140 M30 140 L60 90 L20 80 M20 80 L60 60 L70 40"/>
+        <path class="crack-sub" d="M85 70 L115 70 L125 90 L115 115 L85 115 L75 90 Z"/>
+      </svg>
+    `;
+    
+    container.appendChild(crack);
   }
 
   // Application Loop Tick (renders visual frame, runs physics steps)

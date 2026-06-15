@@ -23,6 +23,8 @@ class PhysicsEngine {
   private wallRightBody!: CANNON.Body;
   private wallFrontBody!: CANNON.Body;
   private wallBackBody!: CANNON.Body;
+  private wallTopBody!: CANNON.Body;
+  public onCeilingHit: ((x: number, z: number) => void) | null = null;
 
   public init() {
     // 1. World configuration
@@ -95,6 +97,18 @@ class PhysicsEngine {
     this.wallBackBody = new CANNON.Body({ mass: 0, shape: wallBackShape, material: this.wallMaterial });
     this.wallBackBody.position.set(0, wallHeight, 6.2);
     this.world.addBody(this.wallBackBody);
+
+    // Top Wall (Ceiling / Screen)
+    const wallTopShape = new CANNON.Box(new CANNON.Vec3(20, 0.2, 20));
+    this.wallTopBody = new CANNON.Body({ mass: 0, shape: wallTopShape, material: this.wallMaterial });
+    this.wallTopBody.position.set(0, 11, 0); // Tesne pod kamerou
+    this.wallTopBody.addEventListener('collide', (event: any) => {
+      const relativeVelocity = event.contact.getImpactVelocityAlongNormal();
+      if (Math.abs(relativeVelocity) > 2.0 && this.onCeilingHit) {
+        this.onCeilingHit(event.body.position.x, event.body.position.z);
+      }
+    });
+    this.world.addBody(this.wallTopBody);
   }
 
   // Update physical walls based on screen aspect ratio so the dice never leaves the viewport

@@ -64,6 +64,25 @@ html, body {
   display: block;
 }
 
+/* Screen Crack Overlay */
+#crack-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50; /* Above canvas, below most UI elements */
+  overflow: hidden;
+}
+
+.glass-crack {
+  position: absolute;
+  transform-origin: center center;
+  /* Postupné plynulé miznutie, kým sa kocky neustália */
+  animation: shatterFade 3.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
 /* Glassmorphic Panels */
 .glass-panel {
   background: var(--panel-bg);
@@ -1187,6 +1206,13 @@ input:checked + .slider:before {
 @keyframes popUp {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shatterFade {
+  0% { opacity: 1; filter: brightness(1.5); }
+  5% { opacity: 1; filter: brightness(1); }
+  60% { opacity: 0.9; }
+  100% { opacity: 0; }
 }
 
 /* Responsive Overrides */

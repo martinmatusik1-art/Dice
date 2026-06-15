@@ -19,7 +19,7 @@ export const DICE_THEMES: Record<string, DiceTheme> = {
   neon: { dice: '#0a0b10', pips: '#00f0ff', emissive: '#002b3d', roughness: 0.25, metalness: 0.2, label: "Neon Cyan" },
   emerald: { dice: '#023812', pips: '#ffd700', roughness: 0.12, metalness: 0.4, label: "Emerald Green" },
   monochrome: { dice: '#ffffff', pips: '#111111', roughness: 0.1, metalness: 0.0, label: "Classic Black & White" },
-  sapphire: { dice: '#0d0d12', pips: '#ffb703', emissive: '#553300', roughness: 0.1, metalness: 0.8, label: "Golden Amber" }
+  sapphire: { dice: '#d62828', pips: '#ffffff', roughness: 0.08, metalness: 0.1, label: "Ruby Red" }
 };
 
 class GraphicsEngine {

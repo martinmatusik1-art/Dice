@@ -29,7 +29,7 @@
         </div>
         <div class="logo">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.06</small></span>
+          <span>3D Dice <small class="ver-text">v1.07</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats">
@@ -142,6 +142,13 @@
           <p id="premium-bg-note" class="warning-text"><i class="fa-solid fa-lock"></i> Backgrounds are only available in Premium</p>
         </div>
 
+        <div class="settings-group">
+          <h4>Statistics</h4>
+          <button id="reset-rolls-btn" class="reset-btn">
+            <i class="fa-solid fa-rotate-left"></i> Reset Roll Counter
+          </button>
+        </div>
+
         <div class="settings-group premium-ad-free">
           <h4>Premium Features</h4>
           <button id="sidebar-buy-premium" class="premium-buy-btn">
@@ -150,7 +157,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.06 </span>
+          <span>Version 1.07 </span>
         </div>
       </div>
 
@@ -185,6 +192,26 @@
           <div class="modal-actions">
             <button id="billing-cancel-btn" class="modal-btn cancel">Cancel</button>
             <button id="billing-confirm-btn" class="modal-btn confirm">1-Tap Buy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exit Confirmation Modal -->
+      <div id="exit-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header exit-header">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Exit Game</span>
+          </div>
+          
+          <div class="product-info exit-info">
+            <h2>Are you sure?</h2>
+            <p>Do you really want to leave 3D Dice?</p>
+          </div>
+
+          <div class="modal-actions">
+            <button id="exit-cancel-btn" class="modal-btn cancel">Cancel</button>
+            <button id="exit-confirm-btn" class="modal-btn exit-confirm">Exit</button>
           </div>
         </div>
       </div>

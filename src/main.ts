@@ -2,6 +2,7 @@
    3D Dice Simulation PWA - Main Application Entrypoint
    ------------------------------------------------------------- */
 
+import { App as CapacitorApp } from '@capacitor/app';
 import * as THREE from 'three';
 import { ads } from './ads';
 import { audio } from './audio';
@@ -117,6 +118,62 @@ class App {
     const settingsSidebar = document.getElementById('settings-sidebar');
     const userNameDisplay = document.getElementById('user-name-display');
 
+    // Hardware Back Button Interception (Android/Capacitor)
+    try {
+      CapacitorApp.addListener('backButton', () => {
+        const billingModal = document.getElementById('billing-modal');
+        const exitModal = document.getElementById('exit-modal');
+
+        // 1. Close settings if open
+        if (settingsSidebar?.classList.contains('active')) {
+          audio.playClick();
+          settingsSidebar.classList.remove('active');
+          return;
+        }
+
+        // 2. Close billing modal if open
+        if (billingModal && !billingModal.classList.contains('hidden')) {
+          audio.playClick();
+          billingModal.classList.add('hidden');
+          return;
+        }
+
+        // 3. Close exit modal if it is already open (cancel exit)
+        if (exitModal && !exitModal.classList.contains('hidden')) {
+          audio.playClick();
+          exitModal.classList.add('hidden');
+          return;
+        }
+
+        // 4. Otherwise, prompt to exit
+        if (exitModal) {
+          audio.playClick();
+          exitModal.classList.remove('hidden');
+        }
+      });
+    } catch (e) {
+      console.warn('Capacitor App plugin not found, back button handling skipped.');
+    }
+
+    // Exit Modal Buttons
+    const exitConfirmBtn = document.getElementById('exit-confirm-btn');
+    const exitCancelBtn = document.getElementById('exit-cancel-btn');
+    const exitModal = document.getElementById('exit-modal');
+
+    exitCancelBtn?.addEventListener('click', () => {
+      audio.playClick();
+      exitModal?.classList.add('hidden');
+    });
+
+    exitConfirmBtn?.addEventListener('click', () => {
+      audio.playClick();
+      try {
+        CapacitorApp.exitApp();
+      } catch (e) {
+        console.warn('Exit app not available in this environment.');
+      }
+    });
+
     // User Profile Management (Open settings sidebar)
     const userProfileBtn = document.getElementById('user-profile-btn');
     const usernameInput = document.getElementById('username-input') as HTMLInputElement;
@@ -135,6 +192,16 @@ class App {
       localStorage.setItem('dice_app_username', this.username);
       if (userNameDisplay) userNameDisplay.innerText = this.username;
       usernameInput.value = this.username; // Update input in case it was trimmed
+    });
+
+    // Reset Roll Counter
+    const resetRollsBtn = document.getElementById('reset-rolls-btn');
+    const rollCountDisplayUI = document.getElementById('roll-count-display');
+    
+    resetRollsBtn?.addEventListener('click', () => {
+      audio.playClick();
+      localStorage.setItem('dice_app_roll_count', '0');
+      if (rollCountDisplayUI) rollCountDisplayUI.innerText = '0';
     });
 
     // Mode switcher buttons

@@ -537,6 +537,29 @@ html, body {
   background-color: var(--accent-color);
 }
 
+/* Reset Button Styles */
+.reset-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  background-color: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-family);
+}
+
+.reset-btn:hover {
+  background-color: rgba(231, 76, 60, 0.3);
+  color: #fff;
+}
+
 /* Dice color option buttons */
 .color-options {
   display: flex;
@@ -950,6 +973,33 @@ input:checked + .slider:before {
 .modal-btn.confirm:hover {
   background: #2b8e44;
   box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
+}
+
+/* 8.1 Exit Modal Overrides */
+.exit-header {
+  justify-content: center;
+  color: #ff4e50;
+}
+.exit-header i {
+  color: #ff4e50;
+}
+.exit-info {
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 5px;
+  margin-bottom: 15px;
+}
+.modal-btn.exit-confirm {
+  background: #ff4e50;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);
+}
+.modal-btn.exit-confirm:hover {
+  background: #e53935;
+  box-shadow: 0 6px 20px rgba(255, 78, 80, 0.4);
 }
 
 .modal-btn:active {

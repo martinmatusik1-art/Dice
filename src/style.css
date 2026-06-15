@@ -469,6 +469,22 @@ html, body {
   pointer-events: none; /* Disable mouse/touch events when closed */
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   background: rgba(18, 22, 33, 0.98); /* Less transparent background */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Settings Sidebar */
+#settings-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+#settings-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#settings-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }
 
 #settings-sidebar.active {

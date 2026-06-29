@@ -1789,11 +1789,11 @@ input:checked + .slider:before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background: rgba(18, 22, 33, 0.65);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--panel-border);
+  padding: 12px 20px;
+  background: rgba(18, 22, 33, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 10;
 }
 
@@ -1850,40 +1850,43 @@ input:checked + .slider:before {
 /* Options/Answers Container at Bottom */
 .game-options-container {
   margin-top: auto;
-  padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 10px)) 20px;
-  background: linear-gradient(to top, rgba(8, 10, 16, 0.9) 70%, rgba(8, 10, 16, 0.0));
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 10px)) 20px;
+  background: linear-gradient(to top, rgba(8, 10, 16, 0.45) 0%, rgba(8, 10, 16, 0.0));
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
   z-index: 10;
 }
 
 .option-btn {
-  background: rgba(18, 22, 33, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  background: rgba(18, 22, 33, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 8px;
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   text-align: center;
-  display: block;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .option-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--primary-color);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .option-btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.98);
 }
 
 .option-btn.correct {
@@ -1891,7 +1894,6 @@ input:checked + .slider:before {
   border-color: #2ecc71 !important;
   color: #2ecc71 !important;
   box-shadow: 0 0 20px rgba(46, 204, 113, 0.3) !important;
-  transform: scale(1.02);
 }
 
 .option-btn.incorrect {
@@ -1922,17 +1924,17 @@ input:checked + .slider:before {
 
 .player2-half {
   transform: rotate(180deg);
-  background: linear-gradient(to top, rgba(8, 10, 16, 0.4) 0%, transparent 100%);
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  background: linear-gradient(to top, rgba(8, 10, 16, 0.2) 0%, transparent 100%);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
 }
 
 .player1-half {
-  background: linear-gradient(to bottom, rgba(8, 10, 16, 0.4) 0%, transparent 100%);
+  background: linear-gradient(to bottom, rgba(8, 10, 16, 0.2) 0%, transparent 100%);
 }
 
 .rotated-hud {
   border-bottom: none;
-  border-top: 1px solid var(--panel-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .versus-divider-line {
@@ -1942,7 +1944,7 @@ input:checked + .slider:before {
   width: 100%;
   transform: translateY(-50%);
   height: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1958,7 +1960,7 @@ input:checked + .slider:before {
   padding: 2px 8px;
   border-radius: 10px;
   letter-spacing: 1px;
-  box-shadow: 0 0 8px rgba(251, 133, 0, 0.5);
+  box-shadow: 0 0 8px rgba(251, 133, 0, 0.3);
 }
 
 /* Versus statuses info */

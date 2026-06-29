@@ -11,6 +11,7 @@ import { graphics } from './graphics';
 import { detonationMode } from './modes/detonation';
 import { slingshotMode } from './modes/slingshot';
 import { standardMode } from './modes/standard';
+import { gamemode } from './modes/gamemode';
 import { physics } from './physics';
 import './style.css';
 
@@ -24,7 +25,7 @@ interface RollHistoryItem {
 
 class App {
   private clock = new THREE.Clock();
-  private currentMode: 'standard' | 'slingshot' | 'detonation' = 'standard';
+  private currentMode: 'standard' | 'slingshot' | 'detonation' | 'gamemode' = 'standard';
   private resultPanel: HTMLElement | null = null;
   private resultValue: HTMLElement | null = null;
   private isRolling = false;
@@ -127,6 +128,7 @@ class App {
     standardMode.init(triggerRollState);
     slingshotMode.init(triggerRollState);
     detonationMode.init(triggerRollState);
+    gamemode.init(triggerRollState);
 
     // Default mode is standard
     standardMode.activate();
@@ -143,12 +145,30 @@ class App {
     // Common UI elements
     const settingsSidebar = document.getElementById('settings-sidebar');
     const userNameDisplay = document.getElementById('user-name-display');
-    // Unified Back Button Logic (Android Hardware + Web Browser Back)
     const handleBackButton = () => {
       const billingModal = document.getElementById('billing-modal');
       const exitModal = document.getElementById('exit-modal');
       const shareModal = document.getElementById('share-modal');
       const historyModal = document.getElementById('history-modal');
+
+      // Check Game Mode states first
+      if (this.currentMode === 'gamemode') {
+        const playScreen = document.getElementById('game-play-screen');
+        if (playScreen && !playScreen.classList.contains('hidden')) {
+          audio.playClick();
+          (gamemode as any).endGameGracefully();
+          return;
+        } else {
+          audio.playClick();
+          this.switchMode('standard');
+          const classicBtn = document.querySelector('.mode-btn[data-mode="standard"]');
+          if (classicBtn) {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            classicBtn.classList.add('active');
+          }
+          return;
+        }
+      }
 
       // 1. Close settings if open
       if (settingsSidebar?.classList.contains('active')) {
@@ -661,13 +681,14 @@ class App {
     });
   }
 
-  private switchMode(mode: 'standard' | 'slingshot' | 'detonation') {
+  private switchMode(mode: 'standard' | 'slingshot' | 'detonation' | 'gamemode') {
     if (this.currentMode === mode) return;
 
     // Deactivate previous mode
     if (this.currentMode === 'standard') standardMode.deactivate();
     else if (this.currentMode === 'slingshot') slingshotMode.deactivate();
     else if (this.currentMode === 'detonation') detonationMode.deactivate();
+    else if (this.currentMode === 'gamemode') gamemode.deactivate();
 
     this.currentMode = mode;
     this.isRolling = false;
@@ -683,6 +704,8 @@ class App {
       slingshotMode.activate();
     } else if (mode === 'detonation') {
       detonationMode.activate();
+    } else if (mode === 'gamemode') {
+      gamemode.activate();
     }
   }
 
@@ -701,6 +724,8 @@ class App {
       } else if (this.currentMode === 'detonation') {
         detonationMode.resetDiceForTNT();
         this.resultPanel?.classList.add('hidden');
+      } else if (this.currentMode === 'gamemode') {
+        // Handled automatically or ignored
       }
     }
   }
@@ -776,6 +801,10 @@ class App {
   };
 
   private showResults(faces: number[]) {
+    if (this.currentMode === 'gamemode') {
+      gamemode.handleDiceSettled(faces);
+      return;
+    }
     if (this.resultValue && this.resultPanel) {
       const sum = faces.reduce((a, b) => a + b, 0);
       if (faces.length === 1) {

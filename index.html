@@ -71,6 +71,10 @@
           <i class="fa-solid fa-bomb"></i>
           <span>Detonation</span>
         </button>
+        <button class="mode-btn" data-mode="gamemode" id="gamemode-btn">
+          <i class="fa-solid fa-gamepad"></i>
+          <span>Game Mode</span>
+        </button>
         <div class="bar-divider"></div>
         <button id="sound-toggle-btn" class="bar-btn" title="Toggle Mute">
           <i class="fa-solid fa-volume-high"></i>
@@ -100,6 +104,201 @@
           </div>
           <div class="plunger-base">
             <span class="tnt-label">TNT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Mode Overlay -->
+      <div id="game-mode-overlay" class="hidden">
+        <!-- Setup Screen -->
+        <div id="game-setup-screen" class="game-screen glass-panel">
+          <div class="game-screen-header">
+            <h3><i class="fa-solid fa-gamepad"></i> Game Mode Setup</h3>
+          </div>
+          <div class="setup-scrollable">
+            <div class="settings-group">
+              <h4>Herný Mód (Game Mode)</h4>
+              <div class="game-mode-options">
+                <button class="setup-btn active" id="btn-mode-solo">
+                  <i class="fa-solid fa-user"></i> Solo
+                </button>
+                <button class="setup-btn" id="btn-mode-versus">
+                  <i class="fa-solid fa-users"></i> Versus
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h4>Obtiažnosť (Difficulty)</h4>
+              <div class="difficulty-options">
+                <button class="setup-btn active" id="btn-diff-easy">Easy</button>
+                <button class="setup-btn" id="btn-diff-medium">Medium</button>
+                <button class="setup-btn" id="btn-diff-hard">Hard</button>
+              </div>
+            </div>
+
+            <div class="settings-group" id="time-limit-settings-group">
+              <h4>Časové Limity (Seconds)</h4>
+              <div class="time-limit-inputs">
+                <div class="limit-input">
+                  <label for="limit-medium-input">Medium:</label>
+                  <input type="number" id="limit-medium-input" min="1" max="60" value="7">
+                </div>
+                <div class="limit-input">
+                  <label for="limit-hard-input">Hard:</label>
+                  <input type="number" id="limit-hard-input" min="1" max="60" value="4">
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <h4>Počet kôl (Rounds)</h4>
+              <div class="round-options">
+                <button class="setup-btn active" data-rounds="10">10</button>
+                <button class="setup-btn" data-rounds="20">20</button>
+                <button class="setup-btn" data-rounds="0">Endless</button>
+              </div>
+            </div>
+            
+            <div class="settings-group">
+              <h4>Počet kociek (Dice Count)</h4>
+              <div class="setup-dice-options">
+                <button class="setup-btn active" data-dice="1">1</button>
+                <button class="setup-btn" data-dice="2">2</button>
+                <button class="setup-btn" data-dice="3">3</button>
+                <button class="setup-btn" data-dice="4">4</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setup-footer">
+            <button id="btn-start-game" class="premium-buy-btn" style="width: 100%; height: 50px; font-size: 1.1rem;">
+              <i class="fa-solid fa-play"></i> Štart Hry
+            </button>
+          </div>
+        </div>
+
+        <!-- Play Screen -->
+        <div id="game-play-screen" class="game-screen hidden">
+          <!-- Solo Mode Visuals -->
+          <div id="solo-play-layout" class="play-layout">
+            <div class="game-hud">
+              <div class="hud-item"><i class="fa-solid fa-hashtag"></i> <span id="solo-round">Kolo: 1/10</span></div>
+              <div class="hud-item"><i class="fa-solid fa-trophy"></i> <span id="solo-score">Skóre: 0</span></div>
+              <button id="btn-solo-exit" class="game-exit-btn" title="Ukončiť hru"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Timer bar -->
+            <div class="timer-container" id="solo-timer-container">
+              <div class="timer-bar" id="solo-timer-bar"></div>
+            </div>
+
+            <!-- Options overlay at bottom -->
+            <div class="game-options-container" id="solo-options">
+              <!-- Three option buttons will be injected here -->
+            </div>
+          </div>
+
+          <!-- Versus Mode Visuals -->
+          <div id="versus-play-layout" class="play-layout hidden">
+            <!-- Player 2 (Top, rotated 180 degrees) -->
+            <div class="versus-half player2-half">
+              <div class="game-hud rotated-hud">
+                <div class="hud-item"><i class="fa-solid fa-user"></i> <span id="p2-name">Hráč 2</span></div>
+                <div class="hud-item"><i class="fa-solid fa-trophy"></i> <span id="p2-score">Skóre: 0</span></div>
+                <div class="hud-item" id="p2-status">Čaká sa...</div>
+              </div>
+              <div class="timer-container">
+                <div class="timer-bar" id="p2-timer-bar"></div>
+              </div>
+              <div class="game-options-container" id="p2-options">
+                <!-- Buttons injected here -->
+              </div>
+            </div>
+
+            <!-- VS Divider line in center of screen -->
+            <div class="versus-divider-line">
+              <span>VS</span>
+            </div>
+
+            <!-- Player 1 (Bottom, normal) -->
+            <div class="versus-half player1-half">
+              <div class="game-hud">
+                <div class="hud-item"><i class="fa-solid fa-user"></i> <span id="p1-name">Hráč 1</span></div>
+                <div class="hud-item"><i class="fa-solid fa-trophy"></i> <span id="p1-score">Skóre: 0</span></div>
+                <div class="hud-item" id="p1-status">Čaká sa...</div>
+                <button id="btn-versus-exit" class="game-exit-btn" title="Ukončiť hru"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="timer-container">
+                <div class="timer-bar" id="p1-timer-bar"></div>
+              </div>
+              <div class="game-options-container" id="p1-options">
+                <!-- Buttons injected here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Screen -->
+        <div id="game-stats-screen" class="game-screen glass-panel hidden">
+          <div class="stats-header">
+            <h2 id="stats-title"><i class="fa-solid fa-chart-line"></i> Koniec Hry</h2>
+            <p id="stats-winner-announcement" class="winner-text"></p>
+          </div>
+          
+          <div class="stats-scrollable">
+            <div id="solo-stats-container">
+              <div class="stat-row">
+                <span class="stat-label">Počet kôl:</span>
+                <span class="stat-value" id="stat-rounds">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Skóre (Správne):</span>
+                <span class="stat-value highlight-green" id="stat-correct">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Nesprávne:</span>
+                <span class="stat-value highlight-red" id="stat-incorrect">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Úspešnosť:</span>
+                <span class="stat-value" id="stat-percentage">0%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Najdlhšia séria:</span>
+                <span class="stat-value" id="stat-streak">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Priemerný reakčný čas:</span>
+                <span class="stat-value" id="stat-reaction">0.0s</span>
+              </div>
+            </div>
+            
+            <div id="versus-stats-container" class="hidden">
+              <div class="versus-stats-grid">
+                <div class="player-stat-col">
+                  <h4 id="vs-p1-label">Hráč 1</h4>
+                  <div class="stat-mini-row"><span>Skóre:</span> <strong id="stat-vs-p1-score">0</strong></div>
+                  <div class="stat-mini-row"><span>Správne:</span> <span id="stat-vs-p1-correct" class="highlight-green">0</span></div>
+                  <div class="stat-mini-row"><span>Reakcia:</span> <span id="stat-vs-p1-reaction">0.0s</span></div>
+                </div>
+                <div class="player-stat-col">
+                  <h4 id="vs-p2-label">Hráč 2</h4>
+                  <div class="stat-mini-row"><span>Skóre:</span> <strong id="stat-vs-p2-score">0</strong></div>
+                  <div class="stat-mini-row"><span>Správne:</span> <span id="stat-vs-p2-correct" class="highlight-green">0</span></div>
+                  <div class="stat-mini-row"><span>Reakcia:</span> <span id="stat-vs-p2-reaction">0.0s</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-footer">
+            <button id="btn-stats-restart" class="premium-buy-btn">
+              <i class="fa-solid fa-rotate-left"></i> Hrať Znovu
+            </button>
+            <button id="btn-stats-exit" class="modal-btn cancel" style="width: 100%; height: 44px; margin-top: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <i class="fa-solid fa-xmark"></i> Ukončiť
+            </button>
           </div>
         </div>
       </div>

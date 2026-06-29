@@ -322,6 +322,37 @@ class AudioEngine {
     osc1.stop(now + duration);
     osc2.stop(now + duration);
   }
+
+  // Warning sound on failure
+  public playFailure() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    // Failure vibration pattern
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([100, 50, 100]);
+    }
+
+    const now = this.ctx.currentTime;
+    const duration = 0.4;
+    
+    const osc = this.ctx.createOscillator();
+    const gainNode = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(130, now);
+    osc.frequency.linearRampToValueAtTime(75, now + duration);
+
+    gainNode.gain.setValueAtTime(0.18, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration + 0.05);
+  }
 }
 
 export const audio = new AudioEngine();

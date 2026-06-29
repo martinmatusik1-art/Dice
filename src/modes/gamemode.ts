@@ -428,7 +428,7 @@ class GameMode {
           const btn = document.createElement('button');
           btn.className = 'option-btn';
           btn.innerText = opt.toString();
-          btn.addEventListener('click', () => this.handleSoloAnswer(opt));
+          btn.addEventListener('pointerdown', () => this.handleSoloAnswer(opt));
           optionsContainer.appendChild(btn);
         });
       }
@@ -459,7 +459,7 @@ class GameMode {
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.innerText = opt.toString();
-      btn.addEventListener('click', () => this.handleVersusAnswer(player, opt, btn));
+      btn.addEventListener('pointerdown', () => this.handleVersusAnswer(player, opt, btn));
       container.appendChild(btn);
     });
   }

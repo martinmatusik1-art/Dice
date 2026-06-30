@@ -35,6 +35,7 @@
         <div class="user-profile" id="user-profile-btn" title="Change name">
           <i class="fa-solid fa-circle-user profile-icon"></i>
           <span id="user-name-display">Guest</span>
+          <i class="fa-solid fa-crown premium-crown hidden" id="top-premium-crown" style="color: #ffb703; margin-left: 6px; filter: drop-shadow(0 0 4px rgba(255, 183, 3, 0.6));"></i>
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
@@ -45,6 +46,9 @@
             <i class="fa-solid fa-chart-simple"></i>
             <span>Rolls: <strong id="roll-count-display">0</strong></span>
           </div>
+          <button id="sound-toggle-btn" class="sound-toggle-btn" title="Toggle Mute">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
           <button id="lock-btn" class="lock-btn" title="Lock/Unlock roll">
             <i class="fa-solid fa-lock-open"></i>
           </button>
@@ -76,10 +80,6 @@
           <span>Game Mode</span>
         </button>
         <div class="bar-divider"></div>
-        <button id="sound-toggle-btn" class="bar-btn" title="Toggle Mute">
-          <i class="fa-solid fa-volume-high"></i>
-          <span>Sounds</span>
-        </button>
         <button id="settings-btn" class="bar-btn" title="Settings">
           <i class="fa-solid fa-gear"></i>
           <span>Settings</span>

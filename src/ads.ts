@@ -140,8 +140,11 @@ class AdManager {
     if (this.isPremium) {
       container?.classList.add('premium');
       if (premiumBadgeBtn) {
-        premiumBadgeBtn.innerHTML = '<i class="fa-solid fa-crown"></i> <span>Premium Active</span>';
-        premiumBadgeBtn.classList.add('purchased');
+        premiumBadgeBtn.classList.add('hidden');
+      }
+      const topCrown = document.getElementById('top-premium-crown');
+      if (topCrown) {
+        topCrown.classList.remove('hidden');
       }
       if (premiumNote) {
         premiumNote.classList.add('hidden');
@@ -156,6 +159,13 @@ class AdManager {
       }, 300);
     } else {
       container?.classList.remove('premium');
+      if (premiumBadgeBtn) {
+        premiumBadgeBtn.classList.remove('hidden');
+      }
+      const topCrown = document.getElementById('top-premium-crown');
+      if (topCrown) {
+        topCrown.classList.add('hidden');
+      }
     }
   }
 

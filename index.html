@@ -129,6 +129,20 @@
               </div>
             </div>
 
+            <div class="settings-group hidden" id="versus-names-group">
+              <h4>Player Names</h4>
+              <div class="versus-names-container" style="display: flex; gap: 10px; flex-direction: column;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 1:</label>
+                  <input type="text" id="setup-p1-name-input" readonly style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px; color: var(--text-secondary); font-size: 0.9rem;" value="Guest">
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label for="setup-p2-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 2:</label>
+                  <input type="text" id="setup-p2-name-input" placeholder="Enter Player 2 name" maxlength="15" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; color: #fff; font-size: 0.9rem; font-family: var(--font-family);">
+                </div>
+              </div>
+            </div>
+
             <div class="settings-group">
               <h4>Difficulty</h4>
               <div class="difficulty-options">
@@ -286,6 +300,9 @@
           <div class="stats-footer">
             <button id="btn-stats-restart" class="premium-buy-btn">
               <i class="fa-solid fa-rotate-left"></i> Hrať Znovu
+            </button>
+            <button id="btn-stats-share" class="modal-btn confirm" style="width: 100%; height: 44px; margin-top: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--secondary-color); color: #fff;">
+              <i class="fa-solid fa-share-nodes"></i> Zdieľať výsledok
             </button>
             <button id="btn-stats-exit" class="modal-btn cancel" style="width: 100%; height: 44px; margin-top: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
               <i class="fa-solid fa-xmark"></i> Ukončiť

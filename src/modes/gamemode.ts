@@ -82,6 +82,23 @@ class GameMode {
     const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
     this.diceCount = savedDice;
 
+    // Sync setup player names
+    const savedP1 = localStorage.getItem('dice_app_username') || 'Guest';
+    const savedP2 = localStorage.getItem('dice_app_versus_p2_name') || 'Player 2';
+    const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
+    const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+    if (p1Input) p1Input.value = savedP1;
+    if (p2Input) p2Input.value = savedP2;
+
+    const namesGroup = document.getElementById('versus-names-group');
+    if (namesGroup) {
+      if (this.mode === 'versus') {
+        namesGroup.classList.remove('hidden');
+      } else {
+        namesGroup.classList.add('hidden');
+      }
+    }
+
     // Make sure normal dice settings slider does not interfere during gamemode
     physics.resetToCenter();
   }
@@ -124,6 +141,7 @@ class GameMode {
       this.mode = 'solo';
       btnSolo.classList.add('active');
       btnVersus?.classList.remove('active');
+      document.getElementById('versus-names-group')?.classList.add('hidden');
     });
 
     btnVersus?.addEventListener('click', () => {
@@ -131,6 +149,15 @@ class GameMode {
       this.mode = 'versus';
       btnVersus.classList.add('active');
       btnSolo?.classList.remove('active');
+      
+      const savedP1 = localStorage.getItem('dice_app_username') || 'Guest';
+      const savedP2 = localStorage.getItem('dice_app_versus_p2_name') || 'Player 2';
+      const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
+      const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+      if (p1Input) p1Input.value = savedP1;
+      if (p2Input) p2Input.value = savedP2;
+
+      document.getElementById('versus-names-group')?.classList.remove('hidden');
     });
 
     // Difficulty selectors
@@ -209,6 +236,11 @@ class GameMode {
       this.startGame();
     });
 
+    document.getElementById('btn-stats-share')?.addEventListener('click', () => {
+      audio.playClick();
+      this.shareGameStats();
+    });
+
     document.getElementById('btn-stats-exit')?.addEventListener('click', () => {
       audio.playClick();
       this.deactivate();
@@ -225,6 +257,20 @@ class GameMode {
     // Sync setup dice count with current app settings
     const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
     this.diceCount = savedDice;
+
+    // Sync and save player names for versus mode
+    const p1Name = localStorage.getItem('dice_app_username') || 'Guest';
+    let p2Name = 'Player 2';
+    if (this.mode === 'versus') {
+      const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+      p2Name = p2Input?.value.trim() || 'Player 2';
+      localStorage.setItem('dice_app_versus_p2_name', p2Name);
+    }
+    
+    const p1Display = document.getElementById('p1-name');
+    if (p1Display) p1Display.innerText = p1Name;
+    const p2Display = document.getElementById('p2-name');
+    if (p2Display) p2Display.innerText = p2Name;
 
     // Reset scores & statistics
     this.soloScore = 0;
@@ -740,13 +786,21 @@ class GameMode {
       soloStatsBox?.classList.add('hidden');
       versusStatsBox?.classList.remove('hidden');
 
-      // Determine Winner
+      // Determine Winner and Update Labels
+      const p1Name = localStorage.getItem('dice_app_username') || 'Guest';
+      const p2Name = localStorage.getItem('dice_app_versus_p2_name') || 'Player 2';
+      
+      const vsP1Label = document.getElementById('vs-p1-label');
+      const vsP2Label = document.getElementById('vs-p2-label');
+      if (vsP1Label) vsP1Label.innerText = p1Name;
+      if (vsP2Label) vsP2Label.innerText = p2Name;
+
       if (winnerAnnouncement) {
         if (this.p1Score > this.p2Score) {
-          winnerAnnouncement.innerText = '🏆 Hráč 1 vyhráva!';
+          winnerAnnouncement.innerText = `🏆 ${p1Name} vyhráva!`;
           winnerAnnouncement.style.color = '#2ecc71';
         } else if (this.p2Score > this.p1Score) {
-          winnerAnnouncement.innerText = '🏆 Hráč 2 vyhráva!';
+          winnerAnnouncement.innerText = `🏆 ${p2Name} vyhráva!`;
           winnerAnnouncement.style.color = '#2ecc71';
         } else {
           winnerAnnouncement.innerText = '🤝 Remíza!';
@@ -814,6 +868,92 @@ class GameMode {
         doc.msExitFullscreen();
       }
     }
+  }
+
+  private shareGameStats() {
+    const shareUrl = window.location.origin + window.location.pathname;
+    let shareText = '';
+
+    if (this.mode === 'solo') {
+      const totalRounds = this.soloCorrectAnswers + this.soloIncorrectAnswers;
+      const successPct = totalRounds > 0 ? Math.round((this.soloCorrectAnswers / totalRounds) * 100) : 0;
+      const avgReaction = this.soloCorrectAnswers > 0 
+        ? ((this.soloTotalReactionTime / this.soloCorrectAnswers) / 1000).toFixed(2)
+        : '0.00';
+      
+      shareText = `Práve som dosiahol skóre ${this.soloScore} bodov v Solo hernom móde na 3D Dice! 🎲\nPresnosť: ${successPct}%\nPriemerný čas: ${avgReaction}s`;
+    } else {
+      const p1Name = localStorage.getItem('dice_app_username') || 'Guest';
+      const p2Name = localStorage.getItem('dice_app_versus_p2_name') || 'Player 2';
+      let winnerText = 'Remíza';
+      if (this.p1Score > this.p2Score) {
+        winnerText = `Víťaz: ${p1Name}`;
+      } else if (this.p2Score > this.p1Score) {
+        winnerText = `Víťaz: ${p2Name}`;
+      }
+      
+      shareText = `Zápas ${p1Name} vs ${p2Name} na 3D Dice skončil! 🎲\nSkóre: ${this.p1Score} : ${this.p2Score}\n${winnerText}`;
+    }
+
+    const fullMessage = `${shareText}\nHraj tu: ${shareUrl}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: '3D Dice - Herné Výsledky',
+        text: shareText,
+        url: shareUrl
+      }).catch(err => {
+        console.log('Error sharing:', err);
+      });
+    } else {
+      // Fallback: Copy to clipboard and show toast
+      navigator.clipboard.writeText(fullMessage).then(() => {
+        this.showShareNotification();
+      }).catch(err => {
+        console.error('Could not copy link: ', err);
+        alert(fullMessage);
+      });
+    }
+  }
+
+  private showShareNotification() {
+    // Create temporary beautiful glass toast
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.top = '100px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+    toast.style.background = 'linear-gradient(135deg, rgba(26, 188, 156, 0.95) 0%, rgba(22, 160, 133, 0.95) 100%)';
+    toast.style.color = '#fff';
+    toast.style.padding = '16px 32px';
+    toast.style.borderRadius = '30px';
+    toast.style.fontWeight = '700';
+    toast.style.fontSize = '1rem';
+    toast.style.boxShadow = '0 10px 25px rgba(22, 160, 133, 0.3)';
+    toast.style.zIndex = '1000';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '10px';
+    toast.style.opacity = '0';
+    toast.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    toast.innerHTML = `<i class="fa-solid fa-check"></i> <span>Výsledky skopírované do schránky!</span>`;
+
+    document.body.appendChild(toast);
+
+    // Fade in
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+
+    // Fade out and remove
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-20px)';
+      setTimeout(() => {
+        toast.remove();
+      }, 500);
+    }, 3000);
   }
 }
 

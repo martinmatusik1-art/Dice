@@ -531,6 +531,18 @@ class App {
       settingsSidebar?.classList.remove('active');
     });
 
+    // Close Game Mode Setup Button (X)
+    const closeGameSetupBtn = document.getElementById('close-game-setup-btn');
+    closeGameSetupBtn?.addEventListener('click', () => {
+      audio.playClick();
+      this.switchMode('standard');
+      const classicBtn = document.querySelector('.mode-btn[data-mode="standard"]');
+      if (classicBtn) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        classicBtn.classList.add('active');
+      }
+    });
+
     // Zatvorenie nastavení pri kliknutí mimo (na iné prvky ako plátno a samotné menu)
     document.addEventListener('pointerdown', (e) => {
       if (settingsSidebar?.classList.contains('active')) {

@@ -114,10 +114,11 @@
         <div id="game-setup-screen" class="game-screen glass-panel">
           <div class="game-screen-header">
             <h3><i class="fa-solid fa-gamepad"></i> Game Mode Setup</h3>
+            <button id="close-game-setup-btn" class="icon-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div class="setup-scrollable">
             <div class="settings-group">
-              <h4>Herný Mód (Game Mode)</h4>
+              <h4>Game Mode</h4>
               <div class="game-mode-options">
                 <button class="setup-btn active" id="btn-mode-solo">
                   <i class="fa-solid fa-user"></i> Solo
@@ -129,7 +130,7 @@
             </div>
 
             <div class="settings-group">
-              <h4>Obtiažnosť (Difficulty)</h4>
+              <h4>Difficulty</h4>
               <div class="difficulty-options">
                 <button class="setup-btn active" id="btn-diff-easy">Easy</button>
                 <button class="setup-btn" id="btn-diff-medium">Medium</button>
@@ -138,7 +139,7 @@
             </div>
 
             <div class="settings-group" id="time-limit-settings-group">
-              <h4>Časové Limity (Seconds)</h4>
+              <h4>Time Limits</h4>
               <div class="time-limit-inputs">
                 <div class="limit-input">
                   <label for="limit-medium-input">Medium:</label>
@@ -152,21 +153,11 @@
             </div>
 
             <div class="settings-group">
-              <h4>Počet kôl (Rounds)</h4>
+              <h4>Rounds</h4>
               <div class="round-options">
                 <button class="setup-btn active" data-rounds="10">10</button>
                 <button class="setup-btn" data-rounds="20">20</button>
                 <button class="setup-btn" data-rounds="0">Endless</button>
-              </div>
-            </div>
-            
-            <div class="settings-group">
-              <h4>Počet kociek (Dice Count)</h4>
-              <div class="setup-dice-options">
-                <button class="setup-btn active" data-dice="1">1</button>
-                <button class="setup-btn" data-dice="2">2</button>
-                <button class="setup-btn" data-dice="3">3</button>
-                <button class="setup-btn" data-dice="4">4</button>
               </div>
             </div>
           </div>

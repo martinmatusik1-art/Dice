@@ -80,7 +80,7 @@ class GameMode {
     
     // Sync setup dice count with current app settings
     const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
-    this.setSetupDiceCount(savedDice);
+    this.diceCount = savedDice;
 
     // Make sure normal dice settings slider does not interfere during gamemode
     physics.resetToCenter();
@@ -165,16 +165,7 @@ class GameMode {
       });
     });
 
-    // Dice selector buttons
-    const diceBtns = document.querySelectorAll('.setup-dice-options .setup-btn');
-    diceBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        audio.playClick();
-        diceBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.diceCount = parseInt(btn.getAttribute('data-dice') || '1', 10);
-      });
-    });
+
 
     // Time Limit Inputs
     const limitMediumInput = document.getElementById('limit-medium-input') as HTMLInputElement;
@@ -225,22 +216,15 @@ class GameMode {
     });
   }
 
-  private setSetupDiceCount(count: number) {
-    this.diceCount = count;
-    const diceBtns = document.querySelectorAll('.setup-dice-options .setup-btn');
-    diceBtns.forEach(btn => {
-      const val = parseInt(btn.getAttribute('data-dice') || '1', 10);
-      if (val === count) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-  }
+
 
   private startGame() {
     this.inGamePlay = true;
     this.currentRound = 1;
+
+    // Sync setup dice count with current app settings
+    const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
+    this.diceCount = savedDice;
 
     // Reset scores & statistics
     this.soloScore = 0;

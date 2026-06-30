@@ -10,6 +10,7 @@ class AudioEngine {
   private stretchGain: GainNode | null = null;
   public currentSurface: string = 'classic';
   public hapticsEnabled: boolean = true;
+  private buffers: Record<string, AudioBuffer> = {};
 
   constructor() {
     // AudioContext is initialized on first user interaction
@@ -18,18 +19,98 @@ class AudioEngine {
   private init() {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.preloadAll();
     }
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
   }
 
-  // Plays a procedural plastic thud/cink for dice collisions
+  private preloadBuffer(name: string, url: string) {
+    if (this.buffers[name]) return;
+    if (!this.ctx) return;
+    
+    fetch(url)
+      .then(response => response.arrayBuffer())
+      .then(arrayBuffer => this.ctx!.decodeAudioData(arrayBuffer))
+      .then(audioBuffer => {
+        this.buffers[name] = audioBuffer;
+      })
+      .catch(err => console.error('Failed to load audio buffer', url, err));
+  }
+
+  private preloadAll() {
+    const sounds = {
+      concrete: '/dice sound 1.mp3',
+      wood: '/dice sound wood.mp3',
+      mramor: '/dice sound mramor.mp3',
+      corten: '/dice sound corten.mp3',
+      load: '/dice sound load.mp3'
+    };
+    
+    for (const [key, url] of Object.entries(sounds)) {
+      this.preloadBuffer(key, url);
+    }
+  }
+
+  private playBuffer(name: string, volumeLevel = 1.0, pitchMod = 1.0) {
+    if (!this.enabled || !this.ctx) return;
+    const buffer = this.buffers[name];
+    if (!buffer) return;
+
+    const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
+    source.playbackRate.value = pitchMod;
+
+    const gainNode = this.ctx.createGain();
+    gainNode.gain.setValueAtTime(volumeLevel, this.ctx.currentTime);
+
+    source.connect(gainNode);
+    gainNode.connect(this.ctx.destination);
+    
+    source.start(0);
+    return source;
+  }
+
+  public playRollLoad() {
+    if (!this.enabled) return;
+    this.init();
+    this.playBuffer('load', 0.6, 1.0);
+  }
+
+  // Plays a procedural plastic thud/cink or preloaded MP3 for dice collisions
   public playThud(intensity: number) {
     if (!this.enabled || intensity < 0.1) return;
     this.init();
     if (!this.ctx) return;
 
+    // Haptic feedback for collision
+    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(Math.max(5, Math.min(intensity * 1.5, 20))); // Short bump based on collision force
+    }
+
+    const volume = Math.min(intensity * 0.15, 0.8);
+    const pitch = 0.95 + Math.random() * 0.1; // Add subtle pitch variance for realism
+
+    // Check preloaded buffers
+    if (this.currentSurface === 'concrete' && this.buffers['concrete']) {
+      this.playBuffer('concrete', volume, pitch);
+      return;
+    }
+    if (this.currentSurface === 'wood' && this.buffers['wood']) {
+      this.playBuffer('wood', volume, pitch);
+      return;
+    }
+    if (this.currentSurface === 'mramor' && this.buffers['mramor']) {
+      this.playBuffer('mramor', volume, pitch);
+      return;
+    }
+    if (this.currentSurface === 'corten' && this.buffers['corten']) {
+      this.playBuffer('corten', volume, pitch);
+      return;
+    }
+
+    // Fallback: procedural synthesis thud
     let startFreq = 180, endFreq = 50;
     let clickStart = 800, clickEnd = 400;
     let volMod = 1.0;
@@ -60,12 +141,7 @@ class AudioEngine {
         break;
     }
 
-    // Haptic feedback for collision
-    if (this.hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(Math.max(5, Math.min(intensity * 1.5, 20))); // Short bump based on collision force
-    }
-
-    const volume = Math.min(intensity * 0.15 * volMod, 0.8);
+    const volumeLevel = Math.min(intensity * 0.15 * volMod, 0.8);
     const duration = (0.15 + Math.min(intensity * 0.05, 0.25)) * durationMod;
     const now = this.ctx.currentTime;
 
@@ -78,7 +154,7 @@ class AudioEngine {
     osc.frequency.setValueAtTime(startFreq, now);
     osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
 
-    gainNode.gain.setValueAtTime(volume, now);
+    gainNode.gain.setValueAtTime(volumeLevel, now);
     gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
     osc.connect(gainNode);
@@ -95,7 +171,7 @@ class AudioEngine {
     clickOsc.frequency.setValueAtTime(clickStart, now);
     clickOsc.frequency.linearRampToValueAtTime(clickEnd, now + 0.02);
 
-    clickGain.gain.setValueAtTime(volume * 0.6, now);
+    clickGain.gain.setValueAtTime(volumeLevel * 0.6, now);
     clickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.02);
 
     clickOsc.connect(clickGain);

@@ -373,6 +373,7 @@ class GameMode {
 
   private throwDicePhysics() {
     audio.playClick();
+    audio.playRollLoad();
     const scale = 0.4;
     const spacing = 2.0 * scale;
 

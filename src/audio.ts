@@ -43,9 +43,15 @@ class AudioEngine {
         volMod = 1.2; durationMod = 0.8;
         break;
       case 'concrete':
+      case 'mramor':
         startFreq = 600; endFreq = 200;
         clickStart = 2500; clickEnd = 1000;
         volMod = 1.4; durationMod = 0.5; // Ostrý, krátky a hlasnejší náraz
+        break;
+      case 'corten':
+        startFreq = 450; endFreq = 150;
+        clickStart = 3500; clickEnd = 1200; // Bright metal click
+        volMod = 1.3; durationMod = 0.7;
         break;
       case 'fleece':
         startFreq = 120; endFreq = 40;

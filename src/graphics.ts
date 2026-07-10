@@ -429,6 +429,15 @@ class GraphicsEngine {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  public setTrayOpacity(opacity: number) {
+    if (this.trayFloor && this.trayFloor.material) {
+      const mat = this.trayFloor.material as THREE.MeshStandardMaterial;
+      mat.transparent = opacity < 1;
+      mat.opacity = opacity;
+      mat.needsUpdate = true;
+    }
+  }
+
   public updateBackgroundTheme(themeKey: string) {
     const themes: Record<string, { css: string, floor: number, roughness: number, metalness: number, isImage?: boolean }> = {
       classic: { css: 'radial-gradient(circle at center, #1b2030 0%, #080a10 100%)', floor: 0x11131a, roughness: 0.6, metalness: 0.25 },

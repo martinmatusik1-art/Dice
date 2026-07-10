@@ -1643,6 +1643,15 @@ input:checked + .slider:before {
   pointer-events: none !important;
 }
 
+#app-container.in-game #game-mode-overlay {
+  z-index: auto;
+}
+
+#app-container.in-game #three-canvas {
+  z-index: 10;
+  pointer-events: none;
+}
+
 #game-mode-overlay {
   position: absolute;
   top: 0;
@@ -1803,7 +1812,8 @@ input:checked + .slider:before {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 10;
+  z-index: 15;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .hud-item {
@@ -1845,7 +1855,8 @@ input:checked + .slider:before {
   height: 6px;
   background: rgba(255, 255, 255, 0.05);
   position: relative;
-  z-index: 9;
+  z-index: 15;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .timer-bar {
@@ -1865,7 +1876,7 @@ input:checked + .slider:before {
   flex-direction: row;
   justify-content: center;
   gap: 12px;
-  z-index: 10;
+  z-index: 20;
   touch-action: none;
 }
 
@@ -1962,6 +1973,7 @@ input:checked + .slider:before {
   align-items: center;
   z-index: 100;
   pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .versus-divider-line span {
@@ -2084,6 +2096,26 @@ input:checked + .slider:before {
 .stats-footer {
   display: flex;
   flex-direction: column;
+}
+
+/* HUD on Floor styling (for game mode when dice settle) */
+.game-hud.on-floor {
+  z-index: 5 !important;
+  opacity: 0.25 !important;
+  background: rgba(18, 22, 33, 0.05) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.01) !important;
+}
+
+.timer-container.on-floor {
+  z-index: 5 !important;
+  opacity: 0.25 !important;
+}
+
+.versus-divider-line.on-floor {
+  z-index: 5 !important;
+  opacity: 0.25 !important;
 }
 
 

@@ -115,6 +115,10 @@ class GameMode {
     physics.setDiceCount(savedDice);
     graphics.setDiceCount(savedDice, graphics.currentThemeKey);
     physics.resetToCenter();
+
+    // Reset HUD and tray states
+    graphics.setTrayOpacity(1.0);
+    this.setHudOnFloor(false);
   }
 
   private showScreen(screen: 'setup' | 'play' | 'stats') {
@@ -327,6 +331,10 @@ class GameMode {
     this.p1AnswerChoice = null;
     this.p2AnswerChoice = null;
 
+    // Restore HUD to top and make tray opaque
+    this.setHudOnFloor(false);
+    graphics.setTrayOpacity(1.0);
+
     // Hide options UI initially during rolling
     const soloOptions = document.getElementById('solo-options');
     const p1Options = document.getElementById('p1-options');
@@ -412,6 +420,10 @@ class GameMode {
     this.correctSum = faces.reduce((a, b) => a + b, 0);
     this.generateOptions();
     this.revealOptions();
+
+    // Move HUD to floor and make tray semi-transparent
+    this.setHudOnFloor(true);
+    graphics.setTrayOpacity(0.35);
   }
 
   private generateOptions() {
@@ -750,6 +762,10 @@ class GameMode {
     this.exitFullscreen();
     this.appContainer?.classList.remove('in-game');
 
+    // Reset HUD and tray states
+    graphics.setTrayOpacity(1.0);
+    this.setHudOnFloor(false);
+
     // Hide normal views, show stats
     this.showScreen('stats');
 
@@ -844,6 +860,10 @@ class GameMode {
 
     // Reset physics positions
     physics.resetToCenter();
+
+    // Reset HUD and tray states
+    graphics.setTrayOpacity(1.0);
+    this.setHudOnFloor(false);
   }
 
   // Full Screen API Helpers
@@ -955,6 +975,17 @@ class GameMode {
         toast.remove();
       }, 500);
     }, 3000);
+  }
+
+  private setHudOnFloor(onFloor: boolean) {
+    const huds = document.querySelectorAll('.game-hud, .timer-container, .versus-divider-line');
+    huds.forEach(el => {
+      if (onFloor) {
+        el.classList.add('on-floor');
+      } else {
+        el.classList.remove('on-floor');
+      }
+    });
   }
 }
 

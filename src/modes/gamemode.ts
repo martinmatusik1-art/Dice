@@ -427,8 +427,10 @@ class GameMode {
   }
 
   private generateOptions() {
+    const match = (graphics.currentDiceType || 'd6').match(/^d(\d+)$/i);
+    const maxFaceVal = match ? parseInt(match[1], 10) : 6;
     const minSum = this.diceCount;
-    const maxSum = this.diceCount * 6;
+    const maxSum = this.diceCount * maxFaceVal;
     const incorrects = new Set<number>();
     
     // Realistic close offsets

@@ -108,6 +108,14 @@ class App {
       activeBgBtn.classList.add('active');
     }
 
+    // Load saved dice type
+    const savedDiceType = localStorage.getItem('dice_app_dice_type') || 'd6';
+    graphics.currentDiceType = savedDiceType;
+    const diceTypeSelect = document.getElementById('dice-type-select') as HTMLSelectElement;
+    if (diceTypeSelect) {
+      diceTypeSelect.value = savedDiceType;
+    }
+
     // 3. Initialize herné módy
     const triggerRollState = () => {
       if (this.isRolling) return;
@@ -115,6 +123,12 @@ class App {
       if (this.settleTimeout) {
         clearTimeout(this.settleTimeout);
         this.settleTimeout = null;
+      }
+
+      // Randomize dice face values if not standard D6!
+      if (graphics.currentDiceType !== 'd6') {
+        graphics.generateAllDiceFaceValues(graphics.diceMeshes.length);
+        graphics.setDiceCount(graphics.diceMeshes.length, graphics.currentThemeKey);
       }
 
       // Increment throws
@@ -604,6 +618,19 @@ class App {
       audio.playClick();
     });
 
+    // Dice Type Selector
+    const diceTypeSelectElement = document.getElementById('dice-type-select') as HTMLSelectElement;
+    diceTypeSelectElement?.addEventListener('change', () => {
+      audio.playClick();
+      const selectedType = diceTypeSelectElement.value;
+      localStorage.setItem('dice_app_dice_type', selectedType);
+      graphics.currentDiceType = selectedType;
+      
+      // Regenerate faces and update graphics
+      graphics.generateAllDiceFaceValues(graphics.diceMeshes.length);
+      graphics.setDiceCount(graphics.diceMeshes.length, graphics.currentThemeKey);
+    });
+
     // Sound toggle buttons (Header sound toggle only, checkboxes removed)
     const headerSoundBtn = document.getElementById('sound-toggle-btn');
  
@@ -813,16 +840,19 @@ class App {
   };
 
   private showResults(faces: number[]) {
+    // Map physical faces to actual face values based on the current dice type
+    const actualFaces = graphics.getActualFaceValues(faces);
+
     if (this.currentMode === 'gamemode') {
-      gamemode.handleDiceSettled(faces);
+      gamemode.handleDiceSettled(actualFaces);
       return;
     }
     if (this.resultValue && this.resultPanel) {
-      const sum = faces.reduce((a, b) => a + b, 0);
-      if (faces.length === 1) {
-        this.resultValue.innerText = faces[0].toString();
+      const sum = actualFaces.reduce((a, b) => a + b, 0);
+      if (actualFaces.length === 1) {
+        this.resultValue.innerText = actualFaces[0].toString();
       } else {
-        this.resultValue.innerText = `${faces.join(' + ')} = ${sum}`;
+        this.resultValue.innerText = `${actualFaces.join(' + ')} = ${sum}`;
       }
       this.resultPanel.classList.remove('hidden');
       
@@ -837,7 +867,7 @@ class App {
       const timeStr = now.toTimeString().split(' ')[0];
       const newItem: RollHistoryItem = {
         time: timeStr,
-        diceValues: [...faces],
+        diceValues: [...actualFaces],
         sum: sum
       };
 

@@ -38,6 +38,8 @@ class GraphicsEngine {
   private diceMaterials: THREE.MeshStandardMaterial[][] = [];
   private diceGeometry: THREE.BufferGeometry | null = null;
   public currentThemeKey: string = 'classic';
+  public currentDiceType: string = 'd6';
+  public diceFaceValues: number[][] = [];
   
   private trayFloor!: THREE.Mesh;
   private particles: Array<{
@@ -154,7 +156,7 @@ class GraphicsEngine {
     return geometry;
   }
 
-  // Generates canvas texture representing the pips on a face
+  // Generates canvas texture representing the pips or numbers on a face
   private createDiceFaceTexture(value: number, theme: DiceTheme): THREE.CanvasTexture {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
@@ -174,7 +176,7 @@ class GraphicsEngine {
     ctx.lineWidth = 4;
     ctx.strokeRect(14, 14, 228, 228);
 
-    // Pip styling
+    // Styling
     ctx.fillStyle = theme.pips;
     
     if (theme.emissive) {
@@ -186,51 +188,59 @@ class GraphicsEngine {
       ctx.shadowOffsetY = 3;
     }
 
-    const r = 23; // pip radius
-    const drawPip = (x: number, y: number) => {
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-    };
+    if (this.currentDiceType === 'd6') {
+      const r = 23; // pip radius
+      const drawPip = (x: number, y: number) => {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      };
 
-    const center = 128;
-    const low = 68;
-    const high = 188;
+      const center = 128;
+      const low = 68;
+      const high = 188;
 
-    switch (value) {
-      case 1:
-        drawPip(center, center);
-        break;
-      case 2:
-        drawPip(low, low);
-        drawPip(high, high);
-        break;
-      case 3:
-        drawPip(low, low);
-        drawPip(center, center);
-        drawPip(high, high);
-        break;
-      case 4:
-        drawPip(low, low);
-        drawPip(high, low);
-        drawPip(low, high);
-        drawPip(high, high);
-        break;
-      case 5:
-        drawPip(low, low);
-        drawPip(high, low);
-        drawPip(center, center);
-        drawPip(low, high);
-        drawPip(high, high);
-        break;
-      case 6:
-        drawPip(low, low);
-        drawPip(high, low);
-        drawPip(low, center);
-        drawPip(high, center);
-        drawPip(low, high);
-        drawPip(high, high);
-        break;
+      switch (value) {
+        case 1:
+          drawPip(center, center);
+          break;
+        case 2:
+          drawPip(low, low);
+          drawPip(high, high);
+          break;
+        case 3:
+          drawPip(low, low);
+          drawPip(center, center);
+          drawPip(high, high);
+          break;
+        case 4:
+          drawPip(low, low);
+          drawPip(high, low);
+          drawPip(low, high);
+          drawPip(high, high);
+          break;
+        case 5:
+          drawPip(low, low);
+          drawPip(high, low);
+          drawPip(center, center);
+          drawPip(low, high);
+          drawPip(high, high);
+          break;
+        case 6:
+          drawPip(low, low);
+          drawPip(high, low);
+          drawPip(low, center);
+          drawPip(high, center);
+          drawPip(low, high);
+          drawPip(high, high);
+          break;
+      }
+    } else {
+      // Draw number as text for custom dice types
+      ctx.font = 'bold 95px "Outfit", -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(value.toString(), 128, 128);
     }
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -238,7 +248,11 @@ class GraphicsEngine {
   }
 
   // Set active count of visual 3D dice in the scene
-  public setDiceCount(count: number, themeKey: string) {
+  public setDiceCount(count: number, themeKey: string, diceType?: string) {
+    if (diceType) {
+      this.currentDiceType = diceType;
+    }
+
     // 1. Clean up existing meshes
     this.diceMeshes.forEach(mesh => {
       this.scene.remove(mesh);
@@ -259,12 +273,17 @@ class GraphicsEngine {
       this.diceGeometry = this.createRoundedBoxGeometry(2.0, 2.0, 2.0, 0.35, 12);
     }
 
-    const faces = [1, 6, 2, 5, 3, 4];
+    // Initialize/regenerate face values if count or type changed
+    if (this.diceFaceValues.length !== count) {
+      this.generateAllDiceFaceValues(count);
+    }
+
     const scale = 0.4;
 
     for (let i = 0; i < count; i++) {
+      const currentFaces = this.diceFaceValues[i] || [1, 6, 2, 5, 3, 4];
       // Generate materials for this specific die
-      const materials = faces.map(val => {
+      const materials = currentFaces.map(val => {
         const texture = this.createDiceFaceTexture(val, theme);
         
         const matParams: THREE.MeshStandardMaterialParameters = {
@@ -299,6 +318,60 @@ class GraphicsEngine {
       this.scene.add(mesh);
       this.diceMeshes.push(mesh);
     }
+  }
+
+  // Helpers to generate face values for custom dice types
+  public generateAllDiceFaceValues(count: number) {
+    this.diceFaceValues = [];
+    for (let i = 0; i < count; i++) {
+      this.diceFaceValues.push(this.generateDiceFaces(this.currentDiceType));
+    }
+  }
+
+  private generateDiceFaces(type: string): number[] {
+    const match = type.match(/^d(\d+)$/i);
+    if (!match) return [1, 6, 2, 5, 3, 4];
+    const n = parseInt(match[1], 10);
+    if (n === 6) return [1, 6, 2, 5, 3, 4];
+
+    if (n < 6) {
+      // Repeat numbers to fill 6 faces
+      const result: number[] = [];
+      for (let i = 0; i < 6; i++) {
+        result.push((i % n) + 1);
+      }
+      result.sort(() => Math.random() - 0.5);
+      return result;
+    } else {
+      // Pick 6 unique random numbers from 1 to N
+      const pool: number[] = [];
+      for (let i = 1; i <= n; i++) {
+        pool.push(i);
+      }
+      pool.sort(() => Math.random() - 0.5);
+      return pool.slice(0, 6);
+    }
+  }
+
+  // Maps physical face (1-6) to actual mapped face value
+  public getActualFaceValue(dieIndex: number, physicalFace: number): number {
+    const faceMapping: Record<number, number> = {
+      1: 0,
+      6: 1,
+      2: 2,
+      5: 3,
+      3: 4,
+      4: 5
+    };
+    const index = faceMapping[physicalFace];
+    if (index !== undefined && this.diceFaceValues[dieIndex]) {
+      return this.diceFaceValues[dieIndex][index];
+    }
+    return physicalFace;
+  }
+
+  public getActualFaceValues(physicalFaces: number[]): number[] {
+    return physicalFaces.map((phys, idx) => this.getActualFaceValue(idx, phys));
   }
 
   // Backwards-compatibility wrappers

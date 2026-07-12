@@ -116,6 +116,9 @@ class App {
       diceTypeSelect.value = savedDiceType;
     }
 
+    // Update settings menu previews
+    this.updateSettingsMenuPreviews();
+
     // 3. Initialize herné módy
     const triggerRollState = () => {
       if (this.isRolling) return;
@@ -137,6 +140,7 @@ class App {
       this.isRolling = true;
       localStorage.setItem('dice_app_roll_count', rollCount.toString());
       if (rollCountDisplay) rollCountDisplay.innerText = rollCount.toString();
+      this.updateSettingsMenuPreviews();
     };
 
     standardMode.init(triggerRollState);
@@ -458,7 +462,7 @@ class App {
 
     userProfileBtn?.addEventListener('click', () => {
       audio.playClick();
-      settingsSidebar?.classList.add('active');
+      document.getElementById('modal-setting-username')?.classList.remove('hidden');
     });
 
     if (usernameInput) usernameInput.value = this.username;
@@ -469,6 +473,7 @@ class App {
       localStorage.setItem('dice_app_username', this.username);
       if (userNameDisplay) userNameDisplay.innerText = this.username;
       usernameInput.value = this.username; // Update input in case it was trimmed
+      this.updateSettingsMenuPreviews();
     });
 
     // Reset Roll Counter
@@ -479,6 +484,7 @@ class App {
       audio.playClick();
       localStorage.setItem('dice_app_roll_count', '0');
       if (rollCountDisplayUI) rollCountDisplayUI.innerText = '0';
+      this.updateSettingsMenuPreviews();
     });
 
     // Mode switcher buttons
@@ -537,12 +543,51 @@ class App {
 
     settingsBtn?.addEventListener('click', () => {
       audio.playClick();
+      this.updateSettingsMenuPreviews();
       settingsSidebar?.classList.toggle('active');
     });
 
     closeSettingsBtn?.addEventListener('click', () => {
       audio.playClick();
       settingsSidebar?.classList.remove('active');
+    });
+
+    // Bind settings menu items to open corresponding modals
+    const openModal = (id: string) => {
+      audio.playClick();
+      document.getElementById(id)?.classList.remove('hidden');
+    };
+
+    const closeModal = (id: string) => {
+      audio.playClick();
+      document.getElementById(id)?.classList.add('hidden');
+    };
+
+    document.getElementById('menu-item-username')?.addEventListener('click', () => openModal('modal-setting-username'));
+    document.getElementById('menu-item-dice-config')?.addEventListener('click', () => openModal('modal-setting-dice-config'));
+    document.getElementById('menu-item-theme')?.addEventListener('click', () => openModal('modal-setting-theme'));
+    document.getElementById('menu-item-background')?.addEventListener('click', () => openModal('modal-setting-background'));
+    document.getElementById('menu-item-feedback')?.addEventListener('click', () => openModal('modal-setting-feedback'));
+    document.getElementById('menu-item-stats')?.addEventListener('click', () => openModal('modal-setting-stats'));
+
+    // Bind close buttons in modals
+    document.querySelectorAll('.modal-close-btn, .close-modal-action').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalId = btn.getAttribute('data-modal');
+        if (modalId) {
+          closeModal(modalId);
+        }
+      });
+    });
+
+    // Close on overlay pointerdown click outside modal-content
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('pointerdown', (e) => {
+        if (e.target === overlay) {
+          audio.playClick();
+          overlay.classList.add('hidden');
+        }
+      });
     });
 
     // Close Game Mode Setup Button (X)
@@ -616,6 +661,7 @@ class App {
       }
 
       audio.playClick();
+      this.updateSettingsMenuPreviews();
     });
 
     // Dice Type Selector
@@ -629,6 +675,7 @@ class App {
       // Regenerate faces and update graphics
       graphics.generateAllDiceFaceValues(graphics.diceMeshes.length);
       graphics.setDiceCount(graphics.diceMeshes.length, graphics.currentThemeKey);
+      this.updateSettingsMenuPreviews();
     });
 
     // Sound toggle buttons (Header sound toggle only, checkboxes removed)
@@ -671,6 +718,7 @@ class App {
         // UI toggle active
         colorButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        this.updateSettingsMenuPreviews();
       });
     });
 
@@ -697,6 +745,7 @@ class App {
         // UI toggle active
         bgButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        this.updateSettingsMenuPreviews();
       });
     });
 
@@ -711,6 +760,7 @@ class App {
       audio.playClick();
       audio.hapticsEnabled = (e.target as HTMLInputElement).checked;
       localStorage.setItem('dice_app_haptics', audio.hapticsEnabled.toString());
+      this.updateSettingsMenuPreviews();
     });
 
     // Handle Window Resize
@@ -876,6 +926,69 @@ class App {
         this.rollHistory = this.rollHistory.slice(0, 10);
       }
       localStorage.setItem('dice_app_roll_history', JSON.stringify(this.rollHistory));
+    }
+  }
+
+  private updateSettingsMenuPreviews() {
+    // 1. Username
+    const menuUsernameDesc = document.getElementById('menu-username-desc');
+    if (menuUsernameDesc) {
+      menuUsernameDesc.innerText = this.username;
+    }
+
+    // 2. Dice Config
+    const menuDiceDesc = document.getElementById('menu-dice-desc');
+    if (menuDiceDesc) {
+      const diceCount = localStorage.getItem('dice_app_dice_count') || '1';
+      const diceType = (localStorage.getItem('dice_app_dice_type') || 'd6').toUpperCase();
+      menuDiceDesc.innerText = `${diceType} / ${diceCount} ks`;
+    }
+
+    // 3. Dice Theme
+    const menuThemeDesc = document.getElementById('menu-theme-desc');
+    if (menuThemeDesc) {
+      const activeTheme = localStorage.getItem('dice_app_theme') || 'classic';
+      const themeLabelMap: Record<string, string> = {
+        classic: 'Classic White',
+        onyx: 'Onyx Black',
+        neon: 'Neon Cyan',
+        emerald: 'Emerald Green',
+        monochrome: 'Monochrome',
+        sapphire: 'Ruby Red'
+      };
+      menuThemeDesc.innerText = themeLabelMap[activeTheme] || 'Classic White';
+    }
+
+    // 4. Background
+    const menuBgDesc = document.getElementById('menu-bg-desc');
+    if (menuBgDesc) {
+      const activeBg = localStorage.getItem('dice_app_bg_theme') || 'classic';
+      const bgLabelMap: Record<string, string> = {
+        classic: 'Midnight Blue',
+        concrete: 'Concrete',
+        mahogany: 'Dark Mahogany',
+        wood: 'Wood Texture',
+        mramor: 'Marble Texture',
+        corten: 'Corten Metal'
+      };
+      menuBgDesc.innerText = bgLabelMap[activeBg] || 'Midnight Blue';
+    }
+
+    // 5. Haptics
+    const menuHapticsDesc = document.getElementById('menu-haptics-desc');
+    if (menuHapticsDesc) {
+      menuHapticsDesc.innerText = audio.hapticsEnabled ? 'Zapnuté' : 'Vypnuté';
+    }
+
+    // 6. Stats
+    const menuStatsDesc = document.getElementById('menu-stats-desc');
+    const statsTotalRolls = document.getElementById('stats-total-rolls');
+    const totalRolls = localStorage.getItem('dice_app_roll_count') || '0';
+    if (menuStatsDesc) {
+      menuStatsDesc.innerText = `Celkovo hodené: ${totalRolls}-krát`;
+    }
+    if (statsTotalRolls) {
+      statsTotalRolls.innerText = `${totalRolls}-krát`;
     }
   }
 }

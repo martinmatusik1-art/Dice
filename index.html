@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.19</small></span>
+          <span>3D Dice <small class="ver-text">v1.20</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -317,149 +317,82 @@
           <h3>Settings</h3>
           <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="settings-group">
-          <h4>Username</h4>
-          <div class="username-edit-container">
-            <input type="text" id="username-input" placeholder="Enter name" maxlength="15">
-            <button id="username-save-btn" class="username-save-btn">Save</button>
-          </div>
-        </div>
-        <div class="settings-group">
-          <h4>Dice Theme</h4>
-          <div class="color-options">
-            <button class="color-btn active" data-theme="classic" title="Classic White">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#d32f2f" />
-                <circle cx="75" cy="25" r="8" fill="#d32f2f" />
-                <circle cx="50" cy="50" r="8" fill="#d32f2f" />
-                <circle cx="25" cy="75" r="8" fill="#d32f2f" />
-                <circle cx="75" cy="75" r="8" fill="#d32f2f" />
-              </svg>
-            </button>
-            <button class="color-btn" data-theme="onyx" title="Onyx Black">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#151518" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#e5c158" />
-                <circle cx="75" cy="25" r="8" fill="#e5c158" />
-                <circle cx="50" cy="50" r="8" fill="#e5c158" />
-                <circle cx="25" cy="75" r="8" fill="#e5c158" />
-                <circle cx="75" cy="75" r="8" fill="#e5c158" />
-              </svg>
-            </button>
-            <button class="color-btn" data-theme="neon" title="Neon Cyan">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#0a0b10" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#00f0ff" />
-                <circle cx="75" cy="25" r="8" fill="#00f0ff" />
-                <circle cx="50" cy="50" r="8" fill="#00f0ff" />
-                <circle cx="25" cy="75" r="8" fill="#00f0ff" />
-                <circle cx="75" cy="75" r="8" fill="#00f0ff" />
-              </svg>
-            </button>
-            <button class="color-btn" data-theme="emerald" title="Emerald Green">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#023812" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#ffd700" />
-                <circle cx="75" cy="25" r="8" fill="#ffd700" />
-                <circle cx="50" cy="50" r="8" fill="#ffd700" />
-                <circle cx="25" cy="75" r="8" fill="#ffd700" />
-                <circle cx="75" cy="75" r="8" fill="#ffd700" />
-              </svg>
-            </button>
-            <button class="color-btn" data-theme="monochrome" title="Classic Black & White">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#111111" />
-                <circle cx="75" cy="25" r="8" fill="#111111" />
-                <circle cx="50" cy="50" r="8" fill="#111111" />
-                <circle cx="25" cy="75" r="8" fill="#111111" />
-                <circle cx="75" cy="75" r="8" fill="#111111" />
-              </svg>
-            </button>
-            <button class="color-btn" data-theme="sapphire" title="Ruby Red">
-              <svg viewBox="0 0 100 100" class="die-preview-svg">
-                <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#d62828" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
-                <circle cx="25" cy="25" r="8" fill="#ffffff" />
-                <circle cx="75" cy="25" r="8" fill="#ffffff" />
-                <circle cx="50" cy="50" r="8" fill="#ffffff" />
-                <circle cx="25" cy="75" r="8" fill="#ffffff" />
-                <circle cx="75" cy="75" r="8" fill="#ffffff" />
-              </svg>
-            </button>
-          </div>
-          <p id="premium-themes-note" class="warning-text"><i class="fa-solid fa-lock"></i> Themes are only available in Premium</p>
-        </div>
+        <div class="settings-menu">
+          <button class="settings-menu-item" id="menu-item-username">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-circle-user"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Meno používateľa</span>
+                <span class="menu-item-desc" id="menu-username-desc">Guest</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          
+          <button class="settings-menu-item" id="menu-item-dice-config">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-dice"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Kocky (Typ a počet)</span>
+                <span class="menu-item-desc" id="menu-dice-desc">D6 / 1 ks</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
 
-        <div class="settings-group">
-          <h4>Number of Dice</h4>
-          <div class="slider-setting">
-            <input type="range" id="dice-count-slider" min="1" max="6" value="1" step="1">
-            <span id="dice-count-display-val">1</span>
-          </div>
-        </div>
+          <button class="settings-menu-item" id="menu-item-theme">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-palette"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Vzhľad kociek</span>
+                <span class="menu-item-desc" id="menu-theme-desc">Classic White</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
 
-        <div class="settings-group">
-          <h4>Dice Type</h4>
-          <div class="select-setting">
-            <select id="dice-type-select" style="width: 100%; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 10px 14px; color: #fff; font-family: var(--font-family); font-size: 0.9rem; font-weight: 600; outline: none; cursor: pointer; transition: all 0.2s ease;">
-              <option value="d6" selected>D6 (Standard)</option>
-              <option value="d2">D2 (Coin)</option>
-              <option value="d3">D3</option>
-              <option value="d4">D4</option>
-              <option value="d5">D5</option>
-              <option value="d7">D7</option>
-              <option value="d8">D8</option>
-              <option value="d10">D10</option>
-              <option value="d12">D12</option>
-              <option value="d14">D14</option>
-              <option value="d16">D16</option>
-              <option value="d20">D20</option>
-              <option value="d24">D24</option>
-            </select>
-          </div>
-        </div>
+          <button class="settings-menu-item" id="menu-item-background">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-table"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Pozadie stola</span>
+                <span class="menu-item-desc" id="menu-bg-desc">Midnight Blue</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
 
-        <div class="settings-group">
-          <h4>Table Background</h4>
-          <div class="bg-options">
-            <button class="bg-btn active" data-bg="classic" style="background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);" title="Midnight Blue"></button>
-            <button class="bg-btn" data-bg="concrete" style="background: radial-gradient(circle at center, #787c80 0%, #303336 100%);" title="Concrete"></button>
-            <button class="bg-btn" data-bg="mahogany" style="background: linear-gradient(45deg, #3f110c 0%, #170402 100%);" title="Dark Mahogany"></button>
-            <button class="bg-btn" data-bg="wood" style="background: url('/wood.jpg') center/cover no-repeat;" title="Wood Texture"></button>
-            <button class="bg-btn" data-bg="mramor" style="background: url('/mramor.jpg') center/cover no-repeat;" title="Marble Texture"></button>
-            <button class="bg-btn" data-bg="corten" style="background: url('/corten.jpg') center/cover no-repeat;" title="Corten Metal"></button>
-          </div>
-          <p id="premium-bg-note" class="warning-text"><i class="fa-solid fa-lock"></i> Backgrounds are only available in Premium</p>
-        </div>
+          <button class="settings-menu-item" id="menu-item-feedback">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-mobile-vibration"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Haptická odozva</span>
+                <span class="menu-item-desc" id="menu-haptics-desc">Zapnuté</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
 
-        <div class="settings-group">
-          <h4>Device Feedback</h4>
-          <div class="toggle-setting">
-            <span>Haptic Vibrations</span>
-            <label class="switch">
-              <input type="checkbox" id="haptics-toggle" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <h4>Statistics</h4>
-          <button id="reset-rolls-btn" class="reset-btn">
-            <i class="fa-solid fa-rotate-left"></i> Reset Roll Counter
+          <button class="settings-menu-item" id="menu-item-stats">
+            <div class="menu-item-left">
+              <i class="fa-solid fa-chart-simple"></i>
+              <div class="menu-item-text">
+                <span class="menu-item-title">Štatistiky hádzania</span>
+                <span class="menu-item-desc" id="menu-stats-desc">Celkovo hodené: 0-krát</span>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
 
-        <div class="settings-group premium-ad-free">
-          <h4>Premium Features</h4>
-          <button id="sidebar-buy-premium" class="premium-buy-btn">
-            <i class="fa-solid fa-crown"></i> Activate Premium
+        <div class="settings-premium-box" style="margin-top: 15px; margin-bottom: 20px;">
+          <button id="sidebar-buy-premium" class="premium-buy-btn" style="height: 48px; border-radius: 12px; font-size: 0.95rem;">
+            <i class="fa-solid fa-crown"></i> Aktivovať Premium
           </button>
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.19 </span>
+          <span>Version 1.20 </span>
         </div>
       </div>
 
@@ -609,6 +542,222 @@
           <i class="fa-solid fa-mobile-screen rotate-phone-icon"></i>
           <h2>Please rotate to portrait</h2>
           <p>Please rotate your phone to portrait mode for optimal gameplay.</p>
+        </div>
+      </div>
+
+      <!-- Modal: Username -->
+      <div id="modal-setting-username" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-circle-user"></i>
+            <span>Užívateľské nastavenia</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-username" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="product-info exit-info" style="margin-bottom: 15px;">
+            <h2>Meno používateľa</h2>
+            <p>Zadajte meno, ktoré sa bude zobrazovať v štatistikách a v hre.</p>
+          </div>
+          <div class="username-edit-container" style="margin-bottom: 20px;">
+            <input type="text" id="username-input" placeholder="Zadajte meno" maxlength="15" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; color: #fff; font-family: var(--font-family); font-size: 1rem; outline: none;">
+          </div>
+          <div class="modal-actions">
+            <button id="username-save-btn" class="modal-btn confirm close-modal-action" data-modal="modal-setting-username">Uložiť</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Dice Config -->
+      <div id="modal-setting-dice-config" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-dice"></i>
+            <span>Nastavenia hádzania</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-dice-config" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="settings-group" style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 15px; margin-bottom: 15px;">
+            <h4>Number of Dice</h4>
+            <div class="slider-setting" style="margin-top: 10px;">
+              <input type="range" id="dice-count-slider" min="1" max="6" value="1" step="1">
+              <span id="dice-count-display-val">1</span>
+            </div>
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <h4>Dice Type</h4>
+            <div class="select-setting" style="margin-top: 10px;">
+              <select id="dice-type-select" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; color: #fff; font-family: var(--font-family); font-size: 1rem; font-weight: 600; outline: none; cursor: pointer;">
+                <option value="d6" selected>D6 (Standard)</option>
+                <option value="d2">D2 (Coin)</option>
+                <option value="d3">D3</option>
+                <option value="d4">D4</option>
+                <option value="d5">D5</option>
+                <option value="d7">D7</option>
+                <option value="d8">D8</option>
+                <option value="d10">D10</option>
+                <option value="d12">D12</option>
+                <option value="d14">D14</option>
+                <option value="d16">D16</option>
+                <option value="d20">D20</option>
+                <option value="d24">D24</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn confirm close-modal-action" data-modal="modal-setting-dice-config">Hotovo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Theme -->
+      <div id="modal-setting-theme" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-palette"></i>
+            <span>Vzhľad aplikácie</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-theme" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <h4>Dice Theme</h4>
+            <div class="color-options" style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;">
+              <button class="color-btn active" data-theme="classic" title="Classic White">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#d32f2f" />
+                  <circle cx="75" cy="25" r="8" fill="#d32f2f" />
+                  <circle cx="50" cy="50" r="8" fill="#d32f2f" />
+                  <circle cx="25" cy="75" r="8" fill="#d32f2f" />
+                  <circle cx="75" cy="75" r="8" fill="#d32f2f" />
+                </svg>
+              </button>
+              <button class="color-btn" data-theme="onyx" title="Onyx Black">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#151518" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#e5c158" />
+                  <circle cx="75" cy="25" r="8" fill="#e5c158" />
+                  <circle cx="50" cy="50" r="8" fill="#e5c158" />
+                  <circle cx="25" cy="75" r="8" fill="#e5c158" />
+                  <circle cx="75" cy="75" r="8" fill="#e5c158" />
+                </svg>
+              </button>
+              <button class="color-btn" data-theme="neon" title="Neon Cyan">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#0a0b10" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#00f0ff" />
+                  <circle cx="75" cy="25" r="8" fill="#00f0ff" />
+                  <circle cx="50" cy="50" r="8" fill="#00f0ff" />
+                  <circle cx="25" cy="75" r="8" fill="#00f0ff" />
+                  <circle cx="75" cy="75" r="8" fill="#00f0ff" />
+                </svg>
+              </button>
+              <button class="color-btn" data-theme="emerald" title="Emerald Green">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#023812" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#ffd700" />
+                  <circle cx="75" cy="25" r="8" fill="#ffd700" />
+                  <circle cx="50" cy="50" r="8" fill="#ffd700" />
+                  <circle cx="25" cy="75" r="8" fill="#ffd700" />
+                  <circle cx="75" cy="75" r="8" fill="#ffd700" />
+                </svg>
+              </button>
+              <button class="color-btn" data-theme="monochrome" title="Classic Black & White">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#ffffff" stroke="rgba(0,0,0,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#111111" />
+                  <circle cx="75" cy="25" r="8" fill="#111111" />
+                  <circle cx="50" cy="50" r="8" fill="#111111" />
+                  <circle cx="25" cy="75" r="8" fill="#111111" />
+                  <circle cx="75" cy="75" r="8" fill="#111111" />
+                </svg>
+              </button>
+              <button class="color-btn" data-theme="sapphire" title="Ruby Red">
+                <svg viewBox="0 0 100 100" class="die-preview-svg">
+                  <rect x="5" y="5" width="90" height="90" rx="18" ry="18" fill="#d62828" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+                  <circle cx="25" cy="25" r="8" fill="#ffffff" />
+                  <circle cx="75" cy="25" r="8" fill="#ffffff" />
+                  <circle cx="50" cy="50" r="8" fill="#ffffff" />
+                  <circle cx="25" cy="75" r="8" fill="#ffffff" />
+                  <circle cx="75" cy="75" r="8" fill="#ffffff" />
+                </svg>
+              </button>
+            </div>
+            <p id="premium-themes-note" class="warning-text" style="margin-top: 15px;"><i class="fa-solid fa-lock"></i> Themes are only available in Premium</p>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn confirm close-modal-action" data-modal="modal-setting-theme">Hotovo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Background -->
+      <div id="modal-setting-background" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-palette"></i>
+            <span>Vzhľad aplikácie</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-background" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <h4>Table Background</h4>
+            <div class="bg-options" style="margin-top: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center;">
+              <button class="bg-btn active" data-bg="classic" style="background: radial-gradient(circle at center, #1b2030 0%, #080a10 100%);" title="Midnight Blue"></button>
+              <button class="bg-btn" data-bg="concrete" style="background: radial-gradient(circle at center, #787c80 0%, #303336 100%);" title="Concrete"></button>
+              <button class="bg-btn" data-bg="mahogany" style="background: linear-gradient(45deg, #3f110c 0%, #170402 100%);" title="Dark Mahogany"></button>
+              <button class="bg-btn" data-bg="wood" style="background: url('/wood.jpg') center/cover no-repeat;" title="Wood Texture"></button>
+              <button class="bg-btn" data-bg="mramor" style="background: url('/mramor.jpg') center/cover no-repeat;" title="Marble Texture"></button>
+              <button class="bg-btn" data-bg="corten" style="background: url('/corten.jpg') center/cover no-repeat;" title="Corten Metal"></button>
+            </div>
+            <p id="premium-bg-note" class="warning-text" style="margin-top: 15px;"><i class="fa-solid fa-lock"></i> Backgrounds are only available in Premium</p>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn confirm close-modal-action" data-modal="modal-setting-background">Hotovo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Feedback -->
+      <div id="modal-setting-feedback" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-mobile-vibration"></i>
+            <span>Vibrácie a odozva</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-feedback" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <h4>Device Feedback</h4>
+            <div class="toggle-setting" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+              <span>Haptic Vibrations</span>
+              <label class="switch">
+                <input type="checkbox" id="haptics-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn confirm close-modal-action" data-modal="modal-setting-feedback">Hotovo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Stats -->
+      <div id="modal-setting-stats" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+          <div class="play-store-header">
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>Štatistiky a meranie</span>
+            <button class="modal-close-btn icon-btn" data-modal="modal-setting-stats" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <h4>Statistics</h4>
+            <div class="product-info exit-info" style="margin-top: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px;">
+              <span style="font-weight: 600; color: var(--text-secondary);">Hodené celkom:</span>
+              <strong id="stats-total-rolls" style="font-size: 1.25rem; color: var(--primary-color);">0-krát</strong>
+            </div>
+            <button id="reset-rolls-btn" class="reset-btn" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; font-weight: 700; border-radius: 12px; cursor: pointer;">
+              <i class="fa-solid fa-rotate-left"></i> Reset Roll Counter
+            </button>
+          </div>
+          <div class="modal-actions">
+            <button class="modal-btn confirm close-modal-action" data-modal="modal-setting-stats">Zatvoriť</button>
+          </div>
         </div>
       </div>
 

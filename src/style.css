@@ -29,6 +29,10 @@
   outline: none;
 }
 
+button, input, select, textarea {
+  font-family: var(--font-family) !important;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -2117,5 +2121,129 @@ input:checked + .slider:before {
   z-index: 5 !important;
   opacity: 0.25 !important;
 }
+
+/* Settings Menu Layout */
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.settings-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.settings-menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.settings-menu-item:active {
+  transform: translateY(0);
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.menu-item-left > i {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  width: 24px;
+  text-align: center;
+}
+
+.menu-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.menu-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.settings-menu-item > i.fa-chevron-right {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.25s ease;
+}
+
+.settings-menu-item:hover > i.fa-chevron-right {
+  color: var(--primary-color);
+  transform: translateX(3px);
+}
+
+/* Modals Typography and spacing updates */
+.settings-group h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.setting-help-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+/* Make settings modals wider and match styles */
+#modal-setting-theme .color-options {
+  padding: 8px 0;
+}
+
+#modal-setting-theme .color-btn {
+  margin: 0;
+  width: 68px;
+  height: 68px;
+}
+
+#modal-setting-background .bg-options {
+  padding: 8px 0;
+}
+
+#modal-setting-background .bg-btn {
+  margin: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+}
+
+.username-edit-container input {
+  transition: all 0.2s ease;
+}
+
+.username-edit-container input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(255, 183, 3, 0.15);
+}
+
 
 

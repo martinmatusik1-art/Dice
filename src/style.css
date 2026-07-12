@@ -1948,9 +1948,17 @@ input:checked + .slider:before {
 }
 
 .player2-half {
-  transform: rotate(180deg);
   background: linear-gradient(to top, rgba(8, 10, 16, 0.2) 0%, transparent 100%);
   border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column-reverse; /* Invert visual flow so options are at top of screen and HUD is in the middle */
+}
+
+/* Rotate Player 2 children individually to avoid WebKit stacking context / z-index bugs */
+.player2-half .game-hud,
+.player2-half .timer-container,
+.player2-half .game-options-container {
+  transform: rotate(180deg);
 }
 
 .player1-half {

@@ -1812,9 +1812,7 @@ input:checked + .slider:before {
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  background: rgba(18, 22, 33, 0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(18, 22, 33, 0.9); /* Opaque background for great readability and WebKit rotated rendering compatibility */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 15;
   transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);

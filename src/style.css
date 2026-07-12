@@ -1950,8 +1950,6 @@ input:checked + .slider:before {
 .player2-half {
   background: linear-gradient(to top, rgba(8, 10, 16, 0.2) 0%, transparent 100%);
   border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
-  display: flex;
-  flex-direction: column-reverse; /* Invert visual flow so options are at top of screen and HUD is in the middle */
 }
 
 /* Rotate Player 2 children individually to avoid WebKit stacking context / z-index bugs */
@@ -1968,6 +1966,12 @@ input:checked + .slider:before {
 .rotated-hud {
   border-bottom: none;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: auto !important;
+}
+
+#p2-options {
+  margin-top: 0 !important;
+  margin-bottom: auto !important;
 }
 
 .versus-divider-line {

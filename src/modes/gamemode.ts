@@ -229,10 +229,12 @@ class GameMode {
       this.endGameGracefully();
     });
 
-    document.getElementById('btn-versus-exit')?.addEventListener('click', () => {
+    const exitVersusGame = () => {
       audio.playClick();
       this.endGameGracefully();
-    });
+    };
+    document.getElementById('btn-versus-exit')?.addEventListener('click', exitVersusGame);
+    document.getElementById('btn-versus-exit-p2')?.addEventListener('click', exitVersusGame);
 
     // Stats screen buttons
     document.getElementById('btn-stats-restart')?.addEventListener('click', () => {
@@ -263,12 +265,16 @@ class GameMode {
     this.diceCount = savedDice;
 
     // Sync and save player names for versus mode
-    const p1Name = localStorage.getItem('dice_app_username') || 'Guest';
+    let p1Name = 'Guest';
     let p2Name = 'Player 2';
     if (this.mode === 'versus') {
+      const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
       const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+      p1Name = p1Input?.value.trim() || 'Guest';
       p2Name = p2Input?.value.trim() || 'Player 2';
       localStorage.setItem('dice_app_versus_p2_name', p2Name);
+    } else {
+      p1Name = localStorage.getItem('dice_app_username') || 'Guest';
     }
     
     const p1Display = document.getElementById('p1-name');

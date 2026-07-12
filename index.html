@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.21</small></span>
+          <span>3D Dice <small class="ver-text">v1.22</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -133,8 +133,8 @@
               <h4>Player Names</h4>
               <div class="versus-names-container" style="display: flex; gap: 10px; flex-direction: column;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <label style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 1:</label>
-                  <input type="text" id="setup-p1-name-input" readonly style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px; color: var(--text-secondary); font-size: 0.9rem;" value="Guest">
+                  <label for="setup-p1-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 1:</label>
+                  <input type="text" id="setup-p1-name-input" placeholder="Enter Player 1 name" maxlength="15" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; color: #fff; font-size: 0.9rem; font-family: var(--font-family);">
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <label for="setup-p2-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 2:</label>
@@ -212,6 +212,7 @@
                 <div class="hud-item"><i class="fa-solid fa-user"></i> <span id="p2-name">Hráč 2</span></div>
                 <div class="hud-item"><i class="fa-solid fa-trophy"></i> <span id="p2-score">Skóre: 0</span></div>
                 <div class="hud-item" id="p2-status">Čaká sa...</div>
+                <button id="btn-versus-exit-p2" class="game-exit-btn" title="Ukončiť hru"><i class="fa-solid fa-xmark"></i></button>
               </div>
               <div class="timer-container">
                 <div class="timer-bar" id="p2-timer-bar"></div>
@@ -392,7 +393,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.21 </span>
+          <span>Version 1.22 </span>
         </div>
       </div>
 

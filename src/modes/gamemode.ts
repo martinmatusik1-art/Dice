@@ -186,7 +186,7 @@ class GameMode {
     btnHard?.addEventListener('click', () => selectDifficulty('hard'));
 
     // Round selector buttons
-    const roundBtns = document.querySelectorAll('.round-options .setup-btn');
+    const roundBtns = document.querySelectorAll('.round-options .settings-menu-item');
     roundBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         audio.playClick();

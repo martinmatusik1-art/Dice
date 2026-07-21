@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.26</small></span>
+          <span>3D Dice <small class="ver-text">v1.27</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -118,60 +118,136 @@
           </div>
           <div class="setup-scrollable">
             <div class="settings-group">
-              <h4>Game Mode</h4>
-              <div class="game-mode-options">
-                <button class="setup-btn active" id="btn-mode-solo">
-                  <i class="fa-solid fa-user"></i> Solo
+              <h4>Hrací Režim (Game Mode)</h4>
+              <div class="settings-menu">
+                <button class="settings-menu-item active" id="btn-mode-solo">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-user"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Sólomód (Solo)</span>
+                      <span class="menu-item-desc">Hraj sám a prekonávaj svoje skóre</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
                 </button>
-                <button class="setup-btn" id="btn-mode-versus">
-                  <i class="fa-solid fa-users"></i> Versus
+                <button class="settings-menu-item" id="btn-mode-versus">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-users"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Súboj (Versus)</span>
+                      <span class="menu-item-desc">Dvaja hráči na jednom zariadení</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
                 </button>
               </div>
             </div>
 
             <div class="settings-group hidden" id="versus-names-group">
-              <h4>Player Names</h4>
-              <div class="versus-names-container" style="display: flex; gap: 10px; flex-direction: column;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <label for="setup-p1-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 1:</label>
-                  <input type="text" id="setup-p1-name-input" placeholder="Enter Player 1 name" maxlength="15" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; color: #fff; font-size: 0.9rem; font-family: var(--font-family);">
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                  <label for="setup-p2-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 65px;">Player 2:</label>
-                  <input type="text" id="setup-p2-name-input" placeholder="Enter Player 2 name" maxlength="15" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; color: #fff; font-size: 0.9rem; font-family: var(--font-family);">
+              <h4>Mená Hráčov</h4>
+              <div class="settings-menu">
+                <div class="settings-menu-item-static">
+                  <div class="versus-names-container" style="display: flex; gap: 14px; flex-direction: column; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                      <label for="setup-p1-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 70px;"><i class="fa-solid fa-circle-user" style="color: var(--primary-color); margin-right: 6px;"></i> Hráč 1:</label>
+                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="setup-text-input">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                      <label for="setup-p2-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 70px;"><i class="fa-solid fa-circle-user" style="color: var(--secondary-color); margin-right: 6px;"></i> Hráč 2:</label>
+                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="setup-text-input">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="settings-group">
-              <h4>Difficulty</h4>
-              <div class="difficulty-options">
-                <button class="setup-btn active" id="btn-diff-easy">Easy</button>
-                <button class="setup-btn" id="btn-diff-medium">Medium</button>
-                <button class="setup-btn" id="btn-diff-hard">Hard</button>
+              <h4>Náročnosť (Difficulty)</h4>
+              <div class="settings-menu">
+                <button class="settings-menu-item active" id="btn-diff-easy">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-gauge-simple"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Ľahká (Easy)</span>
+                      <span class="menu-item-desc">Hádzanie bez časového limitu</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
+                <button class="settings-menu-item" id="btn-diff-medium">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-gauge-simple-high"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Stredná (Medium)</span>
+                      <span class="menu-item-desc">Limit 7 sekúnd na odpoveď</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
+                <button class="settings-menu-item" id="btn-diff-hard">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-gauge"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Ťažká (Hard)</span>
+                      <span class="menu-item-desc">Limit 4 sekundy na odpoveď</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
               </div>
             </div>
 
             <div class="settings-group" id="time-limit-settings-group">
-              <h4>Time Limits</h4>
-              <div class="time-limit-inputs">
-                <div class="limit-input">
-                  <label for="limit-medium-input">Medium:</label>
-                  <input type="number" id="limit-medium-input" min="1" max="60" value="7">
-                </div>
-                <div class="limit-input">
-                  <label for="limit-hard-input">Hard:</label>
-                  <input type="number" id="limit-hard-input" min="1" max="60" value="4">
+              <h4>Časové Limity (sekundy)</h4>
+              <div class="settings-menu">
+                <div class="settings-menu-item-static">
+                  <div class="time-limit-inputs" style="display: flex; gap: 16px; width: 100%;">
+                    <div class="limit-input" style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                      <label for="limit-medium-input" style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-gauge-simple-high" style="color: var(--primary-color); margin-right: 6px;"></i> Stredná:</label>
+                      <input type="number" id="limit-medium-input" min="1" max="60" value="7" class="setup-number-input">
+                    </div>
+                    <div class="limit-input" style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                      <label for="limit-hard-input" style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-gauge" style="color: var(--primary-color); margin-right: 6px;"></i> Ťažká:</label>
+                      <input type="number" id="limit-hard-input" min="1" max="60" value="4" class="setup-number-input">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="settings-group">
-              <h4>Rounds</h4>
-              <div class="round-options">
-                <button class="setup-btn active" data-rounds="10">10</button>
-                <button class="setup-btn" data-rounds="20">20</button>
-                <button class="setup-btn" data-rounds="0">Endless</button>
+              <h4>Počet Kôl (Rounds)</h4>
+              <div class="settings-menu round-options">
+                <button class="settings-menu-item active" data-rounds="10">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-list-ol"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">10 Kôl</span>
+                      <span class="menu-item-desc">Rýchla hra na 10 hodov</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
+                <button class="settings-menu-item" data-rounds="20">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-list-ol"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">20 Kôl</span>
+                      <span class="menu-item-desc">Dlhšia hra na 20 hodov</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
+                <button class="settings-menu-item" data-rounds="0">
+                  <div class="menu-item-left">
+                    <i class="fa-solid fa-infinity"></i>
+                    <div class="menu-item-text">
+                      <span class="menu-item-title">Nekonečno (Endless)</span>
+                      <span class="menu-item-desc">Hraj bez obmedzenia kôl</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-check select-check"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -393,7 +469,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.26 </span>
+          <span>Version 1.27 </span>
         </div>
       </div>
 

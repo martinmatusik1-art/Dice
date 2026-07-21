@@ -2267,3 +2267,62 @@ input:checked + .slider:before {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
+
+/* Active state for settings-menu-item */
+.settings-menu-item.active {
+  background: rgba(255, 183, 3, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.15) !important;
+}
+
+.settings-menu-item.active i {
+  color: var(--primary-color) !important;
+}
+
+/* Checkmark selection animation */
+.settings-menu-item .select-check {
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.settings-menu-item.active .select-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Static menu items (inputs containers) */
+.settings-menu-item-static {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: var(--text-primary);
+}
+
+/* Styling inputs inside the Game Mode setup */
+.setup-text-input, .setup-number-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: var(--font-family);
+  transition: all 0.25s ease;
+}
+
+.setup-text-input:focus, .setup-number-input:focus {
+  border-color: var(--primary-color);
+  background: rgba(0, 0, 0, 0.5);
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.15);
+}

@@ -185,16 +185,35 @@ class GameMode {
     btnMedium?.addEventListener('click', () => selectDifficulty('medium'));
     btnHard?.addEventListener('click', () => selectDifficulty('hard'));
 
-    // Round selector buttons
-    const roundBtns = document.querySelectorAll('.round-options .settings-menu-item');
-    roundBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        audio.playClick();
-        roundBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.maxRounds = parseInt(btn.getAttribute('data-rounds') || '10', 10);
+    // Round selector slider
+    const roundsSlider = document.getElementById('rounds-slider') as HTMLInputElement;
+    const roundsSliderTitle = document.getElementById('rounds-slider-title');
+    
+    if (roundsSlider) {
+      this.maxRounds = parseInt(roundsSlider.value, 10);
+      
+      const updateRoundsDisplay = () => {
+        const val = roundsSlider.value;
+        if (roundsSliderTitle) {
+          const num = parseInt(val, 10);
+          let suffix = 'kôl';
+          if (num === 1) suffix = 'kolo';
+          else if (num >= 2 && num <= 4) suffix = 'kolá';
+          roundsSliderTitle.innerText = `Vybrané: ${num} ${suffix}`;
+        }
+      };
+
+      roundsSlider.addEventListener('input', () => {
+        updateRoundsDisplay();
+        this.maxRounds = parseInt(roundsSlider.value, 10);
       });
-    });
+
+      roundsSlider.addEventListener('change', () => {
+        audio.playClick();
+      });
+      
+      updateRoundsDisplay();
+    }
 
 
 

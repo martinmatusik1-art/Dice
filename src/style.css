@@ -720,7 +720,7 @@ html, body {
 }
 
 /* Custom premium input range slider */
-#dice-count-slider {
+#dice-count-slider, #rounds-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -728,12 +728,12 @@ html, body {
   cursor: pointer;
 }
 
-#dice-count-slider:focus {
+#dice-count-slider:focus, #rounds-slider:focus {
   outline: none;
 }
 
 /* Chrome/Safari track */
-#dice-count-slider::-webkit-slider-runnable-track {
+#dice-count-slider::-webkit-slider-runnable-track, #rounds-slider::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
   background: rgba(255, 255, 255, 0.08);
@@ -743,7 +743,7 @@ html, body {
 }
 
 /* Chrome/Safari thumb */
-#dice-count-slider::-webkit-slider-thumb {
+#dice-count-slider::-webkit-slider-thumb, #rounds-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   height: 18px;
   width: 18px;
@@ -755,17 +755,17 @@ html, body {
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#dice-count-slider::-webkit-slider-thumb:hover {
+#dice-count-slider::-webkit-slider-thumb:hover, #rounds-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
 
-#dice-count-slider::-webkit-slider-thumb:active {
+#dice-count-slider::-webkit-slider-thumb:active, #rounds-slider::-webkit-slider-thumb:active {
   transform: scale(1.25);
   background: #fb8500;
 }
 
 /* Firefox track */
-#dice-count-slider::-moz-range-track {
+#dice-count-slider::-moz-range-track, #rounds-slider::-moz-range-track {
   width: 100%;
   height: 6px;
   background: rgba(255, 255, 255, 0.08);
@@ -775,7 +775,7 @@ html, body {
 }
 
 /* Firefox thumb */
-#dice-count-slider::-moz-range-thumb {
+#dice-count-slider::-moz-range-thumb, #rounds-slider::-moz-range-thumb {
   height: 18px;
   width: 18px;
   border-radius: 50%;
@@ -786,11 +786,11 @@ html, body {
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#dice-count-slider::-moz-range-thumb:hover {
+#dice-count-slider::-moz-range-thumb:hover, #rounds-slider::-moz-range-thumb:hover {
   transform: scale(1.15);
 }
 
-#dice-count-slider::-moz-range-thumb:active {
+#dice-count-slider::-moz-range-thumb:active, #rounds-slider::-moz-range-thumb:active {
   transform: scale(1.25);
   background: #fb8500;
 }
@@ -2325,4 +2325,9 @@ input:checked + .slider:before {
   background: rgba(0, 0, 0, 0.5);
   outline: none;
   box-shadow: 0 0 10px rgba(255, 183, 3, 0.15);
+}
+
+/* Ensure Game Mode setup and stats screens have the same opacity/background as Settings */
+.game-screen.glass-panel {
+  background: rgba(18, 22, 33, 0.98) !important;
 }

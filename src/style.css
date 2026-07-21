@@ -1966,7 +1966,6 @@ input:checked + .slider:before {
 .rotated-hud {
   border-bottom: none;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  margin-top: auto !important;
 }
 
 #p2-options {

@@ -184,8 +184,66 @@ class GameMode {
       }
     });
 
+    this.updatePeekButtons(face);
+
     if (playAudio) {
       audio.playClick();
+    }
+  }
+
+  private updatePeekButtons(currentFace: string) {
+    const peekTop = document.querySelector('.cube-peek-btn.peek-top');
+    const peekBottom = document.querySelector('.cube-peek-btn.peek-bottom');
+    const peekLeft = document.querySelector('.cube-peek-btn.peek-left');
+    const peekRight = document.querySelector('.cube-peek-btn.peek-right');
+
+    const peekMap: Record<string, { top: { face: string; label: string }; bottom: { face: string; label: string } }> = {
+      front: {
+        top: { face: 'top', label: 'Náročnosť' },
+        bottom: { face: this.mode === 'versus' ? 'bottom' : 'top', label: this.mode === 'versus' ? 'Hráči' : 'Náročnosť' },
+      },
+      bottom: {
+        top: { face: 'front', label: 'Režim' },
+        bottom: { face: 'top', label: 'Náročnosť' },
+      },
+      top: {
+        top: { face: 'front', label: 'Režim' },
+        bottom: { face: 'back', label: 'Kolá' },
+      },
+      back: {
+        top: { face: 'top', label: 'Náročnosť' },
+        bottom: { face: 'front', label: 'Režim' },
+      },
+      left: {
+        top: { face: 'front', label: 'Režim' },
+        bottom: { face: 'front', label: 'Režim' },
+      },
+      right: {
+        top: { face: 'front', label: 'Režim' },
+        bottom: { face: 'front', label: 'Režim' },
+      },
+    };
+
+    const info = peekMap[currentFace] || peekMap['front'];
+    if (peekTop) {
+      peekTop.setAttribute('data-face', info.top.face);
+      const span = peekTop.querySelector('span');
+      if (span) span.innerText = info.top.label;
+    }
+    if (peekBottom) {
+      peekBottom.setAttribute('data-face', info.bottom.face);
+      const span = peekBottom.querySelector('span');
+      if (span) span.innerText = info.bottom.label;
+    }
+    if (peekLeft) {
+      peekLeft.setAttribute('data-face', currentFace === 'left' ? 'front' : 'left');
+      const span = peekLeft.querySelector('span');
+      if (span) span.innerText = currentFace === 'left' ? 'Späť' : 'Počet';
+    }
+    if (peekRight) {
+      peekRight.setAttribute('data-face', currentFace === 'right' ? 'front' : 'right');
+      const span = peekRight.querySelector('span');
+      if (span) span.innerText = currentFace === 'right' ? 'Späť' : 'Typ';
     }
   }
 
@@ -442,7 +500,16 @@ class GameMode {
       limitHardInput.value = val.toString();
     });
 
-    // Touch & Pointer Gesture Controller for 3D Cube
+    // 3D Directional Peek Badges click handlers
+    document.querySelectorAll('.cube-peek-btn').forEach(peekBtn => {
+      peekBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const face = peekBtn.getAttribute('data-face') as any;
+        if (face) this.setCubeFace(face);
+      });
+    });
+
+    // Touch & Pointer Gesture Controller for 3D Cube (Ultra-responsive)
     if (this.cubeViewport) {
       let isDragging = false;
       let startX = 0;
@@ -450,6 +517,7 @@ class GameMode {
       let currentX = 0;
       let currentY = 0;
       let hasMoved = false;
+      let activePointerId: number | null = null;
 
       const faceRotations: Record<string, { x: number; y: number }> = {
         front: { x: 0, y: 0 },
@@ -460,47 +528,62 @@ class GameMode {
         right: { x: 0, y: -90 },
       };
 
-      this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
-        const target = e.target as HTMLElement;
-        // Don't drag when interacting directly with range sliders or text inputs
-        if (target.tagName === 'INPUT' && (target as HTMLInputElement).type !== 'button') {
+      const handleStart = (clientX: number, clientY: number, target: HTMLElement, pointerId?: number) => {
+        if (target.closest('.cube-peek-btn') || target.tagName === 'INPUT') {
           return;
         }
 
         isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        currentX = e.clientX;
-        currentY = e.clientY;
+        startX = clientX;
+        startY = clientY;
+        currentX = clientX;
+        currentY = clientY;
         hasMoved = false;
-      });
 
-      window.addEventListener('pointermove', (e: PointerEvent) => {
+        if (pointerId !== undefined && this.cubeViewport && this.cubeViewport.setPointerCapture) {
+          try {
+            this.cubeViewport.setPointerCapture(pointerId);
+            activePointerId = pointerId;
+          } catch {}
+        }
+      };
+
+      const handleMove = (clientX: number, clientY: number, e?: Event) => {
         if (!isDragging || !this.cubeElement) return;
-        currentX = e.clientX;
-        currentY = e.clientY;
+        currentX = clientX;
+        currentY = clientY;
         const dx = currentX - startX;
         const dy = currentY - startY;
 
-        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
           hasMoved = true;
+          if (e && e.cancelable) {
+            e.preventDefault();
+          }
           this.cubeElement.classList.add('is-dragging');
           const base = faceRotations[this.cubeCurrentFace] || { x: 0, y: 0 };
-          const tiltY = base.y + Math.max(-30, Math.min(30, dx * 0.22));
-          const tiltX = base.x - Math.max(-30, Math.min(30, dy * 0.22));
-          this.cubeElement.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+          const tiltY = base.y + Math.max(-36, Math.min(36, dx * 0.28));
+          const tiltX = base.x - Math.max(-36, Math.min(36, dy * 0.28));
+          const pullZ = -Math.min(30, Math.hypot(dx, dy) * 0.15);
+          this.cubeElement.style.transform = `translateZ(${pullZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         }
-      });
+      };
 
-      const endDrag = () => {
+      const handleEnd = () => {
         if (!isDragging) return;
         isDragging = false;
+        if (activePointerId !== null && this.cubeViewport && this.cubeViewport.releasePointerCapture) {
+          try {
+            this.cubeViewport.releasePointerCapture(activePointerId);
+          } catch {}
+          activePointerId = null;
+        }
         this.cubeElement?.classList.remove('is-dragging');
 
         if (hasMoved) {
           const dx = currentX - startX;
           const dy = currentY - startY;
-          const threshold = 32;
+          const threshold = 18; // Effortless one-finger swipe
 
           if (Math.abs(dx) > Math.abs(dy)) {
             // Horizontal swipe
@@ -524,8 +607,34 @@ class GameMode {
         }
       };
 
-      window.addEventListener('pointerup', endDrag);
-      window.addEventListener('pointercancel', endDrag);
+      this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
+        handleStart(e.clientX, e.clientY, e.target as HTMLElement, e.pointerId);
+      });
+
+      this.cubeViewport.addEventListener('pointermove', (e: PointerEvent) => {
+        handleMove(e.clientX, e.clientY, e);
+      });
+
+      this.cubeViewport.addEventListener('pointerup', handleEnd);
+      this.cubeViewport.addEventListener('pointercancel', handleEnd);
+
+      // Explicit touch events fallback
+      this.cubeViewport.addEventListener('touchstart', (e: TouchEvent) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          handleStart(t.clientX, t.clientY, e.target as HTMLElement);
+        }
+      }, { passive: true });
+
+      this.cubeViewport.addEventListener('touchmove', (e: TouchEvent) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          handleMove(t.clientX, t.clientY, e);
+        }
+      }, { passive: false });
+
+      this.cubeViewport.addEventListener('touchend', handleEnd, { passive: true });
+      this.cubeViewport.addEventListener('touchcancel', handleEnd, { passive: true });
     }
 
     // Start Game Button

@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.29</small></span>
+          <span>3D Dice <small class="ver-text">v1.30</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -132,6 +132,27 @@
 
           <!-- 3D Cube Scene Viewport -->
           <div class="cube-viewport" id="cube-viewport">
+            <!-- 3D Directional Peek Badges (Immediate 3D perspective cues) -->
+            <button class="cube-peek-btn peek-top" data-face="top" title="Náročnosť">
+              <i class="fa-solid fa-chevron-up"></i>
+              <span>Náročnosť</span>
+            </button>
+            <button class="cube-peek-btn peek-bottom" data-face="bottom" title="Mená Hráčov">
+              <span>Hráči</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <button class="cube-peek-btn peek-left" data-face="left" title="Počet Kociek">
+              <i class="fa-solid fa-chevron-left"></i>
+              <span>Počet</span>
+            </button>
+            <button class="cube-peek-btn peek-right" data-face="right" title="Typ Kociek">
+              <span>Typ</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <!-- 3D Floor Shadow -->
+            <div class="cube-floor-shadow" id="cube-floor-shadow"></div>
+
             <div class="cube-3d" id="cube-3d">
               
               <!-- 1. FRONT FACE: Game Mode (Solo / Versus) -->
@@ -498,7 +519,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.29 </span>
+          <span>Version 1.30 </span>
         </div>
       </div>
 

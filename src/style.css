@@ -1780,19 +1780,85 @@ input:checked + .slider:before {
   transform: translateY(-1px);
 }
 
-/* 3D Viewport */
+/* 3D Viewport with Realistic Perspective */
 .cube-viewport {
-  perspective: 1100px;
-  perspective-origin: 50% 50%;
+  perspective: 720px;
+  perspective-origin: 50% 32%;
   width: 100%;
-  height: calc(var(--cube-size) + 16px);
-  margin: 4px auto;
+  height: calc(var(--cube-size) + 24px);
+  margin: 2px auto;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   touch-action: none;
   user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 3D Directional Peek Badges */
+.cube-peek-btn {
+  position: absolute;
+  z-index: 25;
+  background: rgba(20, 26, 46, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #cbd5e1;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.22s ease;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.cube-peek-btn:hover, .cube-peek-btn:active {
+  background: rgba(139, 92, 246, 0.35);
+  border-color: #8b5cf6;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+}
+
+.cube-peek-btn.peek-top {
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.cube-peek-btn.peek-bottom {
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.cube-peek-btn.peek-left {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.cube-peek-btn.peek-right {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 3D Floor Shadow */
+.cube-floor-shadow {
+  position: absolute;
+  bottom: 6px;
+  width: calc(var(--cube-size) * 0.82);
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, rgba(99, 102, 241, 0.22) 45%, transparent 75%);
+  filter: blur(8px);
+  pointer-events: none;
+  transform: rotateX(75deg);
+  transition: all 0.5s ease;
 }
 
 /* The Rotating 3D Cube */
@@ -1801,8 +1867,9 @@ input:checked + .slider:before {
   height: var(--cube-size);
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.55s cubic-bezier(0.2, 0.85, 0.25, 1.15);
   will-change: transform;
+  touch-action: none;
 }
 
 .cube-3d.is-dragging {
@@ -1818,17 +1885,18 @@ input:checked + .slider:before {
   height: 100%;
   box-sizing: border-box;
   border-radius: 20px;
-  background: linear-gradient(145deg, rgba(22, 28, 48, 0.96), rgba(13, 17, 30, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  padding: 14px;
+  background: linear-gradient(145deg, rgba(24, 30, 52, 0.97), rgba(12, 16, 28, 0.98));
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(139, 92, 246, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 12px 14px;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  touch-action: none;
 }
 
 /* Exact 3D rotations for all 6 faces */

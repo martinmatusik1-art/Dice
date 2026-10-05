@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.28</small></span>
+          <span>3D Dice <small class="ver-text">v1.29</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -110,137 +110,180 @@
 
       <!-- Game Mode Overlay -->
       <div id="game-mode-overlay" class="hidden">
-        <!-- Setup Screen -->
-        <div id="game-setup-screen" class="game-screen glass-panel">
-          <div class="game-screen-header">
-            <h3><i class="fa-solid fa-gamepad"></i> Game Mode Setup</h3>
-            <button id="close-game-setup-btn" class="icon-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        <!-- Setup Screen: 3D Cube Setup -->
+        <div id="game-setup-screen" class="game-screen cube-setup-wrapper">
+          <div class="cube-setup-header">
+            <div class="cube-header-title">
+              <i class="fa-solid fa-cube cube-header-icon"></i>
+              <span>Herná Kocka & Nastavenia</span>
+            </div>
+            <button id="close-game-setup-btn" class="icon-btn" title="Zatvoriť"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div class="setup-scrollable">
-            <div class="settings-group">
-              <h4>Hrací Režim (Game Mode)</h4>
-              <div class="settings-menu">
-                <button class="settings-menu-item active" id="btn-mode-solo">
-                  <div class="menu-item-left">
-                    <i class="fa-solid fa-user"></i>
-                    <div class="menu-item-text">
-                      <span class="menu-item-title">Sólomód (Solo)</span>
-                      <span class="menu-item-desc">Hraj sám a prekonávaj svoje skóre</span>
-                    </div>
-                  </div>
-                  <i class="fa-solid fa-check select-check"></i>
-                </button>
-                <button class="settings-menu-item" id="btn-mode-versus">
-                  <div class="menu-item-left">
-                    <i class="fa-solid fa-users"></i>
-                    <div class="menu-item-text">
-                      <span class="menu-item-title">Súboj (Versus)</span>
-                      <span class="menu-item-desc">Dvaja hráči na jednom zariadení</span>
-                    </div>
-                  </div>
-                  <i class="fa-solid fa-check select-check"></i>
-                </button>
-              </div>
-            </div>
 
-            <div class="settings-group hidden" id="versus-names-group">
-              <h4>Mená Hráčov</h4>
-              <div class="settings-menu">
-                <div class="settings-menu-item-static">
-                  <div class="versus-names-container" style="display: flex; gap: 14px; flex-direction: column; width: 100%;">
-                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                      <label for="setup-p1-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 70px;"><i class="fa-solid fa-circle-user" style="color: var(--primary-color); margin-right: 6px;"></i> Hráč 1:</label>
-                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="setup-text-input">
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
-                      <label for="setup-p2-name-input" style="font-size: 0.85rem; color: var(--text-secondary); min-width: 70px;"><i class="fa-solid fa-circle-user" style="color: var(--secondary-color); margin-right: 6px;"></i> Hráč 2:</label>
-                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="setup-text-input">
-                    </div>
+          <!-- Face Navigation Chips -->
+          <div class="cube-nav-chips" id="cube-nav-chips">
+            <button class="cube-nav-chip active" data-face="front"><i class="fa-solid fa-gamepad"></i> Režim</button>
+            <button class="cube-nav-chip" data-face="bottom"><i class="fa-solid fa-users"></i> Hráči</button>
+            <button class="cube-nav-chip" data-face="top"><i class="fa-solid fa-gauge-high"></i> Náročnosť</button>
+            <button class="cube-nav-chip" data-face="back"><i class="fa-solid fa-list-ol"></i> Kolá</button>
+            <button class="cube-nav-chip" data-face="left"><i class="fa-solid fa-dice"></i> Počet</button>
+            <button class="cube-nav-chip" data-face="right"><i class="fa-solid fa-shapes"></i> Typ</button>
+          </div>
+
+          <!-- 3D Cube Scene Viewport -->
+          <div class="cube-viewport" id="cube-viewport">
+            <div class="cube-3d" id="cube-3d">
+              
+              <!-- 1. FRONT FACE: Game Mode (Solo / Versus) -->
+              <div class="cube-face cube-face-front active" data-face-id="front">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-gamepad"></i> Hrací Režim</div>
+                  <div class="cube-mode-options">
+                    <button class="cube-option-btn active" id="btn-mode-solo">
+                      <div class="cube-option-icon"><i class="fa-solid fa-user"></i></div>
+                      <div class="cube-option-info">
+                        <span class="cube-option-title">Sólomód</span>
+                        <span class="cube-option-desc">Hraj sám a trénuj rýchlosť</span>
+                      </div>
+                      <i class="fa-solid fa-check select-check"></i>
+                    </button>
+                    <button class="cube-option-btn" id="btn-mode-versus">
+                      <div class="cube-option-icon"><i class="fa-solid fa-users"></i></div>
+                      <div class="cube-option-info">
+                        <span class="cube-option-title">Súboj (Versus)</span>
+                        <span class="cube-option-desc">2 hráči na jednom displeji</span>
+                      </div>
+                      <i class="fa-solid fa-check select-check"></i>
+                    </button>
+                  </div>
+                  <div class="cube-face-footer-hint">
+                    <span class="swipe-hint-pill"><i class="fa-solid fa-arrows-up-down"></i> Ťahaj pre kroky hry</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="settings-group">
-              <h4>Náročnosť (Difficulty)</h4>
-              <div class="settings-menu">
-                <button class="settings-menu-item active" id="btn-diff-easy">
-                  <div class="menu-item-left">
-                    <i class="fa-solid fa-gauge-simple"></i>
-                    <div class="menu-item-text">
-                      <span class="menu-item-title">Ľahká (Easy)</span>
-                      <span class="menu-item-desc">Hádzanie bez časového limitu</span>
+              <!-- 2. BOTTOM FACE: Player Names (Versus setup) -->
+              <div class="cube-face cube-face-bottom" data-face-id="bottom">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-users"></i> Mená Hráčov</div>
+                  <div class="cube-form-group" id="versus-names-group">
+                    <div class="cube-input-row">
+                      <label for="setup-p1-name-input"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:</label>
+                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="cube-text-input">
+                    </div>
+                    <div class="cube-input-row">
+                      <label for="setup-p2-name-input"><i class="fa-solid fa-circle-user" style="color: var(--secondary-color);"></i> Hráč 2:</label>
+                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="cube-text-input">
                     </div>
                   </div>
-                  <i class="fa-solid fa-check select-check"></i>
-                </button>
-                <button class="settings-menu-item" id="btn-diff-medium">
-                  <div class="menu-item-left">
-                    <i class="fa-solid fa-gauge-simple-high"></i>
-                    <div class="menu-item-text">
-                      <span class="menu-item-title">Stredná (Medium)</span>
-                      <span class="menu-item-desc">Limit 7 sekúnd na odpoveď</span>
-                    </div>
-                  </div>
-                  <i class="fa-solid fa-check select-check"></i>
-                </button>
-                <button class="settings-menu-item" id="btn-diff-hard">
-                  <div class="menu-item-left">
-                    <i class="fa-solid fa-gauge"></i>
-                    <div class="menu-item-text">
-                      <span class="menu-item-title">Ťažká (Hard)</span>
-                      <span class="menu-item-desc">Limit 4 sekundy na odpoveď</span>
-                    </div>
-                  </div>
-                  <i class="fa-solid fa-check select-check"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="settings-group" id="time-limit-settings-group">
-              <h4>Časové Limity (sekundy)</h4>
-              <div class="settings-menu">
-                <div class="settings-menu-item-static">
-                  <div class="time-limit-inputs" style="display: flex; gap: 16px; width: 100%;">
-                    <div class="limit-input" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-                      <label for="limit-medium-input" style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-gauge-simple-high" style="color: var(--primary-color); margin-right: 6px;"></i> Stredná:</label>
-                      <input type="number" id="limit-medium-input" min="1" max="60" value="7" class="setup-number-input">
-                    </div>
-                    <div class="limit-input" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-                      <label for="limit-hard-input" style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-gauge" style="color: var(--primary-color); margin-right: 6px;"></i> Ťažká:</label>
-                      <input type="number" id="limit-hard-input" min="1" max="60" value="4" class="setup-number-input">
-                    </div>
-                  </div>
+                  <button type="button" class="cube-step-btn" id="btn-cube-to-diff">
+                    <span>Náročnosť</span> <i class="fa-solid fa-arrow-right"></i>
+                  </button>
                 </div>
               </div>
-            </div>
 
-            <div class="settings-group">
-              <h4>Počet Kôl (Rounds)</h4>
-              <div class="settings-menu">
-                <div class="settings-menu-item-static" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <div class="menu-item-left">
-                      <i class="fa-solid fa-list-ol" style="color: var(--primary-color);"></i>
-                      <div class="menu-item-text">
-                        <span class="menu-item-title" id="rounds-slider-title">Vybrané: 10 kôl</span>
-                        <span class="menu-item-desc">Ťahaním zvoľte počet kôl od 1 do 20</span>
+              <!-- 3. TOP FACE: Difficulty & Time Limits -->
+              <div class="cube-face cube-face-top" data-face-id="top">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-gauge-high"></i> Náročnosť & Čas</div>
+                  <div class="cube-difficulty-grid">
+                    <button class="cube-diff-btn active" id="btn-diff-easy">
+                      <i class="fa-solid fa-face-smile"></i>
+                      <span>Ľahká</span>
+                      <small>Bez limitu</small>
+                    </button>
+                    <button class="cube-diff-btn" id="btn-diff-medium">
+                      <i class="fa-solid fa-stopwatch"></i>
+                      <span>Stredná</span>
+                      <small>7s limit</small>
+                    </button>
+                    <button class="cube-diff-btn" id="btn-diff-hard">
+                      <i class="fa-solid fa-bolt"></i>
+                      <span>Ťažká</span>
+                      <small>4s limit</small>
+                    </button>
+                  </div>
+                  <div class="cube-time-limits-group" id="time-limit-settings-group">
+                    <span class="cube-label-small">Vlastné limity (sekundy):</span>
+                    <div class="cube-limits-row">
+                      <div class="cube-mini-input">
+                        <span>Stredná:</span>
+                        <input type="number" id="limit-medium-input" min="1" max="60" value="7" class="cube-num-input">
+                      </div>
+                      <div class="cube-mini-input">
+                        <span>Ťažká:</span>
+                        <input type="number" id="limit-hard-input" min="1" max="60" value="4" class="cube-num-input">
                       </div>
                     </div>
                   </div>
-                  <div class="slider-setting" style="width: 100%; margin-top: 10px; box-sizing: border-box;">
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 10px;">1</span>
-                    <input type="range" id="rounds-slider" min="1" max="20" value="10" step="1" style="flex: 1;">
-                    <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 20px; text-align: right;">20</span>
+                  <button type="button" class="cube-step-btn" id="btn-cube-to-rounds">
+                    <span>Počet Kôl</span> <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 4. BACK FACE: Rounds Slider -->
+              <div class="cube-face cube-face-back" data-face-id="back">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-list-ol"></i> Počet Kôl</div>
+                  <div class="cube-rounds-display">
+                    <span class="rounds-big-num" id="cube-rounds-big-val">10</span>
+                    <span class="rounds-label" id="rounds-slider-title">Vybrané: 10 kôl</span>
+                  </div>
+                  <div class="cube-slider-wrap">
+                    <input type="range" id="rounds-slider" min="1" max="20" value="10" step="1" class="cube-slider">
+                    <div class="cube-slider-range-labels">
+                      <span>1</span>
+                      <span>10</span>
+                      <span>20</span>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <!-- 5. LEFT FACE: Dice Count (from Settings) -->
+              <div class="cube-face cube-face-left" data-face-id="left">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-dice"></i> Počet Kociek</div>
+                  <div class="cube-dice-count-display">
+                    <span class="cube-dice-big-num" id="cube-dice-count-big-val">1</span>
+                    <span class="cube-label-small">kocka na stole</span>
+                  </div>
+                  <div class="cube-dice-pills" id="cube-dice-count-pills">
+                    <button class="cube-count-pill active" data-count="1">1</button>
+                    <button class="cube-count-pill" data-count="2">2</button>
+                    <button class="cube-count-pill" data-count="3">3</button>
+                    <button class="cube-count-pill" data-count="4">4</button>
+                    <button class="cube-count-pill" data-count="5">5</button>
+                    <button class="cube-count-pill" data-count="6">6</button>
+                  </div>
+                  <span class="cube-hint-small">Zvoľte koľko kociek chcete v hre</span>
+                </div>
+              </div>
+
+              <!-- 6. RIGHT FACE: Dice Type (from Settings) -->
+              <div class="cube-face cube-face-right" data-face-id="right">
+                <div class="cube-face-inner">
+                  <div class="cube-face-badge"><i class="fa-solid fa-shapes"></i> Typ Kocky</div>
+                  <div class="cube-dice-types-grid" id="cube-dice-types-grid">
+                    <button class="cube-type-btn" data-type="d4"><span>D4</span><small>4-sten</small></button>
+                    <button class="cube-type-btn active" data-type="d6"><span>D6</span><small>6-sten</small></button>
+                    <button class="cube-type-btn" data-type="d8"><span>D8</span><small>8-sten</small></button>
+                    <button class="cube-type-btn" data-type="d10"><span>D10</span><small>10-sten</small></button>
+                    <button class="cube-type-btn" data-type="d12"><span>D12</span><small>12-sten</small></button>
+                    <button class="cube-type-btn" data-type="d20"><span>D20</span><small>20-sten</small></button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div class="setup-footer">
-            <button id="btn-start-game" class="premium-buy-btn" style="width: 100%; height: 50px; font-size: 1.1rem;">
-              <i class="fa-solid fa-play"></i> Štart Hry
+          <!-- Bottom Control Bar -->
+          <div class="cube-setup-footer">
+            <button id="btn-start-game" class="cube-start-btn">
+              <i class="fa-solid fa-play"></i>
+              <span>Štart Hry</span>
             </button>
           </div>
         </div>
@@ -455,7 +498,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.28 </span>
+          <span>Version 1.29 </span>
         </div>
       </div>
 

@@ -62,6 +62,11 @@ class GameMode {
   private playScreen: HTMLElement | null = null;
   private statsScreen: HTMLElement | null = null;
   private appContainer: HTMLElement | null = null;
+  private cubeElement: HTMLElement | null = null;
+  private cubeViewport: HTMLElement | null = null;
+
+  // 3D Cube Navigation state
+  private cubeCurrentFace: 'front' | 'bottom' | 'top' | 'back' | 'left' | 'right' = 'front';
 
   public init(onRoll: () => void) {
     this.onRollCallback = onRoll;
@@ -70,6 +75,8 @@ class GameMode {
     this.playScreen = document.getElementById('game-play-screen');
     this.statsScreen = document.getElementById('game-stats-screen');
     this.appContainer = document.getElementById('app-container');
+    this.cubeElement = document.getElementById('cube-3d');
+    this.cubeViewport = document.getElementById('cube-viewport');
 
     this.bindSetupUI();
   }
@@ -98,6 +105,10 @@ class GameMode {
         namesGroup.classList.add('hidden');
       }
     }
+
+    // Reset cube orientation to front and sync states
+    this.setCubeFace('front', false);
+    this.syncCubeSettings();
 
     // Make sure normal dice settings slider does not interfere during gamemode
     physics.resetToCenter();
@@ -135,7 +146,144 @@ class GameMode {
     }
   }
 
+  /**
+   * Set active face of 3D Setup Cube with smooth CSS3D rotation
+   */
+  public setCubeFace(face: 'front' | 'bottom' | 'top' | 'back' | 'left' | 'right', playAudio = true) {
+    this.cubeCurrentFace = face;
+    const faceRotations: Record<string, { x: number; y: number }> = {
+      front: { x: 0, y: 0 },
+      bottom: { x: 90, y: 0 },
+      top: { x: -90, y: 0 },
+      back: { x: 180, y: 0 },
+      left: { x: 0, y: 90 },
+      right: { x: 0, y: -90 },
+    };
+
+    const rot = faceRotations[face] || { x: 0, y: 0 };
+    if (this.cubeElement) {
+      this.cubeElement.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+    }
+
+    // Update navigation chips
+    document.querySelectorAll('.cube-nav-chip').forEach(chip => {
+      if (chip.getAttribute('data-face') === face) {
+        chip.classList.add('active');
+        chip.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      } else {
+        chip.classList.remove('active');
+      }
+    });
+
+    // Update active face styling
+    document.querySelectorAll('.cube-face').forEach(faceEl => {
+      if (faceEl.getAttribute('data-face-id') === face) {
+        faceEl.classList.add('active');
+      } else {
+        faceEl.classList.remove('active');
+      }
+    });
+
+    if (playAudio) {
+      audio.playClick();
+    }
+  }
+
+  private navigateVertical(direction: 'up' | 'down') {
+    if (direction === 'up') {
+      // Swipe UP: move to next section
+      if (this.cubeCurrentFace === 'front') {
+        this.setCubeFace(this.mode === 'versus' ? 'bottom' : 'top');
+      } else if (this.cubeCurrentFace === 'bottom') {
+        this.setCubeFace('top');
+      } else if (this.cubeCurrentFace === 'top') {
+        this.setCubeFace('back');
+      } else if (this.cubeCurrentFace === 'back') {
+        this.setCubeFace('front');
+      } else {
+        this.setCubeFace('front');
+      }
+    } else {
+      // Swipe DOWN: move to previous section
+      if (this.cubeCurrentFace === 'front') {
+        this.setCubeFace('back');
+      } else if (this.cubeCurrentFace === 'back') {
+        this.setCubeFace('top');
+      } else if (this.cubeCurrentFace === 'top') {
+        this.setCubeFace(this.mode === 'versus' ? 'bottom' : 'front');
+      } else if (this.cubeCurrentFace === 'bottom') {
+        this.setCubeFace('front');
+      } else {
+        this.setCubeFace('front');
+      }
+    }
+  }
+
+  private navigateHorizontal(direction: 'left' | 'right') {
+    if (direction === 'left') {
+      // Swipe LEFT: reveal Right face (Dice Type)
+      if (this.cubeCurrentFace === 'left') {
+        this.setCubeFace('front');
+      } else if (this.cubeCurrentFace === 'front') {
+        this.setCubeFace('right');
+      } else {
+        this.setCubeFace('front');
+      }
+    } else {
+      // Swipe RIGHT: reveal Left face (Dice Count)
+      if (this.cubeCurrentFace === 'right') {
+        this.setCubeFace('front');
+      } else if (this.cubeCurrentFace === 'front') {
+        this.setCubeFace('left');
+      } else {
+        this.setCubeFace('front');
+      }
+    }
+  }
+
+  public syncCubeSettings() {
+    // 1. Sync dice count
+    const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
+    this.diceCount = savedDice;
+    const countBigVal = document.getElementById('cube-dice-count-big-val');
+    if (countBigVal) countBigVal.innerText = savedDice.toString();
+    document.querySelectorAll('.cube-count-pill').forEach(pill => {
+      if (pill.getAttribute('data-count') === savedDice.toString()) {
+        pill.classList.add('active');
+      } else {
+        pill.classList.remove('active');
+      }
+    });
+
+    // 2. Sync dice type
+    const savedType = (localStorage.getItem('dice_app_dice_type') || 'd6').toLowerCase();
+    document.querySelectorAll('.cube-type-btn').forEach(btn => {
+      if (btn.getAttribute('data-type') === savedType) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // 3. Sync rounds
+    const roundsSlider = document.getElementById('rounds-slider') as HTMLInputElement;
+    const roundsBigVal = document.getElementById('cube-rounds-big-val');
+    if (roundsSlider && roundsBigVal) {
+      roundsBigVal.innerText = roundsSlider.value;
+    }
+  }
+
   private bindSetupUI() {
+    // 3D Cube Navigation Chips
+    document.querySelectorAll('.cube-nav-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const targetFace = chip.getAttribute('data-face') as any;
+        if (targetFace) {
+          this.setCubeFace(targetFace);
+        }
+      });
+    });
+
     // Mode selectors
     const btnSolo = document.getElementById('btn-mode-solo');
     const btnVersus = document.getElementById('btn-mode-versus');
@@ -146,6 +294,13 @@ class GameMode {
       btnSolo.classList.add('active');
       btnVersus?.classList.remove('active');
       document.getElementById('versus-names-group')?.classList.add('hidden');
+
+      // Auto-rotate cube to difficulty after a brief visual cue
+      setTimeout(() => {
+        if (this.cubeCurrentFace === 'front') {
+          this.setCubeFace('top');
+        }
+      }, 240);
     });
 
     btnVersus?.addEventListener('click', () => {
@@ -162,6 +317,58 @@ class GameMode {
       if (p2Input) p2Input.value = savedP2;
 
       document.getElementById('versus-names-group')?.classList.remove('hidden');
+
+      // Auto-rotate cube to player names
+      setTimeout(() => {
+        if (this.cubeCurrentFace === 'front') {
+          this.setCubeFace('bottom');
+        }
+      }, 240);
+    });
+
+    // Step navigation buttons on faces
+    document.getElementById('btn-cube-to-diff')?.addEventListener('click', () => {
+      this.setCubeFace('top');
+    });
+
+    document.getElementById('btn-cube-to-rounds')?.addEventListener('click', () => {
+      this.setCubeFace('back');
+    });
+
+    // Left Face: Dice Count Pills
+    document.querySelectorAll('.cube-count-pill').forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const count = parseInt(pill.getAttribute('data-count') || '1', 10);
+        this.diceCount = count;
+        localStorage.setItem('dice_app_dice_count', count.toString());
+        physics.setDiceCount(count);
+        graphics.setDiceCount(count, graphics.currentThemeKey);
+        physics.resetToCenter();
+
+        const countBigVal = document.getElementById('cube-dice-count-big-val');
+        if (countBigVal) countBigVal.innerText = count.toString();
+
+        document.querySelectorAll('.cube-count-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        audio.playClick();
+      });
+    });
+
+    // Right Face: Dice Types Grid
+    document.querySelectorAll('.cube-type-btn').forEach(typeBtn => {
+      typeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const selectedType = typeBtn.getAttribute('data-type') || 'd6';
+        localStorage.setItem('dice_app_dice_type', selectedType);
+        graphics.currentDiceType = selectedType;
+        graphics.generateAllDiceFaceValues(graphics.diceMeshes.length);
+        graphics.setDiceCount(graphics.diceMeshes.length, graphics.currentThemeKey);
+
+        document.querySelectorAll('.cube-type-btn').forEach(b => b.classList.remove('active'));
+        typeBtn.classList.add('active');
+        audio.playClick();
+      });
     });
 
     // Difficulty selectors
@@ -188,14 +395,16 @@ class GameMode {
     // Round selector slider
     const roundsSlider = document.getElementById('rounds-slider') as HTMLInputElement;
     const roundsSliderTitle = document.getElementById('rounds-slider-title');
+    const roundsBigVal = document.getElementById('cube-rounds-big-val');
     
     if (roundsSlider) {
       this.maxRounds = parseInt(roundsSlider.value, 10);
       
       const updateRoundsDisplay = () => {
         const val = roundsSlider.value;
+        const num = parseInt(val, 10);
+        if (roundsBigVal) roundsBigVal.innerText = num.toString();
         if (roundsSliderTitle) {
-          const num = parseInt(val, 10);
           let suffix = 'kôl';
           if (num === 1) suffix = 'kolo';
           else if (num >= 2 && num <= 4) suffix = 'kolá';
@@ -215,8 +424,6 @@ class GameMode {
       updateRoundsDisplay();
     }
 
-
-
     // Time Limit Inputs
     const limitMediumInput = document.getElementById('limit-medium-input') as HTMLInputElement;
     const limitHardInput = document.getElementById('limit-hard-input') as HTMLInputElement;
@@ -234,6 +441,92 @@ class GameMode {
       this.timeLimitHard = val;
       limitHardInput.value = val.toString();
     });
+
+    // Touch & Pointer Gesture Controller for 3D Cube
+    if (this.cubeViewport) {
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let currentX = 0;
+      let currentY = 0;
+      let hasMoved = false;
+
+      const faceRotations: Record<string, { x: number; y: number }> = {
+        front: { x: 0, y: 0 },
+        bottom: { x: 90, y: 0 },
+        top: { x: -90, y: 0 },
+        back: { x: 180, y: 0 },
+        left: { x: 0, y: 90 },
+        right: { x: 0, y: -90 },
+      };
+
+      this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
+        const target = e.target as HTMLElement;
+        // Don't drag when interacting directly with range sliders or text inputs
+        if (target.tagName === 'INPUT' && (target as HTMLInputElement).type !== 'button') {
+          return;
+        }
+
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        currentX = e.clientX;
+        currentY = e.clientY;
+        hasMoved = false;
+      });
+
+      window.addEventListener('pointermove', (e: PointerEvent) => {
+        if (!isDragging || !this.cubeElement) return;
+        currentX = e.clientX;
+        currentY = e.clientY;
+        const dx = currentX - startX;
+        const dy = currentY - startY;
+
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+          hasMoved = true;
+          this.cubeElement.classList.add('is-dragging');
+          const base = faceRotations[this.cubeCurrentFace] || { x: 0, y: 0 };
+          const tiltY = base.y + Math.max(-30, Math.min(30, dx * 0.22));
+          const tiltX = base.x - Math.max(-30, Math.min(30, dy * 0.22));
+          this.cubeElement.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        }
+      });
+
+      const endDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        this.cubeElement?.classList.remove('is-dragging');
+
+        if (hasMoved) {
+          const dx = currentX - startX;
+          const dy = currentY - startY;
+          const threshold = 32;
+
+          if (Math.abs(dx) > Math.abs(dy)) {
+            // Horizontal swipe
+            if (dx < -threshold) {
+              this.navigateHorizontal('left');
+            } else if (dx > threshold) {
+              this.navigateHorizontal('right');
+            } else {
+              this.setCubeFace(this.cubeCurrentFace, false);
+            }
+          } else {
+            // Vertical swipe
+            if (dy < -threshold) {
+              this.navigateVertical('up');
+            } else if (dy > threshold) {
+              this.navigateVertical('down');
+            } else {
+              this.setCubeFace(this.cubeCurrentFace, false);
+            }
+          }
+        }
+      };
+
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+    }
 
     // Start Game Button
     const btnStart = document.getElementById('btn-start-game');

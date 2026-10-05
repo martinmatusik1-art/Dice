@@ -1673,116 +1673,628 @@ input:checked + .slider:before {
   pointer-events: auto;
 }
 
-.game-screen {
-  width: 90%;
-  max-width: 420px;
-  max-height: 85%;
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  overflow: hidden;
-  box-sizing: border-box;
+/* -------------------------------------------------------------
+   3D CUBE SETUP INTERFACE (Game Mode & Settings Harmony)
+   ------------------------------------------------------------- */
+
+:root {
+  --cube-size: 280px;
+  --cube-half: 140px;
 }
 
-.game-screen-header {
+@media (min-width: 420px) {
+  :root {
+    --cube-size: 300px;
+    --cube-half: 150px;
+  }
+}
+
+@media (max-height: 720px) {
+  :root {
+    --cube-size: 250px;
+    --cube-half: 125px;
+  }
+}
+
+.cube-setup-wrapper {
+  width: 95%;
+  max-width: 440px;
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: rgba(14, 18, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.cube-setup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 10px;
 }
 
-.game-screen-header h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: var(--text-primary);
-  margin-bottom: 0;
-}
-
-.setup-scrollable {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
-  margin-bottom: 20px;
-}
-
-/* Custom Scrollbar for setup sidebar/scrollable */
-.setup-scrollable::-webkit-scrollbar {
-  width: 6px;
-}
-.setup-scrollable::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-}
-.setup-scrollable::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-}
-
-.game-mode-options, .difficulty-options, .round-options, .setup-dice-options {
+.cube-header-title {
   display: flex;
-  gap: 8px;
-  margin-top: 8px;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.setup-btn {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.cube-header-icon {
+  color: #8b5cf6;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+}
+
+/* Navigation Chips Bar */
+.cube-nav-chips {
+  display: flex;
+  gap: 6px;
+  padding: 10px 2px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: flex-start;
+}
+
+.cube-nav-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.cube-nav-chip {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
-  padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
+  padding: 5px 10px;
+  font-size: 0.76rem;
   font-weight: 600;
-  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.cube-nav-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cube-nav-chip.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+  border-color: #8b5cf6;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+/* 3D Viewport */
+.cube-viewport {
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  width: 100%;
+  height: calc(var(--cube-size) + 16px);
+  margin: 4px auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  position: relative;
+  touch-action: none;
+  user-select: none;
 }
 
-.setup-btn:hover {
+/* The Rotating 3D Cube */
+.cube-3d {
+  width: var(--cube-size);
+  height: var(--cube-size);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.cube-3d.is-dragging {
+  transition: none; /* instant tracking while dragging */
+}
+
+/* Cube Faces */
+.cube-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(22, 28, 48, 0.96), rgba(13, 17, 30, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 14px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Exact 3D rotations for all 6 faces */
+.cube-face-front  { transform: rotateY(0deg) translateZ(var(--cube-half)); }
+.cube-face-bottom { transform: rotateX(-90deg) translateZ(var(--cube-half)); }
+.cube-face-top    { transform: rotateX(90deg) translateZ(var(--cube-half)); }
+.cube-face-back   { transform: rotateX(180deg) translateZ(var(--cube-half)); }
+.cube-face-left   { transform: rotateY(-90deg) translateZ(var(--cube-half)); }
+.cube-face-right  { transform: rotateY(90deg) translateZ(var(--cube-half)); }
+
+.cube-face-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 2px;
+}
+
+.cube-face-inner::-webkit-scrollbar {
+  width: 4px;
+}
+.cube-face-inner::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.cube-face-badge {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--primary-color);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Face 1: Mode Options */
+.cube-mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.cube-option-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.cube-option-btn:hover {
   background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cube-option-btn.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.2));
+  border-color: #8b5cf6;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.3);
+}
+
+.cube-option-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.cube-option-btn.active .cube-option-icon {
+  background: #8b5cf6;
   color: #fff;
 }
 
-.setup-btn.active {
-  background: rgba(255, 183, 3, 0.12);
-  border-color: var(--primary-color);
-  color: var(--primary-color);
-  box-shadow: 0 0 12px rgba(255, 183, 3, 0.15);
-}
-
-.time-limit-inputs {
-  display: flex;
-  gap: 16px;
-  margin-top: 8px;
-}
-
-.limit-input {
+.cube-option-info {
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.limit-input label {
-  font-size: 0.85rem;
+.cube-option-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.cube-option-desc {
+  font-size: 0.72rem;
   color: var(--text-secondary);
 }
 
-.limit-input input {
+.cube-face-footer-hint {
+  text-align: center;
+  margin-top: 6px;
+}
+
+.swipe-hint-pill {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 3px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Face 2: Player Names */
+.cube-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   flex: 1;
+  justify-content: center;
+}
+
+.cube-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cube-input-row label {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cube-text-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.cube-text-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cube-step-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 7px 12px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all 0.2s;
+}
+
+.cube-step-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: #8b5cf6;
+}
+
+/* Face 3: Difficulty & Limits */
+.cube-difficulty-grid {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.cube-diff-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 4px;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cube-diff-btn i {
+  font-size: 1.1rem;
+}
+
+.cube-diff-btn span {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cube-diff-btn small {
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+.cube-diff-btn.active {
+  background: rgba(255, 183, 3, 0.15);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.25);
+}
+
+.cube-time-limits-group {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+.cube-label-small {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cube-limits-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cube-mini-input {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.cube-num-input {
+  width: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  padding: 3px;
+  font-size: 0.8rem;
+}
+
+/* Face 4: Rounds */
+.cube-rounds-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.rounds-big-num {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(255, 183, 3, 0.3));
+}
+
+.rounds-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.cube-slider-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px;
+}
+
+.cube-slider {
+  width: 100%;
+  accent-color: var(--primary-color);
+  height: 6px;
+  cursor: pointer;
+}
+
+.cube-slider-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+/* Face 5: Dice Count (harmonized from settings) */
+.cube-dice-count-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.cube-dice-big-num {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #38bdf8;
+  filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.4));
+}
+
+.cube-dice-pills {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.cube-count-pill {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 8px;
-  color: #fff;
+  color: var(--text-secondary);
+  font-weight: 700;
   font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.cube-count-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cube-count-pill.active {
+  background: #38bdf8;
+  border-color: #38bdf8;
+  color: #0b1120;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+.cube-hint-small {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
   text-align: center;
-  max-width: 70px;
+  margin-top: 4px;
+}
+
+/* Face 6: Dice Type (harmonized from settings) */
+.cube-dice-types-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  flex: 1;
+  align-content: center;
+}
+
+.cube-type-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cube-type-btn span {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.cube-type-btn small {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+
+.cube-type-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cube-type-btn.active {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.25));
+  border-color: #ec4899;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+}
+
+.cube-type-btn.active span {
+  color: #ec4899;
+}
+
+/* Setup Footer & Start Button */
+.cube-setup-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cube-start-btn {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s ease;
+}
+
+.cube-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+  background: linear-gradient(135deg, #34d399, #059669);
+}
+
+.cube-start-btn:active {
+  transform: translateY(0);
 }
 
 /* Play Screen layout */

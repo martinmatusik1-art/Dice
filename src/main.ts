@@ -543,6 +543,14 @@ class App {
 
     settingsBtn?.addEventListener('click', () => {
       audio.playClick();
+      if (this.currentMode === 'gamemode') {
+        this.switchMode('standard');
+        const classicBtn = document.querySelector('.mode-btn[data-mode="standard"]');
+        if (classicBtn) {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          classicBtn.classList.add('active');
+        }
+      }
       this.updateSettingsMenuPreviews();
       settingsSidebar?.classList.toggle('active');
     });
@@ -794,6 +802,8 @@ class App {
     } else if (mode === 'detonation') {
       detonationMode.activate();
     } else if (mode === 'gamemode') {
+      const settingsSidebar = document.getElementById('settings-sidebar');
+      settingsSidebar?.classList.remove('active');
       gamemode.activate();
     }
   }

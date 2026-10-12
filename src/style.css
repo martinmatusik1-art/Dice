@@ -1896,7 +1896,50 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  touch-action: none;
+  pointer-events: none; /* Inactive faces will never steal clicks */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Only the active face can be clicked or touched */
+.cube-face.active {
+  pointer-events: auto;
+}
+
+.cube-face.active * {
+  pointer-events: auto;
+}
+
+.cube-option-btn,
+.cube-count-pill,
+.cube-type-btn,
+.cube-diff-btn,
+.cube-step-btn,
+.cube-face button {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
+}
+
+.cube-text-input,
+.cube-num-input {
+  pointer-events: auto !important;
+  touch-action: auto !important;
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  position: relative;
+  z-index: 10;
+}
+
+.cube-slider {
+  pointer-events: auto !important;
+  touch-action: pan-x !important;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
 }
 
 /* Exact 3D rotations for all 6 faces */

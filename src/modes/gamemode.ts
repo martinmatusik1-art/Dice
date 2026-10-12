@@ -509,14 +509,15 @@ class GameMode {
       });
     });
 
-    // Touch & Pointer Gesture Controller for 3D Cube (Ultra-responsive)
+    // Touch & Pointer Gesture Controller for 3D Cube
     if (this.cubeViewport) {
-      let isDragging = false;
+      let isDown = false;
+      let isSwiping = false;
       let startX = 0;
       let startY = 0;
       let currentX = 0;
       let currentY = 0;
-      let hasMoved = false;
+      let isInputTarget = false;
       let activePointerId: number | null = null;
 
       const faceRotations: Record<string, { x: number; y: number }> = {
@@ -528,62 +529,74 @@ class GameMode {
         right: { x: 0, y: -90 },
       };
 
-      const handleStart = (clientX: number, clientY: number, target: HTMLElement, pointerId?: number) => {
-        if (target.closest('.cube-peek-btn') || target.tagName === 'INPUT') {
+      this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
+        const target = e.target as HTMLElement;
+        isInputTarget = target.tagName === 'INPUT' || !!target.closest('input, select');
+        
+        isDown = true;
+        isSwiping = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        currentX = e.clientX;
+        currentY = e.clientY;
+        activePointerId = e.pointerId;
+        // NOTE: We deliberately DO NOT call setPointerCapture here so that taps and clicks
+        // pass through to buttons and inputs completely naturally!
+      });
+
+      window.addEventListener('pointermove', (e: PointerEvent) => {
+        if (!isDown || !this.cubeElement) return;
+        currentX = e.clientX;
+        currentY = e.clientY;
+        const dx = currentX - startX;
+        const dy = currentY - startY;
+        const dist = Math.hypot(dx, dy);
+
+        // If user is interacting with an input (e.g. range slider), don't hijack it into a cube swipe
+        if (isInputTarget) {
           return;
         }
 
-        isDragging = true;
-        startX = clientX;
-        startY = clientY;
-        currentX = clientX;
-        currentY = clientY;
-        hasMoved = false;
-
-        if (pointerId !== undefined && this.cubeViewport && this.cubeViewport.setPointerCapture) {
-          try {
-            this.cubeViewport.setPointerCapture(pointerId);
-            activePointerId = pointerId;
-          } catch {}
-        }
-      };
-
-      const handleMove = (clientX: number, clientY: number, e?: Event) => {
-        if (!isDragging || !this.cubeElement) return;
-        currentX = clientX;
-        currentY = clientY;
-        const dx = currentX - startX;
-        const dy = currentY - startY;
-
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-          hasMoved = true;
-          if (e && e.cancelable) {
-            e.preventDefault();
+        // Only convert to a 3D swipe if finger has deliberately moved more than 12px
+        if (!isSwiping && dist > 12) {
+          isSwiping = true;
+          if (activePointerId !== null && this.cubeViewport && this.cubeViewport.setPointerCapture) {
+            try {
+              this.cubeViewport.setPointerCapture(activePointerId);
+            } catch {}
           }
           this.cubeElement.classList.add('is-dragging');
+        }
+
+        if (isSwiping) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           const base = faceRotations[this.cubeCurrentFace] || { x: 0, y: 0 };
           const tiltY = base.y + Math.max(-36, Math.min(36, dx * 0.28));
           const tiltX = base.x - Math.max(-36, Math.min(36, dy * 0.28));
-          const pullZ = -Math.min(30, Math.hypot(dx, dy) * 0.15);
+          const pullZ = -Math.min(30, dist * 0.15);
           this.cubeElement.style.transform = `translateZ(${pullZ}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         }
-      };
+      });
 
-      const handleEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (activePointerId !== null && this.cubeViewport && this.cubeViewport.releasePointerCapture) {
-          try {
-            this.cubeViewport.releasePointerCapture(activePointerId);
-          } catch {}
+      const handlePointerEnd = () => {
+        if (!isDown) return;
+        isDown = false;
+
+        if (isSwiping) {
+          isSwiping = false;
+          if (activePointerId !== null && this.cubeViewport && this.cubeViewport.releasePointerCapture) {
+            try {
+              this.cubeViewport.releasePointerCapture(activePointerId);
+            } catch {}
+          }
           activePointerId = null;
-        }
-        this.cubeElement?.classList.remove('is-dragging');
+          this.cubeElement?.classList.remove('is-dragging');
 
-        if (hasMoved) {
           const dx = currentX - startX;
           const dy = currentY - startY;
-          const threshold = 18; // Effortless one-finger swipe
+          const threshold = 20;
 
           if (Math.abs(dx) > Math.abs(dy)) {
             // Horizontal swipe
@@ -604,37 +617,14 @@ class GameMode {
               this.setCubeFace(this.cubeCurrentFace, false);
             }
           }
+        } else {
+          // It was a tap / click! No swipe occurred, buttons receive click natively.
+          activePointerId = null;
         }
       };
 
-      this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
-        handleStart(e.clientX, e.clientY, e.target as HTMLElement, e.pointerId);
-      });
-
-      this.cubeViewport.addEventListener('pointermove', (e: PointerEvent) => {
-        handleMove(e.clientX, e.clientY, e);
-      });
-
-      this.cubeViewport.addEventListener('pointerup', handleEnd);
-      this.cubeViewport.addEventListener('pointercancel', handleEnd);
-
-      // Explicit touch events fallback
-      this.cubeViewport.addEventListener('touchstart', (e: TouchEvent) => {
-        if (e.touches.length === 1) {
-          const t = e.touches[0];
-          handleStart(t.clientX, t.clientY, e.target as HTMLElement);
-        }
-      }, { passive: true });
-
-      this.cubeViewport.addEventListener('touchmove', (e: TouchEvent) => {
-        if (e.touches.length === 1) {
-          const t = e.touches[0];
-          handleMove(t.clientX, t.clientY, e);
-        }
-      }, { passive: false });
-
-      this.cubeViewport.addEventListener('touchend', handleEnd, { passive: true });
-      this.cubeViewport.addEventListener('touchcancel', handleEnd, { passive: true });
+      window.addEventListener('pointerup', handlePointerEnd);
+      window.addEventListener('pointercancel', handlePointerEnd);
     }
 
     // Start Game Button

@@ -1678,39 +1678,40 @@ input:checked + .slider:before {
    ------------------------------------------------------------- */
 
 :root {
-  --cube-size: 280px;
-  --cube-half: 140px;
+  --cube-size: 250px;
+  --cube-half: 125px;
 }
 
-@media (min-width: 420px) {
+@media (min-width: 420px) and (min-height: 750px) {
   :root {
-    --cube-size: 300px;
-    --cube-half: 150px;
+    --cube-size: 270px;
+    --cube-half: 135px;
   }
 }
 
-@media (max-height: 720px) {
+@media (max-height: 680px) {
   :root {
-    --cube-size: 250px;
-    --cube-half: 125px;
+    --cube-size: 230px;
+    --cube-half: 115px;
   }
 }
 
 .cube-setup-wrapper {
   width: 95%;
-  max-width: 440px;
-  max-height: 94vh;
+  max-width: 430px;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
-  padding: 14px 16px;
+  justify-content: space-between;
+  padding: 16px 18px;
   overflow: hidden;
   box-sizing: border-box;
-  background: rgba(14, 18, 30, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(14, 18, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 26px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 .cube-setup-header {
@@ -1738,8 +1739,10 @@ input:checked + .slider:before {
 /* Navigation Chips Bar */
 .cube-nav-chips {
   display: flex;
-  gap: 6px;
-  padding: 10px 2px 8px;
+  gap: 8px;
+  padding: 4px 2px;
+  margin-top: 10px;
+  margin-bottom: 14px; /* Generous breathing room above cube */
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1756,8 +1759,8 @@ input:checked + .slider:before {
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
   border-radius: 14px;
-  padding: 5px 10px;
-  font-size: 0.76rem;
+  padding: 6px 11px;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -1782,11 +1785,11 @@ input:checked + .slider:before {
 
 /* 3D Viewport with Realistic Perspective */
 .cube-viewport {
-  perspective: 720px;
-  perspective-origin: 50% 32%;
+  perspective: 750px;
+  perspective-origin: 50% 36%;
   width: 100%;
-  height: calc(var(--cube-size) + 24px);
-  margin: 2px auto;
+  height: calc(var(--cube-size) + 26px);
+  margin: 6px auto 14px; /* Clear spacing from chips above and footer below */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1796,21 +1799,23 @@ input:checked + .slider:before {
   -webkit-user-select: none;
 }
 
-/* 3D Directional Peek Badges */
-.cube-peek-btn {
+/* Clean Side Navigation Buttons outside Cube */
+.cube-side-nav-btn {
   position: absolute;
-  z-index: 25;
-  background: rgba(20, 26, 46, 0.8);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(22, 28, 48, 0.85);
   border: 1px solid rgba(139, 92, 246, 0.35);
   color: #cbd5e1;
-  font-size: 0.68rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
   cursor: pointer;
+  z-index: 25;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1819,40 +1824,28 @@ input:checked + .slider:before {
   touch-action: manipulation;
 }
 
-.cube-peek-btn:hover, .cube-peek-btn:active {
-  background: rgba(139, 92, 246, 0.35);
+.cube-side-nav-btn:hover, .cube-side-nav-btn:active {
+  background: rgba(139, 92, 246, 0.4);
   border-color: #8b5cf6;
   color: #fff;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.6);
+  transform: translateY(-50%) scale(1.08);
 }
 
-.cube-peek-btn.peek-top {
-  top: -2px;
-  left: 50%;
-  transform: translateX(-50%);
+.cube-side-nav-btn.nav-prev {
+  left: 2px;
 }
-.cube-peek-btn.peek-bottom {
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.cube-peek-btn.peek-left {
-  left: -4px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.cube-peek-btn.peek-right {
-  right: -4px;
-  top: 50%;
-  transform: translateY(-50%);
+
+.cube-side-nav-btn.nav-next {
+  right: 2px;
 }
 
 /* 3D Floor Shadow */
 .cube-floor-shadow {
   position: absolute;
-  bottom: 6px;
-  width: calc(var(--cube-size) * 0.82);
-  height: 26px;
+  bottom: 4px;
+  width: calc(var(--cube-size) * 0.8);
+  height: 24px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, rgba(99, 102, 241, 0.22) 45%, transparent 75%);
   filter: blur(8px);
@@ -2374,14 +2367,16 @@ input:checked + .slider:before {
 
 /* Setup Footer & Start Button */
 .cube-setup-footer {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 30;
 }
 
 .cube-start-btn {
   width: 100%;
-  height: 46px;
+  height: 48px;
   border: none;
   border-radius: 14px;
   background: linear-gradient(135deg, #10b981, #059669);
@@ -2394,8 +2389,10 @@ input:checked + .slider:before {
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
   transition: all 0.25s ease;
+  position: relative;
+  z-index: 30;
 }
 
 .cube-start-btn:hover {

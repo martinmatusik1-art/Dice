@@ -184,66 +184,26 @@ class GameMode {
       }
     });
 
-    this.updatePeekButtons(face);
-
     if (playAudio) {
       audio.playClick();
     }
   }
 
-  private updatePeekButtons(currentFace: string) {
-    const peekTop = document.querySelector('.cube-peek-btn.peek-top');
-    const peekBottom = document.querySelector('.cube-peek-btn.peek-bottom');
-    const peekLeft = document.querySelector('.cube-peek-btn.peek-left');
-    const peekRight = document.querySelector('.cube-peek-btn.peek-right');
+  private navigateStep(direction: 'prev' | 'next') {
+    const sequence: Array<'front' | 'bottom' | 'top' | 'back' | 'left' | 'right'> = 
+      this.mode === 'versus' 
+        ? ['front', 'bottom', 'top', 'back', 'left', 'right']
+        : ['front', 'top', 'back', 'left', 'right'];
 
-    const peekMap: Record<string, { top: { face: string; label: string }; bottom: { face: string; label: string } }> = {
-      front: {
-        top: { face: 'top', label: 'Náročnosť' },
-        bottom: { face: this.mode === 'versus' ? 'bottom' : 'top', label: this.mode === 'versus' ? 'Hráči' : 'Náročnosť' },
-      },
-      bottom: {
-        top: { face: 'front', label: 'Režim' },
-        bottom: { face: 'top', label: 'Náročnosť' },
-      },
-      top: {
-        top: { face: 'front', label: 'Režim' },
-        bottom: { face: 'back', label: 'Kolá' },
-      },
-      back: {
-        top: { face: 'top', label: 'Náročnosť' },
-        bottom: { face: 'front', label: 'Režim' },
-      },
-      left: {
-        top: { face: 'front', label: 'Režim' },
-        bottom: { face: 'front', label: 'Režim' },
-      },
-      right: {
-        top: { face: 'front', label: 'Režim' },
-        bottom: { face: 'front', label: 'Režim' },
-      },
-    };
+    let idx = sequence.indexOf(this.cubeCurrentFace);
+    if (idx === -1) idx = 0;
 
-    const info = peekMap[currentFace] || peekMap['front'];
-    if (peekTop) {
-      peekTop.setAttribute('data-face', info.top.face);
-      const span = peekTop.querySelector('span');
-      if (span) span.innerText = info.top.label;
-    }
-    if (peekBottom) {
-      peekBottom.setAttribute('data-face', info.bottom.face);
-      const span = peekBottom.querySelector('span');
-      if (span) span.innerText = info.bottom.label;
-    }
-    if (peekLeft) {
-      peekLeft.setAttribute('data-face', currentFace === 'left' ? 'front' : 'left');
-      const span = peekLeft.querySelector('span');
-      if (span) span.innerText = currentFace === 'left' ? 'Späť' : 'Počet';
-    }
-    if (peekRight) {
-      peekRight.setAttribute('data-face', currentFace === 'right' ? 'front' : 'right');
-      const span = peekRight.querySelector('span');
-      if (span) span.innerText = currentFace === 'right' ? 'Späť' : 'Typ';
+    if (direction === 'next') {
+      const nextIdx = (idx + 1) % sequence.length;
+      this.setCubeFace(sequence[nextIdx]);
+    } else {
+      const prevIdx = (idx - 1 + sequence.length) % sequence.length;
+      this.setCubeFace(sequence[prevIdx]);
     }
   }
 
@@ -500,13 +460,15 @@ class GameMode {
       limitHardInput.value = val.toString();
     });
 
-    // 3D Directional Peek Badges click handlers
-    document.querySelectorAll('.cube-peek-btn').forEach(peekBtn => {
-      peekBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const face = peekBtn.getAttribute('data-face') as any;
-        if (face) this.setCubeFace(face);
-      });
+    // Clean side navigation buttons (outside cube)
+    document.getElementById('cube-nav-prev')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.navigateStep('prev');
+    });
+
+    document.getElementById('cube-nav-next')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.navigateStep('next');
     });
 
     // Touch & Pointer Gesture Controller for 3D Cube

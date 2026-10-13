@@ -97,13 +97,17 @@ class GameMode {
     if (p1Input) p1Input.value = savedP1;
     if (p2Input) p2Input.value = savedP2;
 
-    const namesGroup = document.getElementById('versus-names-group');
-    if (namesGroup) {
-      if (this.mode === 'versus') {
-        namesGroup.classList.remove('hidden');
-      } else {
-        namesGroup.classList.add('hidden');
-      }
+    const p2Row = document.getElementById('setup-p2-row');
+    const soloHint = document.getElementById('setup-solo-hint');
+    const p1Label = document.getElementById('setup-p1-label');
+    if (this.mode === 'versus') {
+      p2Row?.classList.remove('hidden');
+      soloHint?.classList.add('hidden');
+      if (p1Label) p1Label.innerHTML = '<i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:';
+    } else {
+      p2Row?.classList.add('hidden');
+      soloHint?.classList.remove('hidden');
+      if (p1Label) p1Label.innerHTML = '<i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Tvoje Meno (Hráč):';
     }
 
     // Reset cube orientation to front and sync states
@@ -191,9 +195,7 @@ class GameMode {
 
   private navigateStep(direction: 'prev' | 'next') {
     const sequence: Array<'front' | 'bottom' | 'top' | 'back' | 'left' | 'right'> = 
-      this.mode === 'versus' 
-        ? ['front', 'bottom', 'top', 'back', 'left', 'right']
-        : ['front', 'top', 'back', 'left', 'right'];
+      ['front', 'bottom', 'top', 'back', 'left', 'right'];
 
     let idx = sequence.indexOf(this.cubeCurrentFace);
     if (idx === -1) idx = 0;
@@ -211,7 +213,7 @@ class GameMode {
     if (direction === 'up') {
       // Swipe UP: move to next section
       if (this.cubeCurrentFace === 'front') {
-        this.setCubeFace(this.mode === 'versus' ? 'bottom' : 'top');
+        this.setCubeFace('bottom');
       } else if (this.cubeCurrentFace === 'bottom') {
         this.setCubeFace('top');
       } else if (this.cubeCurrentFace === 'top') {
@@ -228,7 +230,7 @@ class GameMode {
       } else if (this.cubeCurrentFace === 'back') {
         this.setCubeFace('top');
       } else if (this.cubeCurrentFace === 'top') {
-        this.setCubeFace(this.mode === 'versus' ? 'bottom' : 'front');
+        this.setCubeFace('bottom');
       } else if (this.cubeCurrentFace === 'bottom') {
         this.setCubeFace('front');
       } else {
@@ -311,7 +313,10 @@ class GameMode {
       this.mode = 'solo';
       btnSolo.classList.add('active');
       btnVersus?.classList.remove('active');
-      document.getElementById('versus-names-group')?.classList.add('hidden');
+      document.getElementById('setup-p2-row')?.classList.add('hidden');
+      document.getElementById('setup-solo-hint')?.classList.remove('hidden');
+      const p1Label = document.getElementById('setup-p1-label');
+      if (p1Label) p1Label.innerHTML = '<i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Tvoje Meno (Hráč):';
 
       // Auto-rotate cube to difficulty after a brief visual cue
       setTimeout(() => {
@@ -334,7 +339,10 @@ class GameMode {
       if (p1Input) p1Input.value = savedP1;
       if (p2Input) p2Input.value = savedP2;
 
-      document.getElementById('versus-names-group')?.classList.remove('hidden');
+      document.getElementById('setup-p2-row')?.classList.remove('hidden');
+      document.getElementById('setup-solo-hint')?.classList.add('hidden');
+      const p1Label = document.getElementById('setup-p1-label');
+      if (p1Label) p1Label.innerHTML = '<i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:';
 
       // Auto-rotate cube to player names
       setTimeout(() => {
@@ -351,6 +359,35 @@ class GameMode {
 
     document.getElementById('btn-cube-to-rounds')?.addEventListener('click', () => {
       this.setCubeFace('back');
+    });
+
+    // Player name inputs listeners (focus, typing, and sync)
+    const setupP1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
+    const setupP2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+    [setupP1Input, setupP2Input].forEach(inp => {
+      if (!inp) return;
+      inp.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+      });
+      inp.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inp.focus();
+      });
+      inp.addEventListener('input', () => {
+        if (inp === setupP1Input) {
+          const val = setupP1Input.value.trim();
+          if (val) {
+            localStorage.setItem('dice_app_username', val);
+            const userDisplay = document.getElementById('username-display');
+            if (userDisplay) userDisplay.innerText = val;
+          }
+        } else if (inp === setupP2Input) {
+          const val = setupP2Input.value.trim();
+          if (val) {
+            localStorage.setItem('dice_app_versus_p2_name', val);
+          }
+        }
+      });
     });
 
     // Left Face: Dice Count Pills
@@ -493,7 +530,10 @@ class GameMode {
 
       this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
         const target = e.target as HTMLElement;
-        isInputTarget = target.tagName === 'INPUT' || !!target.closest('input, select');
+        if (target.tagName === 'INPUT' || !!target.closest('input, select, textarea, label')) {
+          // Input element or label: strictly do not interfere with typing/focusing!
+          return;
+        }
         
         isDown = true;
         isSwiping = false;
@@ -637,17 +677,16 @@ class GameMode {
     const savedDice = parseInt(localStorage.getItem('dice_app_dice_count') || '1', 10);
     this.diceCount = savedDice;
 
-    // Sync and save player names for versus mode
-    let p1Name = 'Guest';
+    // Sync and save player names for versus and solo modes
+    const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
+    const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+    const p1Name = p1Input?.value.trim() || localStorage.getItem('dice_app_username') || 'Guest';
     let p2Name = 'Player 2';
+    localStorage.setItem('dice_app_username', p1Name);
+
     if (this.mode === 'versus') {
-      const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
-      const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
-      p1Name = p1Input?.value.trim() || 'Guest';
       p2Name = p2Input?.value.trim() || 'Player 2';
       localStorage.setItem('dice_app_versus_p2_name', p2Name);
-    } else {
-      p1Name = localStorage.getItem('dice_app_username') || 'Guest';
     }
     
     const p1Display = document.getElementById('p1-name');

@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.32</small></span>
+          <span>3D Dice <small class="ver-text">v1.33</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -173,18 +173,21 @@
                 </div>
               </div>
 
-              <!-- 2. BOTTOM FACE: Player Names (Versus setup) -->
+              <!-- 2. BOTTOM FACE: Player Names -->
               <div class="cube-face cube-face-bottom" data-face-id="bottom">
                 <div class="cube-face-inner">
                   <div class="cube-face-badge"><i class="fa-solid fa-users"></i> Mená Hráčov</div>
                   <div class="cube-form-group" id="versus-names-group">
-                    <div class="cube-input-row">
-                      <label for="setup-p1-name-input"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:</label>
-                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="cube-text-input">
+                    <div class="cube-input-row" id="setup-p1-row">
+                      <label for="setup-p1-name-input" id="setup-p1-label"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:</label>
+                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="cube-text-input" autocomplete="off" spellcheck="false">
                     </div>
-                    <div class="cube-input-row">
+                    <div class="cube-input-row" id="setup-p2-row">
                       <label for="setup-p2-name-input"><i class="fa-solid fa-circle-user" style="color: var(--secondary-color);"></i> Hráč 2:</label>
-                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="cube-text-input">
+                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="cube-text-input" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div class="cube-solo-hint" id="setup-solo-hint">
+                      <small><i class="fa-solid fa-info-circle"></i> Sólomód aktívny (Hráč 2 je dostupný v režime Súboj)</small>
                     </div>
                   </div>
                   <button type="button" class="cube-step-btn" id="btn-cube-to-diff">
@@ -509,7 +512,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.32 </span>
+          <span>Version 1.33 </span>
         </div>
       </div>
 

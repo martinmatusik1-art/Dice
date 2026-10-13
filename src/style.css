@@ -1896,7 +1896,13 @@ input:checked + .slider:before {
 
 /* Only the active face can be clicked or touched */
 .cube-face.active {
-  pointer-events: auto;
+  pointer-events: auto !important;
+  z-index: 20;
+}
+
+.cube-face:not(.active) {
+  pointer-events: none !important;
+  z-index: 1;
 }
 
 .cube-face.active * {
@@ -1923,8 +1929,9 @@ input:checked + .slider:before {
   cursor: text !important;
   user-select: text !important;
   -webkit-user-select: text !important;
+  -webkit-touch-callout: default !important;
   position: relative;
-  z-index: 10;
+  z-index: 25;
 }
 
 .cube-slider {
@@ -2104,6 +2111,20 @@ input:checked + .slider:before {
   border-color: #8b5cf6;
   box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.cube-solo-hint {
+  margin-top: 4px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cube-step-btn {

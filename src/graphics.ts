@@ -39,6 +39,7 @@ class GraphicsEngine {
   private diceGeometry: THREE.BufferGeometry | null = null;
   public currentThemeKey: string = 'classic';
   public currentDiceType: string = 'd6';
+  private lastGeneratedDiceType: string = '';
   public diceFaceValues: number[][] = [];
   
   private trayFloor!: THREE.Mesh;
@@ -211,7 +212,6 @@ class GraphicsEngine {
         case 3:
           drawPip(low, low);
           drawPip(center, center);
-          drawPip(high, high);
           break;
         case 4:
           drawPip(low, low);
@@ -240,7 +240,19 @@ class GraphicsEngine {
       ctx.font = 'bold 95px "Outfit", -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(value.toString(), 128, 128);
+      const textY = value === 9 ? 122 : 128;
+      ctx.fillText(value.toString(), 128, textY);
+
+      // Draw a small distinguishing line under 9 to differentiate it from 6
+      if (value === 9) {
+        ctx.strokeStyle = theme.pips;
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(106, 174);
+        ctx.lineTo(150, 174);
+        ctx.stroke();
+      }
     }
 
     const texture = new THREE.CanvasTexture(canvas);
@@ -274,7 +286,7 @@ class GraphicsEngine {
     }
 
     // Initialize/regenerate face values if count or type changed
-    if (this.diceFaceValues.length !== count) {
+    if (this.diceFaceValues.length !== count || this.lastGeneratedDiceType !== this.currentDiceType) {
       this.generateAllDiceFaceValues(count);
     }
 
@@ -322,6 +334,7 @@ class GraphicsEngine {
 
   // Helpers to generate face values for custom dice types
   public generateAllDiceFaceValues(count: number) {
+    this.lastGeneratedDiceType = this.currentDiceType;
     this.diceFaceValues = [];
     for (let i = 0; i < count; i++) {
       this.diceFaceValues.push(this.generateDiceFaces(this.currentDiceType));

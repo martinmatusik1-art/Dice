@@ -39,7 +39,7 @@
         </div>
         <div class="logo" id="top-logo-btn" title="Share App">
           <i class="fa-solid fa-dice-d6 logo-icon"></i>
-          <span>3D Dice <small class="ver-text">v1.33</small></span>
+          <span>3D Dice <small class="ver-text">v1.36</small></span>
         </div>
         <div class="top-bar-right">
           <div class="roll-stats" id="roll-stats-btn" title="View History">
@@ -180,11 +180,17 @@
                   <div class="cube-form-group" id="versus-names-group">
                     <div class="cube-input-row" id="setup-p1-row">
                       <label for="setup-p1-name-input" id="setup-p1-label"><i class="fa-solid fa-circle-user" style="color: var(--primary-color);"></i> Hráč 1:</label>
-                      <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="cube-text-input" autocomplete="off" spellcheck="false">
+                      <div class="cube-name-wrapper" id="setup-p1-wrapper" title="Kliknite sem pre zmenu mena">
+                        <input type="text" id="setup-p1-name-input" placeholder="Meno Hráča 1" maxlength="15" class="cube-text-input" readonly>
+                        <button type="button" class="cube-name-edit-icon" id="btn-edit-p1" title="Zmeniť meno"><i class="fa-solid fa-pen-to-square"></i></button>
+                      </div>
                     </div>
                     <div class="cube-input-row" id="setup-p2-row">
                       <label for="setup-p2-name-input"><i class="fa-solid fa-circle-user" style="color: var(--secondary-color);"></i> Hráč 2:</label>
-                      <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="cube-text-input" autocomplete="off" spellcheck="false">
+                      <div class="cube-name-wrapper" id="setup-p2-wrapper" title="Kliknite sem pre zmenu mena">
+                        <input type="text" id="setup-p2-name-input" placeholder="Meno Hráča 2" maxlength="15" class="cube-text-input" readonly>
+                        <button type="button" class="cube-name-edit-icon" id="btn-edit-p2" title="Zmeniť meno"><i class="fa-solid fa-pen-to-square"></i></button>
+                      </div>
                     </div>
                     <div class="cube-solo-hint" id="setup-solo-hint">
                       <small><i class="fa-solid fa-info-circle"></i> Sólomód aktívny (Hráč 2 je dostupný v režime Súboj)</small>
@@ -512,7 +518,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <span>Version 1.33 </span>
+          <span>Version 1.36 </span>
         </div>
       </div>
 
@@ -682,6 +688,27 @@
           </div>
           <div class="modal-actions">
             <button id="username-save-btn" class="modal-btn confirm close-modal-action" data-modal="modal-setting-username">Uložiť</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Game Mode Player Name Edit -->
+      <div id="modal-gamemode-player-name" class="modal-overlay hidden" style="z-index: 10000;">
+        <div class="modal-content glass-panel" style="max-width: 350px; width: 92%;">
+          <div class="play-store-header">
+            <i class="fa-solid fa-user-pen" style="color: var(--primary-color);"></i>
+            <span id="gamemode-name-modal-title">Zmena mena hráča</span>
+            <button class="modal-close-btn icon-btn" id="btn-close-gamemode-name-modal" style="margin-left: auto; width: 36px; height: 36px; font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="product-info exit-info" style="margin-bottom: 14px;">
+            <p id="gamemode-name-modal-desc" style="font-size: 0.88rem; color: var(--text-secondary);">Zadajte nové meno pre herný režim.</p>
+          </div>
+          <div class="username-edit-container" style="margin-bottom: 18px;">
+            <input type="text" id="gamemode-player-name-modal-input" placeholder="Zadajte meno" maxlength="15" autocomplete="off" style="width: 100%; background: rgba(0,0,0,0.35); border: 1.5px solid #8b5cf6; border-radius: 12px; padding: 12px; color: #fff; font-family: var(--font-family); font-size: 1.05rem; outline: none; box-shadow: 0 0 16px rgba(139, 92, 246, 0.35);">
+          </div>
+          <div class="modal-actions" style="display: flex; gap: 10px;">
+            <button type="button" id="btn-cancel-gamemode-name-modal" class="modal-btn secondary" style="flex: 1;">Zrušiť</button>
+            <button type="button" id="btn-save-gamemode-name-modal" class="modal-btn confirm" style="flex: 1;">Uložiť</button>
           </div>
         </div>
       </div>

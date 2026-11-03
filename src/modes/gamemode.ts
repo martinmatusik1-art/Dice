@@ -361,33 +361,115 @@ class GameMode {
       this.setCubeFace('back');
     });
 
-    // Player name inputs listeners (focus, typing, and sync)
-    const setupP1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
-    const setupP2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
-    [setupP1Input, setupP2Input].forEach(inp => {
-      if (!inp) return;
-      inp.addEventListener('pointerdown', (e) => {
-        e.stopPropagation();
-      });
-      inp.addEventListener('click', (e) => {
-        e.stopPropagation();
-        inp.focus();
-      });
-      inp.addEventListener('input', () => {
-        if (inp === setupP1Input) {
-          const val = setupP1Input.value.trim();
-          if (val) {
-            localStorage.setItem('dice_app_username', val);
-            const userDisplay = document.getElementById('username-display');
-            if (userDisplay) userDisplay.innerText = val;
-          }
-        } else if (inp === setupP2Input) {
-          const val = setupP2Input.value.trim();
-          if (val) {
-            localStorage.setItem('dice_app_versus_p2_name', val);
-          }
-        }
-      });
+    // Player Name Quick Edit Modal (in 2D space to ensure 100% reliable input on mobile and desktop)
+    const nameModal = document.getElementById('modal-gamemode-player-name');
+    const nameModalTitle = document.getElementById('gamemode-name-modal-title');
+    const nameModalDesc = document.getElementById('gamemode-name-modal-desc');
+    const nameModalInput = document.getElementById('gamemode-player-name-modal-input') as HTMLInputElement;
+    const nameModalSave = document.getElementById('btn-save-gamemode-name-modal');
+    const nameModalCancel = document.getElementById('btn-cancel-gamemode-name-modal');
+    const nameModalClose = document.getElementById('btn-close-gamemode-name-modal');
+
+    let activeEditingPlayer: 1 | 2 = 1;
+
+    const openNameModal = (player: 1 | 2) => {
+      activeEditingPlayer = player;
+      audio.playClick();
+      const currentP1 = localStorage.getItem('dice_app_username') || 'Guest';
+      const currentP2 = localStorage.getItem('dice_app_versus_p2_name') || 'Player 2';
+
+      if (nameModalTitle) {
+        nameModalTitle.innerText = player === 1 
+          ? (this.mode === 'versus' ? 'Meno Hráča 1' : 'Tvoje Meno (Hráč)')
+          : 'Meno Hráča 2';
+      }
+      if (nameModalDesc) {
+        nameModalDesc.innerText = player === 1
+          ? 'Zadajte meno pre prvého hráča.'
+          : 'Zadajte meno pre druhého hráča v režime Súboj.';
+      }
+
+      if (nameModalInput) {
+        nameModalInput.value = player === 1 ? currentP1 : currentP2;
+      }
+
+      nameModal?.classList.remove('hidden');
+
+      setTimeout(() => {
+        nameModalInput?.focus();
+        nameModalInput?.select();
+      }, 80);
+    };
+
+    const closeNameModal = () => {
+      audio.playClick();
+      nameModal?.classList.add('hidden');
+    };
+
+    const saveNameFromModal = () => {
+      audio.playClick();
+      const val = (nameModalInput?.value || '').trim().substring(0, 15);
+      if (activeEditingPlayer === 1) {
+        const finalName = val || 'Guest';
+        localStorage.setItem('dice_app_username', finalName);
+        const p1Input = document.getElementById('setup-p1-name-input') as HTMLInputElement;
+        if (p1Input) p1Input.value = finalName;
+        const userNameDisplay = document.getElementById('user-name-display');
+        if (userNameDisplay) userNameDisplay.innerText = finalName;
+        const userDisplay = document.getElementById('username-display');
+        if (userDisplay) userDisplay.innerText = finalName;
+        const menuDesc = document.getElementById('menu-username-desc');
+        if (menuDesc) menuDesc.innerText = finalName;
+      } else {
+        const finalName = val || 'Player 2';
+        localStorage.setItem('dice_app_versus_p2_name', finalName);
+        const p2Input = document.getElementById('setup-p2-name-input') as HTMLInputElement;
+        if (p2Input) p2Input.value = finalName;
+      }
+      nameModal?.classList.add('hidden');
+    };
+
+    nameModalSave?.addEventListener('click', saveNameFromModal);
+    nameModalCancel?.addEventListener('click', closeNameModal);
+    nameModalClose?.addEventListener('click', closeNameModal);
+
+    nameModalInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveNameFromModal();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closeNameModal();
+      }
+    });
+
+    // Attach click and touch triggers to Player 1 & 2 cards on the cube
+    const triggerP1 = (e: Event) => {
+      e.stopPropagation();
+      openNameModal(1);
+    };
+    const p1Wrapper = document.getElementById('setup-p1-wrapper');
+    const p1Inp = document.getElementById('setup-p1-name-input');
+    const p1Btn = document.getElementById('btn-edit-p1');
+    const p1Row = document.getElementById('setup-p1-row');
+    [p1Wrapper, p1Inp, p1Btn, p1Row].forEach(el => {
+      el?.addEventListener('click', triggerP1);
+      el?.addEventListener('pointerup', triggerP1);
+      el?.addEventListener('touchend', triggerP1);
+    });
+
+    const triggerP2 = (e: Event) => {
+      e.stopPropagation();
+      openNameModal(2);
+    };
+    const p2Wrapper = document.getElementById('setup-p2-wrapper');
+    const p2Inp = document.getElementById('setup-p2-name-input');
+    const p2Btn = document.getElementById('btn-edit-p2');
+    const p2Row = document.getElementById('setup-p2-row');
+    [p2Wrapper, p2Inp, p2Btn, p2Row].forEach(el => {
+      el?.addEventListener('click', triggerP2);
+      el?.addEventListener('pointerup', triggerP2);
+      el?.addEventListener('touchend', triggerP2);
     });
 
     // Left Face: Dice Count Pills
@@ -530,8 +612,15 @@ class GameMode {
 
       this.cubeViewport.addEventListener('pointerdown', (e: PointerEvent) => {
         const target = e.target as HTMLElement;
-        if (target.tagName === 'INPUT' || !!target.closest('input, select, textarea, label')) {
-          // Input element or label: strictly do not interfere with typing/focusing!
+        const nameRow = target.closest('#setup-p1-row, #setup-p2-row, .cube-name-wrapper, #btn-edit-p1, #btn-edit-p2');
+        if (nameRow) {
+          const isP2 = !!target.closest('#setup-p2-row, #setup-p2-wrapper, #btn-edit-p2');
+          openNameModal(isP2 ? 2 : 1);
+          return;
+        }
+
+        if (target.tagName === 'INPUT' || !!target.closest('input, select, textarea, label, .cube-name-wrapper')) {
+          // Input element, label, or name edit wrapper: strictly do not interfere!
           return;
         }
         

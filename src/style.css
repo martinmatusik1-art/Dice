@@ -2094,23 +2094,56 @@ input:checked + .slider:before {
   gap: 5px;
 }
 
-.cube-text-input {
+.cube-name-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  pointer-events: auto !important;
+  z-index: 25;
+}
+
+.cube-name-wrapper:hover,
+.cube-name-wrapper:active {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+}
+
+.cube-name-wrapper .cube-text-input {
+  background: transparent;
+  border: none;
+  border-radius: 0;
   padding: 8px 10px;
   color: #fff;
-  font-size: 0.85rem;
-  outline: none;
-  transition: all 0.2s;
-  box-sizing: border-box;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
   width: 100%;
 }
 
-.cube-text-input:focus {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
-  background: rgba(255, 255, 255, 0.08);
+.cube-name-edit-icon {
+  background: transparent;
+  border: none;
+  color: #a78bfa;
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, color 0.2s;
+  pointer-events: auto !important;
+}
+
+.cube-name-wrapper:hover .cube-name-edit-icon {
+  transform: scale(1.15);
+  color: #c084fc;
 }
 
 .cube-solo-hint {

@@ -212,6 +212,7 @@ class GraphicsEngine {
         case 3:
           drawPip(low, low);
           drawPip(center, center);
+          drawPip(high, high);
           break;
         case 4:
           drawPip(low, low);

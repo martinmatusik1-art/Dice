@@ -1888,7 +1888,10 @@ input:checked + .slider:before {
   -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* NOTE: Do NOT use overflow: hidden here. In Chrome, clipping overflow on faces rotated
+     by 90deg (top/bottom/left/right) breaks hit-testing and all clicks fall through to
+     #cube-viewport. Content clipping/scrolling is handled by .cube-face-inner instead. */
+  overflow: visible;
   pointer-events: none; /* Inactive faces will never steal clicks */
   user-select: none;
   -webkit-user-select: none;
